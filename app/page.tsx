@@ -1,14 +1,17 @@
+import dynamic from "next/dynamic";
 import Nav from "@/components/Nav";
-import QuoteCarousel from "@/components/QuoteCarousel";
 import FadeIn from "@/components/FadeIn";
 import AnimatedCardGrid from "@/components/AnimatedCardGrid";
 import Embers from "@/components/Embers";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import Parallax from "@/components/Parallax";
-import BossShowcase from "@/components/BossShowcase";
 import DescendButton from "@/components/DescendButton";
 import HollowedOrigins from "@/components/HollowedOrigins";
 import SacredRelics from "@/components/SacredRelics";
+
+// Loaded only when near the viewport — reduces initial JS bundle
+const BossShowcase   = dynamic(() => import("@/components/BossShowcase"))
+const QuoteCarousel  = dynamic(() => import("@/components/QuoteCarousel"))
 import { games, perfectGames, currentlyPlaying } from "@/data/games";
 
 const totalHours = Math.floor(games.reduce((sum, g) => sum + (g.hours ?? 0), 0));

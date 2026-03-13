@@ -28,6 +28,16 @@ const TRAIL_LENGTH = 22   // how many points we keep in the ring buffer
 const TRAIL_LIFE   = 22   // frames before a point fully fades out
 const POINT_RADIUS = 2    // px radius of each ember dot
 
+// Pre-computed color lookup table — avoids per-point math every frame.
+// Index 0 = oldest (ember red), index TRAIL_LIFE = newest (amber gold).
+const COLOR_LUT = Array.from({ length: TRAIL_LIFE + 1 }, (_, i) => {
+  const f = i / TRAIL_LIFE
+  const r = Math.round(232 * f + 139 * (1 - f))
+  const g = Math.round(201 * f +  42 * (1 - f))
+  const b = Math.round(122 * f +  26 * (1 - f))
+  return `rgba(${r},${g},${b},${(f * 0.7).toFixed(2)})`
+})
+
 export default function CustomCursor() {
   // ── refs ─────────────────────────────────────────────
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -106,12 +116,8 @@ export default function CustomCursor() {
         ctx.beginPath()
         ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2)
 
-        // Colour: interpolate from amber (#E8C97A) to ember red (#8B2A1A)
-        // Older points are more red, newer points are more gold
-        const r = Math.round(232 * lifeFraction + 139 * (1 - lifeFraction))
-        const g = Math.round(201 * lifeFraction +  42 * (1 - lifeFraction))
-        const b = Math.round(122 * lifeFraction +  26 * (1 - lifeFraction))
-        ctx.fillStyle = `rgba(${r},${g},${b},${lifeFraction * 0.7})`
+        // Look up pre-computed color instead of computing per point per frame
+        ctx.fillStyle = COLOR_LUT[Math.round(lifeFraction * TRAIL_LIFE)]
         ctx.fill()
       }
 
@@ -131,7 +137,7 @@ export default function CustomCursor() {
       window.removeEventListener('mousemove', onMouseMove)
       cancelAnimationFrame(rafRef.current)
     }
-  }, [cursorX, cursorY])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps -- cursorX/cursorY are stable MotionValue refs
 
   return (
     <>

@@ -70,6 +70,12 @@ html { scrollbar-width: none; }
   50%        { opacity: 0; }
 }
 
+/* Quote carousel progress bar — runs on the GPU compositor at 60fps */
+@keyframes quoteProgress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
 /* Card shimmer — diagonal light streak slides across on hover.
    The div starts fully left (-150%) and exits fully right (250%).
    skewX(-15deg) tilts it so it reads as a light reflection, not a wipe.

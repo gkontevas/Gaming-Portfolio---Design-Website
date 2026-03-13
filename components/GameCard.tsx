@@ -37,6 +37,7 @@ export default function GameCard({ game }: Props) {
             alt={game.title}
             fill
             sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            loading="lazy"
             className="object-cover object-center opacity-50 group-hover:opacity-65 transition-opacity duration-300"
           />
           {/* Gradient so text stays readable over the image */}

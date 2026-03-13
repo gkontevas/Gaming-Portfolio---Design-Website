@@ -7,6 +7,7 @@ import IntroScreen from "@/components/IntroScreen";
 import SoundManager from "@/components/SoundManager";
 import AreaToast from "@/components/AreaToast";
 import KeyboardNav from "@/components/KeyboardNav";
+import MobileWarning from "@/components/MobileWarning";
 import "./globals.css";
 
 /*
@@ -55,6 +56,7 @@ export default function RootLayout({
         <SoundManager />   {/* z-[200] — mute button, bottom right */}
         <AreaToast />
         <KeyboardNav />
+        <MobileWarning />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useAnimation } from 'framer-motion'
 
 const quotes = [
   {
@@ -61,13 +61,12 @@ function quoteSize(q: string): string {
 }
 
 export default function QuoteCarousel() {
-  const [index, setIndex]       = useState(0)
-  const [paused, setPaused]     = useState(false)
-  const [progress, setProgress] = useState(0)
+  const [index, setIndex]   = useState(0)
+  const [paused, setPaused] = useState(false)
+  const barControls         = useAnimation()
 
   const goTo = useCallback((next: number) => {
     setIndex(next)
-    setProgress(0)
   }, [])
 
   useEffect(() => {
@@ -76,15 +75,20 @@ export default function QuoteCarousel() {
     return () => clearInterval(timer)
   }, [index, paused, goTo])
 
-  useEffect(() => { setProgress(0) }, [index])
-
+  // Restart bar from 0 whenever the quote changes
   useEffect(() => {
-    if (paused) return
-    const tick = setInterval(() => {
-      setProgress(p => Math.min(p + (50 / DURATION) * 100, 100))
-    }, 50)
-    return () => clearInterval(tick)
-  }, [index, paused])
+    barControls.set({ scaleX: 0 })
+    if (!paused) barControls.start({ scaleX: 1, transition: { duration: DURATION / 1000, ease: 'linear' } })
+  }, [index, barControls, paused])
+
+  // Pause / resume the bar in place
+  useEffect(() => {
+    if (paused) {
+      barControls.stop()
+    } else {
+      barControls.start({ scaleX: 1, transition: { duration: DURATION / 1000, ease: 'linear' } })
+    }
+  }, [paused, barControls])
 
   const current = quotes[index]
 
@@ -161,9 +165,9 @@ export default function QuoteCarousel() {
       {/* Full-width progress line */}
       <div className="w-full h-px bg-gold/10">
         <motion.div
-          className="h-px bg-gold/40 origin-left"
-          style={{ scaleX: progress / 100 }}
-          transition={{ duration: 0 }}
+          className="h-px bg-gold/40"
+          style={{ originX: 0 }}
+          animate={barControls}
         />
       </div>
 
