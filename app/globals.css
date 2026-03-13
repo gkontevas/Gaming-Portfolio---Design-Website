@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/*
+  DESIGN SYSTEM — VESTIGES OF THE UNLIT
+  Tailwind v4 uses @theme to register custom tokens.
+  Every name below becomes a usable Tailwind class.
+  e.g. --color-ash → bg-ash, text-ash, border-ash
+       --font-display → font-display
+*/
+
+@theme {
+  /* ── COLOR PALETTE ─────────────────────────────────────
+     Named after fire-states, not generic names.
+     This keeps the code readable and on-theme.
+  */
+  --color-ash:    #0D0A07; /* page background — near-black, amber-warm */
+  --color-cinder: #1A1714; /* slightly lighter surface, section bg     */
+  --color-mist:   #2A2320; /* card/hover surface                       */
+  --color-bronze: #7A6545; /* muted text, labels, secondary info       */
+  --color-gold:   #C9A96E; /* primary text, titles, UI chrome          */
+  --color-amber:  #E8C97A; /* accent — active, highlighted, selected   */
+  --color-ember:  #8B2A1A; /* danger — death, incomplete, warnings     */
+
+  /* ── TYPOGRAPHY ──────────────────────────────────────── */
+  --font-display: var(--font-cinzel);   /* carved-in-stone headers */
+  --font-body:    var(--font-crimson);  /* written lore, body text */
+}
+
+/* ── BASE STYLES ──────────────────────────────────────────
+   Applied to every element on the page automatically.
+   No Tailwind class needed — this is the foundation.
+*/
+body {
+  background-color: #0D0A07;
+  color: #C9A96E;
+  font-family: var(--font-crimson), Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Thin gold horizontal rule used throughout the site */
+hr {
+  border-color: #C9A96E;
+  opacity: 0.2;
+}
+
+/* Hide default cursor — replaced by CustomCursor canvas + ring */
+* { cursor: none !important; }
+
+/* Hide scrollbar completely */
+::-webkit-scrollbar       { width: 0px !important; display: none; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: transparent; }
+
+html { scrollbar-width: none; }
+
+/* ── KEYFRAMES ────────────────────────────────────────────
+   flickerFlame: squishes a div on X/Y each frame to simulate
+   fire turbulence. The exact percentages create an organic feel.
+
+   blink: fades opacity between 1 and 0 — used for "press any key".
+*/
+@keyframes flickerFlame {
+  0%,  100% { transform: scaleX(1)    scaleY(1);    }
+  25%        { transform: scaleX(0.92) scaleY(1.1);  }
+  75%        { transform: scaleX(1.08) scaleY(0.93); }
+}
+
+@keyframes blink {
+  0%,  100% { opacity: 1; }
+  50%        { opacity: 0; }
+}
+
+/* Card shimmer — diagonal light streak slides across on hover.
+   The div starts fully left (-150%) and exits fully right (250%).
+   skewX(-15deg) tilts it so it reads as a light reflection, not a wipe.
+   Triggered by .group:hover so no JS needed — pure CSS. */
+@keyframes cardShimmer {
+  from { transform: translateX(-150%) skewX(-15deg); }
+  to   { transform: translateX(250%)  skewX(-15deg); }
+}
+.group:hover .card-shimmer {
+  animation: cardShimmer 0.65s ease forwards;
+}
+
+/* Subtle film grain overlay — aged parchment / CRT feel */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}

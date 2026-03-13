@@ -1,0 +1,296 @@
+import { Game } from "@/types/game";
+
+/*
+  THE ARSENAL — all catalogued entries.
+
+  Lore descriptions are written in the style of Souls item tooltips:
+  short, cryptic, personal — they tell a story in 2-3 sentences.
+
+  Data sourced from Steam achievement records.
+  Perfect = 100% achievement completion.
+*/
+
+export const games: Game[] = [
+  {
+    id: "elden-ring",
+    title: "Elden Ring",
+    developer: "FromSoftware",
+    year: 2022,
+    hours: 300.2,
+    achievements: { earned: 42, total: 42 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "A shattered ring. A shattered world. Three hundred hours wandered between their pieces. The Elden Ring was mended — every fragment accounted for.",
+    image: "/elden ring.jpg",
+  },
+  {
+    id: "black-myth-wukong",
+    title: "Black Myth: Wukong",
+    developer: "Game Science",
+    year: 2024,
+    hours: 81,
+    achievements: { earned: 81, total: 81 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "A legend reborn in fur and fire. Eighty-one trials for eighty-one relics. The Great Sage's memory, fully restored.",
+    image: "/wukong.webp",
+  },
+  {
+    id: "clair-obscur",
+    title: "Clair Obscur: Expedition 33",
+    developer: "Sandfall Interactive",
+    year: 2025,
+    hours: 126.3,
+    achievements: { earned: 55, total: 55 },
+    perfect: true,
+    genre: "jrpg",
+    lore: "A dying woman's dream, painted across a dying world. Every colour catalogued before the number fell. The Paintress did not win — but neither did forgetting.",
+    image: "/clair.avif",
+  },
+  {
+    id: "elden-ring-nightreign",
+    title: "Elden Ring Nightreign",
+    developer: "FromSoftware",
+    year: 2025,
+    hours: 91.7,
+    achievements: { earned: 37, total: 37 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "The Ring falls again. Faster. Harsher. The night does not wait. Ninety-one hours survived the nightfall — every ruin revisited, every vestige claimed.",
+    image: "/nightreign.avif",
+  },
+  {
+    id: "sekiro",
+    title: "Sekiro: Shadows Die Twice",
+    developer: "FromSoftware",
+    year: 2019,
+    hours: 77.2,
+    achievements: { earned: 34, total: 34 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "Death is not failure. Death is the lesson. Seventy-seven hours of dying until the posture finally broke — and the Sculptor's art was complete.",
+    image: "/sekiro.jpg",
+  },
+  {
+    id: "god-of-war-ragnarok",
+    title: "God of War: Ragnarök",
+    developer: "Santa Monica Studio",
+    year: 2022,
+    hours: 76.1,
+    achievements: { earned: 48, total: 48 },
+    perfect: true,
+    genre: "action-rpg",
+    lore: "A father wages war against fate itself. Every shard of every realm, every raven silenced, every favour repaid. The Norns did not have the last word.",
+    image: "/ragnarok.webp",
+  },
+  {
+    id: "dark-souls-2",
+    title: "Dark Souls II: Scholar of the First Sin",
+    developer: "FromSoftware",
+    year: 2014,
+    hours: 60.8,
+    achievements: { earned: 38, total: 38 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "The scholar knew something the others did not — that the cycle predates the cycle. Sixty hours lost in that cursed knowledge. All crowns claimed. All thrones visited.",
+    image: "/ds2.jpg",
+  },
+  {
+    id: "dark-souls-remastered",
+    title: "Dark Souls: Remastered",
+    developer: "FromSoftware",
+    year: 2018,
+    hours: 59.1,
+    achievements: { earned: 41, total: 41 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "Where the journey began. The first flame kindled, the first curse endured. Everything since is its echo. The age of fire, fully witnessed.",
+    image: "/ds.jpg",
+  },
+  {
+    id: "dark-souls-3",
+    title: "Dark Souls III",
+    developer: "FromSoftware",
+    year: 2016,
+    perfect: false,
+    genre: "soulslike",
+    lore: "The final linking. The age of fire gutters, chokes, and begs to be fed. The chronicle is still being written.",
+  },
+  {
+    id: "nioh",
+    title: "Nioh: Complete Edition",
+    developer: "Team Ninja",
+    year: 2017,
+    perfect: false,
+    genre: "soulslike",
+    lore: "A samurai out of time, in a land that devours demons whole. The yokai do not rest. Neither does the catalogue.",
+  },
+  {
+    id: "nioh-2",
+    title: "Nioh 2: Complete Edition",
+    developer: "Team Ninja",
+    year: 2020,
+    achievements: { earned: 95, total: 95 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "Half-demon, half-human, entirely relentless. Ninety-five trials endured across three kingdoms. The darkness that lived inside was not destroyed — it was mastered.",
+    image: "/nioh2.avif",
+  },
+  {
+    id: "ghost-of-tsushima",
+    title: "Ghost of Tsushima",
+    developer: "Sucker Punch Productions",
+    year: 2020,
+    achievements: { earned: 77, total: 77 },
+    perfect: true,
+    genre: "action-rpg",
+    lore: "A samurai abandoned the code so the island could live. Every corner of Tsushima witnessed, every tale honoured. The Ghost does not rest until the last Mongol is gone.",
+    image: "/tsushima.avif",
+  },
+  {
+    id: "lies-of-p",
+    title: "Lies of P",
+    developer: "Neowiz",
+    year: 2023,
+    perfect: false,
+    genre: "soulslike",
+    lore: "A puppet with no strings left. Every lie told in service of survival. The truth, it turned out, cost more.",
+  },
+  {
+    id: "first-berserker-khazan",
+    title: "The First Berserker: Khazan",
+    developer: "Neople",
+    year: 2025,
+    hours: 72.2,
+    achievements: { earned: 57, total: 57 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "Rage as theology. A general betrayed, a demon unleashed. Seventy-two hours of fury until every debt was settled. The record of Khazan, complete.",
+    image: "/khazan.avif",
+  },
+
+  // ── BLOODBORNE ──────────────────────────────────────────
+  {
+    id: "bloodborne",
+    title: "Bloodborne",
+    developer: "FromSoftware",
+    year: 2015,
+    hours: 100,
+    achievements: { earned: 40, total: 40 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "Yharnam does not want to be understood. It wants to be endured. The hunt never ends — only the hunter changes. Platinum claimed.",
+    image: "/bloodborne.avif",
+  },
+
+  // ── GOD OF WAR FRANCHISE ────────────────────────────────
+  {
+    id: "god-of-war-2018",
+    title: "God of War",
+    developer: "Santa Monica Studio",
+    year: 2018,
+    achievements: { earned: 37, total: 37 },
+    perfect: true,
+    genre: "action-rpg",
+    lore: "A god who killed gods now tries to be a father. The boy asks questions. The axe answers. Every stone overturned, every favour repaid. The summit reached.",
+    image: "/gow18.webp",
+  },
+  {
+    id: "god-of-war-3",
+    title: "God of War III Remastered",
+    developer: "Santa Monica Studio",
+    year: 2015,
+    achievements: { earned: 35, total: 35 },
+    perfect: true,
+    genre: "action-rpg",
+    lore: "Olympus, unmade. Every god brought low. A war between fathers and sons that consumed the sky, the sea, and the earth beneath them.",
+    image: "/gow3.webp",
+  },
+
+  // ── DEVIL MAY CRY FRANCHISE ─────────────────────────────
+  {
+    id: "dmc1",
+    title: "Devil May Cry",
+    developer: "Capcom",
+    year: 2001,
+    perfect: false,
+    genre: "action",
+    lore: "A son of Sparda walks into a demon's castle like he owns it. By the end, he does. The legend was never humble.",
+  },
+  {
+    id: "dmc3",
+    title: "Devil May Cry 3: Dante's Awakening",
+    developer: "Capcom",
+    year: 2005,
+    perfect: false,
+    genre: "action",
+    lore: "Pride is a weapon. A tower climbed floor by floor, brother by brother. The truth at the top could not be looked away from.",
+  },
+  {
+    id: "dmc4",
+    title: "Devil May Cry 4: Special Edition",
+    developer: "Capcom",
+    year: 2008,
+    perfect: false,
+    genre: "action",
+    lore: "A borrowed sword. A stolen power. Nero learned what he was the hard way — halfway through a war he did not start.",
+  },
+  {
+    id: "dmc-reboot",
+    title: "DmC: Devil May Cry",
+    developer: "Ninja Theory",
+    year: 2013,
+    perfect: false,
+    genre: "action",
+    lore: "A different Dante in a different world with the same rebellion in his blood. The city was a lie. He was the truth it could not contain.",
+  },
+  {
+    id: "dmc5",
+    title: "Devil May Cry 5",
+    developer: "Capcom",
+    year: 2019,
+    perfect: false,
+    genre: "action",
+    lore: "Five years of loss compressed into one reunion. Three hunters, one demon king, one family secret older than all of them. The business is concluded.",
+  },
+
+  // ── HADES ───────────────────────────────────────────────
+  {
+    id: "hades",
+    title: "Hades",
+    developer: "Supergiant Games",
+    year: 2020,
+    perfect: false,
+    genre: "roguelike",
+    lore: "Death is the mechanic. Zagreus falls and returns, each run a conversation, each blade a revelation. The Underworld teaches patience to those who refuse to accept it.",
+  },
+  {
+    id: "hades-2",
+    title: "Hades II",
+    developer: "Supergiant Games",
+    year: 2024,
+    perfect: false,
+    genre: "roguelike",
+    lore: "The daughter learns what the son forgot — that some prisons have no gate, only walls worn thin by persistence and spite.",
+  },
+
+  // ── WARFRAME ────────────────────────────────────────────
+  {
+    id: "warframe",
+    title: "Warframe",
+    developer: "Digital Extremes",
+    year: 2013,
+    perfect: false,
+    genre: "action",
+    lore: "A Tenno wakes inside a relic of a war no one remembers. The Void speaks in frequencies only the operators can hear. The Helminth does not ask — it consumes.",
+  },
+];
+
+/* Helpers — small utility functions for filtering the data */
+
+export const perfectGames = games.filter((g) => g.perfect);
+
+export const soulslikes = games.filter((g) => g.genre === "soulslike");
+
+// Update this whenever you start a new game
+export const currentlyPlaying = "Wo Long: Fallen Dynasty";
