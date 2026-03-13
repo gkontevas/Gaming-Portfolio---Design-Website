@@ -9,7 +9,7 @@ import BossShowcase from "@/components/BossShowcase";
 import DescendButton from "@/components/DescendButton";
 import HollowedOrigins from "@/components/HollowedOrigins";
 import SacredRelics from "@/components/SacredRelics";
-import { games, perfectGames } from "@/data/games";
+import { games, perfectGames, currentlyPlaying } from "@/data/games";
 
 const totalHours = Math.floor(games.reduce((sum, g) => sum + (g.hours ?? 0), 0));
 
@@ -82,7 +82,7 @@ export default function Home() {
               </span>
             </div>
             <p className="font-display text-base tracking-[0.15em] text-gold uppercase">
-              Elden Ring Nightreign
+              {currentlyPlaying}
             </p>
           </FadeIn>
 
