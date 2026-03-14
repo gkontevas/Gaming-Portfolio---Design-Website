@@ -49,6 +49,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cinzel.variable} ${crimsonText.variable}`}>
       <body>
+        {/* Instant server-rendered cover — prevents flash before IntroScreen hydrates */}
+        <div id="intro-cover" style={{ position: 'fixed', inset: 0, background: '#0D0A07', zIndex: 9999 }} />
+
         {/* Global overlays — order matters for z-index stacking */}
         <CustomScrollbar />
         <IntroScreen />    {/* z-[10000] — topmost, must dismiss first */}

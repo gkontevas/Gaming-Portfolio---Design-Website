@@ -51,7 +51,7 @@ hr {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: transparent; }
 
-html { scrollbar-width: none; }
+html { scrollbar-width: none; background-color: #0D0A07; }
 
 /* ── KEYFRAMES ────────────────────────────────────────────
    flickerFlame: squishes a div on X/Y each frame to simulate

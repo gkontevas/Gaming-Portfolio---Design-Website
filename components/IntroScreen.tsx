@@ -110,6 +110,9 @@ export default function IntroScreen() {
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
+    // Remove the server-side cover — IntroScreen has taken over
+    document.getElementById('intro-cover')?.remove()
+
     // Hide scrollbar while intro is covering the page
     document.body.style.overflow = 'hidden'
 
@@ -131,7 +134,7 @@ export default function IntroScreen() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed inset-0 z-[10000] flex flex-col items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-[10000] flex flex-col items-center justify-center overflow-hidden bg-ash"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.5, ease: 'easeInOut' }}
@@ -151,83 +154,90 @@ export default function IntroScreen() {
             className="absolute inset-0 w-full h-full object-cover"
           />
 
-          {/* Dark overlay so text stays readable over the flames */}
-          <div className="absolute inset-0 bg-ash/75" />
+          {/* Single overlay: full ash at edges, lighter in the centre */}
+          <div className="absolute inset-0" style={{
+            background: 'linear-gradient(to bottom, #0D0A07 0%, rgba(13,10,7,0.70) 22%, rgba(13,10,7,0.70) 78%, #0D0A07 100%)'
+          }} />
 
-          {/* ── CORNER ORNAMENTS ────────────────────────────── */}
-          <CornerOrnament style={{ top: 24, left: 24 }} />
-          <CornerOrnament style={{ top: 24, right: 24, transform: 'scaleX(-1)' }} />
-          <CornerOrnament style={{ bottom: 24, left: 24, transform: 'scaleY(-1)' }} />
-          <CornerOrnament style={{ bottom: 24, right: 24, transform: 'scale(-1,-1)' }} />
+          {/* ── ALL CONTENT — relative so it paints above the absolute overlays ── */}
+          <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
 
-          {/* ── TOP LABEL ───────────────────────────────────── */}
-          <FadeUp delay={0.2} className="relative mb-10 text-center">
-            <p className="font-display text-xs tracking-[0.2em] sm:tracking-[0.6em] text-bronze uppercase px-4">
-              A Record of Worlds Consumed
-            </p>
-          </FadeUp>
+            {/* ── CORNER ORNAMENTS ────────────────────────────── */}
+            <CornerOrnament style={{ top: 24, left: 24 }} />
+            <CornerOrnament style={{ top: 24, right: 24, transform: 'scaleX(-1)' }} />
+            <CornerOrnament style={{ bottom: 24, left: 24, transform: 'scaleY(-1)' }} />
+            <CornerOrnament style={{ bottom: 24, right: 24, transform: 'scale(-1,-1)' }} />
 
-          {/* ── DIVIDER above title ───────────────────────── */}
-          <Divider delay={0.4} />
+            {/* ── TOP LABEL ───────────────────────────────────── */}
+            <FadeUp delay={0.2} className="relative mb-10 text-center">
+              <p className="font-display text-xs tracking-[0.2em] sm:tracking-[0.6em] text-bronze uppercase px-4">
+                A Record of Worlds Consumed
+              </p>
+            </FadeUp>
 
-          {/* ── TITLE ────────────────────────────────────────
-              Much larger — text-7xl on desktop.
-              Letters stagger in one by one, 60ms apart.
-          */}
-          <h1 className="relative font-display text-center uppercase mt-8 mb-4">
+            {/* ── DIVIDER above title ───────────────────────── */}
+            <Divider delay={0.4} />
 
-            <motion.div
-              className="flex justify-center gap-[0.2em] sm:gap-[0.3em]"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {LETTERS.map((letter, i) => (
-                <motion.span
-                  key={i}
-                  variants={letterVariants}
-                  className="block text-6xl text-gold sm:text-7xl md:text-8xl lg:text-9xl"
-                >
-                  {letter}
-                </motion.span>
-              ))}
-            </motion.div>
+            {/* ── TITLE ────────────────────────────────────────
+                Much larger — text-7xl on desktop.
+                Letters stagger in one by one, 60ms apart.
+            */}
+            <h1 className="relative font-display text-center uppercase mt-8 mb-4">
 
-            <motion.span
-              className="mt-4 block text-xl tracking-[0.8em] text-bronze"
+              <motion.div
+                className="flex justify-center gap-[0.2em] sm:gap-[0.3em]"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {LETTERS.map((letter, i) => (
+                  <motion.span
+                    key={i}
+                    variants={letterVariants}
+                    className="block text-6xl text-gold sm:text-7xl md:text-8xl lg:text-9xl"
+                  >
+                    {letter}
+                  </motion.span>
+                ))}
+              </motion.div>
+
+              <motion.span
+                className="mt-4 block text-xl tracking-[0.8em] text-bronze"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 1.7 }}
+              >
+                of the Unlit
+              </motion.span>
+
+            </h1>
+
+            {/* ── DIVIDER below title ───────────────────────── */}
+            <Divider delay={1.8} />
+
+            {/* ── YEAR / LORE LINE ─────────────────────────────
+                Sets the fictional date — matches the footer.
+            */}
+            <FadeUp delay={2.0} className="relative mt-6 text-center">
+              <p className="font-display text-xs tracking-[0.5em] text-bronze uppercase">
+                Age of Fire · Year 2026
+              </p>
+            </FadeUp>
+
+            {/* ── PRESS ANY KEY ────────────────────────────────  */}
+            <motion.p
+              className="relative mt-10 font-display text-sm tracking-[0.4em] text-gold uppercase"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1.7 }}
+              transition={{ duration: 0.8, delay: 2.5 }}
+              style={{ animation: 'blink 1.4s ease-in-out infinite', animationDelay: '2.5s' }}
             >
-              of the Unlit
-            </motion.span>
+              {/* Show different text depending on device input method */}
+              <span className="sm:hidden">Tap to continue</span>
+              <span className="hidden sm:inline">Press any key to continue</span>
+            </motion.p>
 
-          </h1>
-
-          {/* ── DIVIDER below title ───────────────────────── */}
-          <Divider delay={1.8} />
-
-          {/* ── YEAR / LORE LINE ─────────────────────────────
-              Sets the fictional date — matches the footer.
-          */}
-          <FadeUp delay={2.0} className="relative mt-6 text-center">
-            <p className="font-display text-xs tracking-[0.5em] text-bronze uppercase">
-              Age of Fire · Year 2026
-            </p>
-          </FadeUp>
-
-          {/* ── PRESS ANY KEY ────────────────────────────────  */}
-          <motion.p
-            className="relative mt-10 font-display text-sm tracking-[0.4em] text-gold uppercase"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 2.5 }}
-            style={{ animation: 'blink 1.4s ease-in-out infinite', animationDelay: '2.5s' }}
-          >
-            {/* Show different text depending on device input method */}
-            <span className="sm:hidden">Tap to continue</span>
-            <span className="hidden sm:inline">Press any key to continue</span>
-          </motion.p>
+          </div>
 
         </motion.div>
       )}
