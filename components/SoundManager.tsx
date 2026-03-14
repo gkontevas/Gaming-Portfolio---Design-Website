@@ -26,7 +26,10 @@
 import { useEffect, useRef, useState } from 'react'
 
 declare global {
-  interface Window { __playChime?: () => void }
+  interface Window {
+    __playChime?:   () => void
+    __toggleMute?:  () => void
+  }
 }
 
 const AUDIO_SRC  = '/ambient.mp3'
@@ -183,22 +186,13 @@ export default function SoundManager() {
     setMuted(next)
     mutedRef.current = next
     localStorage.setItem('muted', String(next))
-    // masterGain controls all Web Audio — ambient + hush both go silent
     if (gainRef.current) gainRef.current.gain.value = next ? 0 : 1
+    // Notify Nav (or any listener) that mute state changed
+    window.dispatchEvent(new CustomEvent('mutechange', { detail: next }))
   }
 
-  return (
-    <button
-      onClick={toggleMute}
-      className="fixed bottom-6 left-6 z-[200] flex h-9 w-9 items-center justify-center rounded-full border border-gold/20 bg-cinder/80 backdrop-blur-sm transition-colors duration-300 hover:border-gold/40"
-      title={muted ? 'Unmute' : 'Mute'}
-    >
-      <span
-        className="font-display text-xs"
-        style={{ color: muted ? '#7A6545' : '#C9A96E' }}
-      >
-        {muted ? '✕' : '♪'}
-      </span>
-    </button>
-  )
+  // Expose toggle so Nav can call it without prop drilling
+  useEffect(() => { window.__toggleMute = toggleMute }, [muted])
+
+  return null
 }

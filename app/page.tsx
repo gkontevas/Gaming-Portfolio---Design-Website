@@ -7,6 +7,7 @@ import AnimatedCounter from "@/components/AnimatedCounter";
 import Parallax from "@/components/Parallax";
 import DescendButton from "@/components/DescendButton";
 import HollowedOrigins from "@/components/HollowedOrigins";
+import HollowTrigger from "@/components/HollowTrigger";
 import SacredRelics from "@/components/SacredRelics";
 
 // Loaded only when near the viewport — reduces initial JS bundle
@@ -64,17 +65,12 @@ export default function Home() {
 
           <FadeIn delay={0.6}>
             <Parallax depth={0.1}>
-              <p className="font-body text-lg italic leading-loose text-bronze">
-                What remains after the fire fades is not ash. It is memory.
-              </p>
-              <p className="mt-3 max-w-sm font-body text-sm leading-relaxed text-bronze/80">
-                These are the remembrances of a wanderer who would not stay hollow.
-              </p>
+              <HollowTrigger />
             </Parallax>
           </FadeIn>
 
           {/* Currently playing — bottom-left HUD element */}
-          <FadeIn delay={0.85} className="absolute bottom-8 left-8 hidden sm:flex flex-col gap-2">
+          <FadeIn delay={0.85} className="absolute bottom-14 left-3 hidden sm:flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber opacity-60" />
@@ -90,7 +86,7 @@ export default function Home() {
           </FadeIn>
 
           {/* Total hours — bottom-right HUD element */}
-          <FadeIn delay={0.75} className="absolute bottom-8 right-8 hidden sm:flex flex-col items-end gap-1">
+          <FadeIn delay={0.75} className="absolute bottom-14 right-3 hidden sm:flex flex-col items-end gap-1">
             <p className="font-display text-3xl tracking-wide text-gold leading-none">
               <AnimatedCounter value={totalHours} suffix="+" />
             </p>

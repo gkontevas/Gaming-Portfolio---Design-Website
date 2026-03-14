@@ -59,8 +59,19 @@ function MagneticLink({ href, onClick, color, initial, animate, transition, chil
 
 // ── Nav ───────────────────────────────────────────────────
 export default function Nav() {
-  const [active, setActive]   = useState('')
+  const [active, setActive]     = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [muted, setMuted]       = useState(false)
+
+  // Sync initial mute state from localStorage + listen for changes from SoundManager
+  useEffect(() => {
+    setMuted(localStorage.getItem('muted') === 'true')
+    function onMuteChange(e: Event) {
+      setMuted((e as CustomEvent<boolean>).detail)
+    }
+    window.addEventListener('mutechange', onMuteChange)
+    return () => window.removeEventListener('mutechange', onMuteChange)
+  }, [])
 
   useEffect(() => {
     const observers = sections.map((id) => {
@@ -92,7 +103,8 @@ export default function Nav() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4 sm:px-6">
+      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center items-start pt-5 px-4 sm:px-6">
+        <div className="flex items-center gap-2 w-full md:w-auto">
         <motion.nav
           className="flex w-full items-center justify-between rounded-full border border-gold/25 bg-cinder/90 px-5 py-3 sm:px-8 md:w-auto md:justify-start backdrop-blur-md"
           style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(201,169,110,0.06)' }}
@@ -118,7 +130,7 @@ export default function Nav() {
 
           {/* Desktop spacer + links */}
           <div className="mx-12 hidden md:block lg:mx-20" />
-          <div className="hidden md:flex gap-6 lg:gap-8">
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
             {links.map((link, i) => (
               <MagneticLink
                 key={link.href}
@@ -130,10 +142,34 @@ export default function Nav() {
                 transition={{ duration: 0.6, ease, delay: 0.6 + i * 0.08 }}
               >
                 {link.label}
-                {/* Subtle key hint — tells users about keyboard nav without cluttering */}
                 <sup className="ml-0.5 text-[7px] opacity-30">{link.key}</sup>
               </MagneticLink>
             ))}
+
+            {/* Divider */}
+            <motion.div
+              className="h-3 w-px bg-gold/20"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, ease, delay: 1.1 }}
+            />
+
+            {/* Dev portfolio link */}
+            <motion.a
+              href="https://dimosgkontevas.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-display text-xs tracking-[0.2em] uppercase transition-colors duration-300"
+              style={{ color: '#7A6545' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#C9A96E')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#7A6545')}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, ease, delay: 1.15 }}
+            >
+              Dev Portfolio
+            </motion.a>
+
           </div>
 
           {/* Hamburger — mobile only */}
@@ -166,7 +202,24 @@ export default function Nav() {
             />
           </motion.button>
         </motion.nav>
+
+
+        </div>
       </header>
+
+      {/* Mute button — fixed bottom-left, all screens */}
+      <motion.button
+        onClick={() => window.__toggleMute?.()}
+        title={muted ? 'Unmute' : 'Mute'}
+        className="fixed bottom-3 left-3 z-[200] flex h-9 w-9 items-center justify-center rounded-full border border-gold/20 bg-cinder/80 backdrop-blur-sm transition-colors duration-300 hover:border-gold/40"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.9, ease, delay: 0.3 }}
+      >
+        <span className="font-display text-xs" style={{ color: muted ? '#7A6545' : '#C9A96E' }}>
+          {muted ? '✕' : '♪'}
+        </span>
+      </motion.button>
 
       {/* ── MOBILE MENU OVERLAY ───────────────────────────────
           Full-screen dark overlay with large centered nav links.
@@ -207,10 +260,21 @@ export default function Nav() {
             </nav>
 
             {/* Decorative divider at bottom */}
-            <div className="absolute bottom-28 flex items-center gap-4 w-48">
-              <div className="flex-1 h-px bg-gold/20" />
-              <span className="text-gold/30 text-xs">✦</span>
-              <div className="flex-1 h-px bg-gold/20" />
+            <div className="absolute bottom-28 flex flex-col items-center gap-5">
+              <div className="flex items-center gap-4 w-48">
+                <div className="flex-1 h-px bg-gold/20" />
+                <span className="text-gold/30 text-xs">✦</span>
+                <div className="flex-1 h-px bg-gold/20" />
+              </div>
+
+              <a
+                href="https://dimosgkontevas.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-display text-xs tracking-[0.3em] uppercase text-bronze/60"
+              >
+                Dev Portfolio
+              </a>
             </div>
           </motion.div>
         )}
