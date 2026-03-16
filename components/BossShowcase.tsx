@@ -39,9 +39,9 @@ function BossPanel({ boss, index }: { boss: Boss; index: number }) {
             className="object-cover"
             style={{
               objectPosition: boss.objectPosition ?? 'center',
-              filter: 'blur(0.4px) contrast(1.08) brightness(0.95)',
+              filter: 'contrast(1.08) brightness(0.95)',
             }}
-            sizes="100vw"
+            sizes="(max-width: 768px) 200vw, 100vw"
           />
         </motion.div>
       ) : (
