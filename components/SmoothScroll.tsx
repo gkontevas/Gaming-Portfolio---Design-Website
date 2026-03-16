@@ -5,7 +5,10 @@ import Lenis from 'lenis'
 
 // Extend the window type so TypeScript knows about our global lenis instance
 declare global {
-  interface Window { __lenis?: Lenis }
+  interface Window {
+    __lenis?: Lenis
+    __lenisLocked?: boolean   // set to true by modals to completely freeze the RAF
+  }
 }
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
@@ -20,7 +23,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     window.__lenis = lenis
 
     function raf(time: number) {
-      if (!document.hidden) lenis.raf(time)
+      if (!document.hidden && !window.__lenisLocked) lenis.raf(time)
       requestAnimationFrame(raf)
     }
 

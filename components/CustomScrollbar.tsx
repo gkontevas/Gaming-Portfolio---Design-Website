@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 
 export default function CustomScrollbar() {
   const thumbRef        = useRef<HTMLDivElement>(null)
@@ -8,6 +8,7 @@ export default function CustomScrollbar() {
   const isDragging      = useRef(false)
   const dragStartY      = useRef(0)
   const dragStartScroll = useRef(0)
+  const [locked, setLocked] = useState(false)
 
   // All the measurements we need, calculated fresh each time
   function getMetrics() {
@@ -40,8 +41,16 @@ export default function CustomScrollbar() {
     }
   }, [updateThumb])
 
+  // Hide when a modal locks scroll
+  useEffect(() => {
+    function onLock(e: Event) { setLocked((e as CustomEvent<boolean>).detail) }
+    window.addEventListener('scrolllock', onLock)
+    return () => window.removeEventListener('scrolllock', onLock)
+  }, [])
+
   // When the user presses down on the thumb, record the starting positions
   function onThumbMouseDown(e: React.MouseEvent) {
+    if (window.__lenisLocked) return
     e.preventDefault()
     isDragging.current      = true
     dragStartY.current      = e.clientY
@@ -54,7 +63,7 @@ export default function CustomScrollbar() {
   // so dragging still works even if the mouse leaves the thumb
   useEffect(() => {
     function onMouseMove(e: MouseEvent) {
-      if (!isDragging.current) return
+      if (!isDragging.current || window.__lenisLocked) return
       const { maxScroll, maxThumbTop } = getMetrics()
       // How far did the mouse move? Convert that to a scroll distance.
       // The ratio is: (mouse delta / available track space) = (scroll delta / max scroll)
@@ -78,7 +87,7 @@ export default function CustomScrollbar() {
 
   // Clicking the track (not the thumb) jumps to that position
   function onTrackClick(e: React.MouseEvent) {
-    if (e.target === thumbRef.current) return
+    if (window.__lenisLocked || e.target === thumbRef.current) return
     const track = trackRef.current
     if (!track) return
     const { maxScroll, maxThumbTop, thumbHeight } = getMetrics()
@@ -87,6 +96,8 @@ export default function CustomScrollbar() {
     const scrollTo  = (clickY / maxThumbTop) * maxScroll
     window.scrollTo({ top: scrollTo, behavior: 'smooth' })
   }
+
+  if (locked) return null
 
   return (
     // Track — now pointer-events auto so it receives clicks

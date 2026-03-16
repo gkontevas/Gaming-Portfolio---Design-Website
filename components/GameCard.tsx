@@ -1,9 +1,10 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import Image from "next/image";
 import { motion, useInView } from 'framer-motion'
 import { Game } from "@/types/game";
+import GameModal from './GameModal';
 
 type Props = {
   game: Game;
@@ -18,16 +19,63 @@ export default function GameCard({ game }: Props) {
   // We pass this boolean to the motion.div below so the bar animates on entry.
   const ref = useRef<HTMLElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-15% 0px' })
+  const [modalOpen, setModalOpen] = useState(false)
+
+  // 3D tilt state — updated on every mousemove, reset on leave
+  const [tilt,      setTilt]      = useState({ x: 0, y: 0 })
+  const [hovered,   setHovered]   = useState(false)
+
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
+    const rect = ref.current?.getBoundingClientRect()
+    if (!rect) return
+    // Normalise cursor position to –0.5 → +0.5 relative to card centre
+    const xPct = (e.clientX - rect.left) / rect.width  - 0.5
+    const yPct = (e.clientY - rect.top)  / rect.height - 0.5
+    // rotateX tilts top/bottom, rotateY tilts left/right — inverted so
+    // the card "rises" toward the cursor rather than diving away
+    setTilt({ x: yPct * -13, y: xPct * 13 })
+  }, [])
+
+  const onMouseEnter = useCallback(() => setHovered(true),  [])
+  const onMouseLeave = useCallback(() => {
+    setHovered(false)
+    setTilt({ x: 0, y: 0 })
+  }, [])
 
   return (
-    <article ref={ref} className={`group h-full flex flex-col gap-3 border p-5 transition-all duration-500 relative overflow-hidden
+    <>
+    <article
+      ref={ref}
+      onClick={() => setModalOpen(true)}
+      onMouseMove={onMouseMove}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className={`group h-full flex flex-col gap-3 border p-5 relative overflow-hidden
       ${game.perfect
         ? 'border-amber/30 bg-cinder hover:border-amber/70 hover:shadow-[0_0_48px_rgba(232,201,122,0.22),0_0_16px_rgba(232,201,122,0.1)_inset]'
         : 'border-gold/25 bg-cinder hover:border-gold/60 hover:shadow-[0_0_40px_rgba(201,169,110,0.18)]'
-      } hover:scale-[1.02]`}>
+      }`}
+      style={{
+        transform: `perspective(700px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hovered ? 1.02 : 1})`,
+        transition: hovered
+          ? 'transform 0.08s ease-out, border-color 0.5s, box-shadow 0.5s'
+          : 'transform 0.55s ease-out, border-color 0.5s, box-shadow 0.5s',
+        willChange: 'transform',
+      }}
+    >
 
       {/* Shimmer sweep — slides diagonally across card on hover, CSS-only */}
       <div className="card-shimmer pointer-events-none absolute inset-0 z-20 w-1/3 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
+
+      {/* 3D glare — a soft highlight that tracks the tilt direction */}
+      {hovered && (
+        <div
+          className="absolute inset-0 pointer-events-none z-20"
+          style={{
+            background: `radial-gradient(circle at ${(tilt.y / 13 + 0.5) * 100}% ${(-tilt.x / 13 + 0.5) * 100}%, rgba(201,169,110,0.13) 0%, transparent 65%)`,
+          }}
+        />
+      )}
 
       {/* Background image — only rendered when game.image is set */}
       {game.image && (
@@ -120,5 +168,10 @@ export default function GameCard({ game }: Props) {
 
       </div>
     </article>
+
+    {modalOpen && (
+      <GameModal game={game} onClose={() => setModalOpen(false)} />
+    )}
+    </>
   );
 }
