@@ -13,8 +13,10 @@ const areas: Record<string, string> = {
 
 export default function AreaToast() {
   const [current, setCurrent] = useState<string | null>(null)
-  const seen    = useRef<Set<string>>(new Set())
-  const timer   = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const seen         = useRef<Set<string>>(new Set())
+  const timer        = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  // One pending dwell-timer per section — cancelled if section exits before delay fires
+  const dwellTimers  = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
 
   useEffect(() => {
     const observers = Object.keys(areas).map((id) => {
@@ -23,16 +25,30 @@ export default function AreaToast() {
 
       const observer = new IntersectionObserver(
         ([entry]) => {
-          if (!entry.isIntersecting || seen.current.has(id)) return
-          seen.current.add(id)
-          clearTimeout(timer.current)
-          setCurrent(id)
-          // Auto-dismiss after 3.5s
-          timer.current = setTimeout(() => setCurrent(null), 3500)
+          if (seen.current.has(id)) return
+
+          if (entry.isIntersecting) {
+            // Section entered the viewport band — start a dwell timer.
+            // During programmatic scroll the section exits before 500ms and
+            // the timer is cancelled below. Only the destination fires.
+            const t = setTimeout(() => {
+              dwellTimers.current.delete(id)
+              if (seen.current.has(id)) return
+              seen.current.add(id)
+              clearTimeout(timer.current)
+              setCurrent(id)
+              timer.current = setTimeout(() => setCurrent(null), 3500)
+            }, 500)
+            dwellTimers.current.set(id, t)
+          } else {
+            // Section left before the delay — cancel pending toast
+            const pending = dwellTimers.current.get(id)
+            if (pending) {
+              clearTimeout(pending)
+              dwellTimers.current.delete(id)
+            }
+          }
         },
-        // threshold: 0 + rootMargin fires when the element enters the middle
-        // band of the viewport — works for both small sections and tall ones
-        // (threshold: 0.25 breaks on tall elements that exceed viewport height)
         { threshold: 0, rootMargin: '-30% 0px -30% 0px' }
       )
       observer.observe(el)
@@ -42,6 +58,7 @@ export default function AreaToast() {
     return () => {
       observers.forEach((o) => o?.disconnect())
       clearTimeout(timer.current)
+      dwellTimers.current.forEach(clearTimeout)
     }
   }, [])
 

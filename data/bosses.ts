@@ -112,4 +112,15 @@ interruption. The most elegant fight Bloodborne offers — and the most sorrowfu
     quote: `A beast who remembered being a man, mid-fight. That moment — when he finds the sword and
 the music changes — is the single greatest boss cutscene in any game I have played.`,
   },
+  {
+    id: 'lu-bu',
+    name: 'Lu Bu',
+    title: 'Mightiest Under Heaven · Vessel of the Demonic',
+    game: 'Wo Long: Fallen Dynasty',
+    image: '/lubu.jpg',
+    objectPosition: '50% 30%',
+    quote: `No introduction needed. The moment that name appears on screen, you already know what
+is coming. A wall of force dressed as a man — and the single most satisfying kill the game
+offers.`,
+  },
 ]
