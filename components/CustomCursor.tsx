@@ -18,7 +18,7 @@
   slow drifts produce a gentle trickle.
 */
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 
 interface Ember {
@@ -43,15 +43,21 @@ export default function CustomCursor() {
   const rafRef          = useRef<number>(0)
   const mouseRef        = useRef({ x: -999, y: -999 })
   const lastSpawnRef    = useRef({ x: -999, y: -999 })  // last position we spawned at
+  const [isHoverDevice, setIsHoverDevice] = useState(false)
 
   const cursorX = useMotionValue(-999)
   const cursorY = useMotionValue(-999)
   const springX = useSpring(cursorX, { stiffness: 600, damping: 35 })
   const springY = useSpring(cursorY, { stiffness: 600, damping: 35 })
 
+  // Effect 1: detect hover capability — triggers re-render that mounts the canvas
   useEffect(() => {
-    // No hover cursor on touch devices — skip entirely
-    if (window.matchMedia('(hover: none)').matches) return
+    if (!window.matchMedia('(hover: none)').matches) setIsHoverDevice(true)
+  }, [])
+
+  // Effect 2: canvas setup — only runs after isHoverDevice=true causes canvas to mount
+  useEffect(() => {
+    if (!isHoverDevice) return
 
     const canvas = canvasRef.current!
     const ctx    = canvas.getContext('2d')!
@@ -176,7 +182,9 @@ export default function CustomCursor() {
       window.removeEventListener('mousemove', onMouseMove)
       cancelAnimationFrame(rafRef.current)
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isHoverDevice]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!isHoverDevice) return null
 
   return (
     <>

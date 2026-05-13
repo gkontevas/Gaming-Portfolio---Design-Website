@@ -43,15 +43,17 @@ hr {
   opacity: 0.2;
 }
 
-/* Hide default cursor — replaced by CustomCursor canvas + ring */
-* { cursor: none !important; }
+/* Hide default cursor — replaced by CustomCursor canvas + ring (desktop only) */
+@media (hover: hover) {
+  * { cursor: none !important; }
+}
 
 /* Hide scrollbar completely */
 ::-webkit-scrollbar       { width: 0px !important; display: none; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: transparent; }
 
-html { scrollbar-width: none; background-color: #0D0A07; }
+html { scrollbar-width: none; background-color: #0D0A07; position: relative; }
 
 /* ── KEYFRAMES ────────────────────────────────────────────
    flickerFlame: squishes a div on X/Y each frame to simulate
