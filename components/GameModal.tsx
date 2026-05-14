@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Game } from '@/types/game'
 
@@ -71,6 +71,14 @@ export default function GameModal({ game, onClose }: Props) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
+  // Announce to combat log
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('combatlog', { detail: `Inspecting ${game.title}.` }))
+    return () => {
+      window.dispatchEvent(new CustomEvent('combatlog', { detail: 'Memory released.' }))
+    }
+  }, [game.title])
+
   // Freeze the Lenis RAF loop + hide custom scrollbar + block native scroll
   useEffect(() => {
     window.__lenisLocked = true
@@ -99,15 +107,17 @@ export default function GameModal({ game, onClose }: Props) {
   if (!mounted) return null
 
   return createPortal(
-    <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 z-[9995] flex items-center justify-center p-4 sm:p-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        onClick={onClose}
-      >
+    <motion.div
+      className="fixed inset-0 z-[9995] flex items-center justify-center p-4 sm:p-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={game.title}
+    >
         {/* Backdrop */}
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
 
@@ -280,14 +290,13 @@ export default function GameModal({ game, onClose }: Props) {
               onClick={onClose}
               className="mt-8 w-full border border-gold/25 py-2.5 font-display text-sm tracking-[0.4em] text-bronze/70 uppercase transition-colors duration-300 hover:border-gold/50 hover:text-gold/90"
             >
-              Close
+              Leave the Memory
             </button>
 
           </div>
           </div>{/* end scrollable inner container */}
         </motion.div>
-      </motion.div>
-    </AnimatePresence>,
+      </motion.div>,
     document.body
   )
 }

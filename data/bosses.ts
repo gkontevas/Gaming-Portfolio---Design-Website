@@ -45,7 +45,7 @@ breach felt less like victory — more like a gift freely given.`,
     name: 'Ozma',
     title: 'The Transcended · Final Reckoning of Khazan',
     game: 'The First Berserker: Khazan',
-    image: '/ozma.png',
+    image: '/ozma.avif',
     objectPosition: 'top',
     quote: `Every phase a revelation. Every death a debt paid toward understanding. A demon lord who
 did not overwhelm — it educated. The hardest fight I have had in years.`,

@@ -207,7 +207,7 @@ export default function Nav() {
         </div>
       </header>
 
-      {/* Mute button — fixed bottom-left, all screens */}
+      {/* Mute button — fixed bottom-left */}
       <motion.button
         onClick={() => window.__toggleMute?.()}
         title={muted ? 'Unmute' : 'Mute'}

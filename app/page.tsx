@@ -8,7 +8,9 @@ import Parallax from "@/components/Parallax";
 import DescendButton from "@/components/DescendButton";
 import HollowedOrigins from "@/components/HollowedOrigins";
 import HollowTrigger from "@/components/HollowTrigger";
+import LoreWord from "@/components/LoreWord";
 import SacredRelics from "@/components/SacredRelics";
+import EldenRingCinematic from "@/components/EldenRingCinematic";
 
 // Loaded only when near the viewport — reduces initial JS bundle
 const BossShowcase   = dynamic(() => import("@/components/BossShowcase"))
@@ -137,12 +139,12 @@ export default function Home() {
                 Location Discovered
               </p>
               <h2 className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
-                Remembrances of the Fallen
+                <LoreWord word="Remembrances">Remembrances</LoreWord> of the Fallen
               </h2>
               <div className="my-6 h-px w-16 bg-gold/40" />
               <p className="max-w-md font-body text-sm leading-relaxed text-bronze">
                 Worlds fully conquered. Every secret unearthed, every trial endured.
-                These are not merely completed — they are mastered.
+                These are not merely completed — they are <LoreWord word="mastered">mastered</LoreWord>.
               </p>
               <p className="mt-4 font-display text-sm tracking-widest text-amber">
                 {perfectGames.length} worlds sealed
@@ -154,18 +156,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── SECTION DIVIDER ── */}
-        <FadeIn>
-          <div className="flex items-center gap-6 px-16 py-12">
-            <div className="h-px flex-1 bg-gold/25" />
-            <div className="flex items-center gap-3">
-              <div className="h-px w-8 bg-gold/50" />
-              <span className="font-display text-sm text-gold/70">✦</span>
-              <div className="h-px w-8 bg-gold/50" />
-            </div>
-            <div className="h-px flex-1 bg-gold/25" />
-          </div>
-        </FadeIn>
+        <EldenRingCinematic />
 
         <SacredRelics />
 

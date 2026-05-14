@@ -14,6 +14,15 @@ export default function YouGoneHollow({ visible }: Props) {
   */
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    if (visible) {
+      window.__pauseAmbient?.()
+    } else {
+      window.__resumeAmbient?.()
+    }
+  }, [visible])
+
   if (!mounted) return null
 
   return createPortal(

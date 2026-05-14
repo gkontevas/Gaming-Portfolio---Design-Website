@@ -8,6 +8,7 @@ import SoundManager from "@/components/SoundManager";
 import AreaToast from "@/components/AreaToast";
 import KeyboardNav from "@/components/KeyboardNav";
 import MobileWarning from "@/components/MobileWarning";
+import ItemToast from "@/components/ItemToast";
 import "./globals.css";
 
 /*
@@ -33,7 +34,22 @@ const crimsonText = Crimson_Text({
 
 export const metadata: Metadata = {
   title: "Vestiges of the Unlit",
-  description: "A record of worlds consumed. A chronicle of the forgotten.",
+  description: "A gaming portfolio documenting 1,000+ hours across soulslike RPGs and action games — 100% achievements in Elden Ring, Sekiro, Bloodborne, and more.",
+  keywords: ["gaming portfolio", "soulslike", "completionist", "achievements", "elden ring", "sekiro", "bloodborne", "dark souls"],
+  authors: [{ name: "Dimos Gkontevas" }],
+  creator: "Dimos Gkontevas",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    title: "Vestiges of the Unlit",
+    description: "A gaming portfolio documenting 1,000+ hours across soulslike RPGs and action games.",
+    siteName: "Vestiges of the Unlit",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vestiges of the Unlit",
+    description: "A gaming portfolio documenting 1,000+ hours across soulslike RPGs and action games.",
+  },
 };
 
 /*
@@ -60,6 +76,7 @@ export default function RootLayout({
         <AreaToast />
         <KeyboardNav />
         <MobileWarning />
+        <ItemToast />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

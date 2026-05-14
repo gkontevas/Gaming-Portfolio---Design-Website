@@ -27,8 +27,10 @@ import { useEffect, useRef, useState } from 'react'
 
 declare global {
   interface Window {
-    __playChime?:   () => void
-    __toggleMute?:  () => void
+    __playChime?:      () => void
+    __toggleMute?:     () => void
+    __pauseAmbient?:   () => void
+    __resumeAmbient?:  () => void
   }
 }
 
@@ -193,6 +195,20 @@ export default function SoundManager() {
 
   // Expose toggle so Nav can call it without prop drilling
   useEffect(() => { window.__toggleMute = toggleMute }, [muted])
+
+  // Temporarily fade ambient out/in without changing persisted mute state
+  useEffect(() => {
+    window.__pauseAmbient = () => {
+      if (gainRef.current && ctxRef.current && !mutedRef.current) {
+        gainRef.current.gain.linearRampToValueAtTime(0, ctxRef.current.currentTime + 0.6)
+      }
+    }
+    window.__resumeAmbient = () => {
+      if (gainRef.current && ctxRef.current && !mutedRef.current) {
+        gainRef.current.gain.linearRampToValueAtTime(1, ctxRef.current.currentTime + 1.0)
+      }
+    }
+  }, [])
 
   return null
 }

@@ -55,6 +55,21 @@ hr {
 
 html { scrollbar-width: none; background-color: #0D0A07; position: relative; }
 
+/* Keyboard focus — visible amber outline for accessibility */
+:focus-visible {
+  outline: 2px solid #E8C97A;
+  outline-offset: 2px;
+}
+
+/* Respect reduced-motion — disable CSS keyframe animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ── KEYFRAMES ────────────────────────────────────────────
    flickerFlame: squishes a div on X/Y each frame to simulate
    fire turbulence. The exact percentages create an organic feel.

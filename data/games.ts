@@ -482,7 +482,5 @@ export const games: Game[] = [
 
 export const perfectGames = games.filter((g) => g.perfect);
 
-export const soulslikes = games.filter((g) => g.genre === "soulslike");
-
 // Update this whenever you start a new game
-export const currentlyPlaying = "Wo Long: Fallen Dynasty";
+export const currentlyPlaying = "Lies of P: Overture DLC";

@@ -34,7 +34,7 @@ function BossPanel({ boss, index }: { boss: Boss; index: number }) {
             src={boss.image}
             alt={boss.name}
             fill
-            loading="eager"
+            loading={index === 0 ? 'eager' : 'lazy'}
             quality={90}
             className="object-cover"
             style={{

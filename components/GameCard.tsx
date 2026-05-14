@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback } from 'react'
 import Image from "next/image";
-import { motion, useInView } from 'framer-motion'
+import { AnimatePresence, motion, useInView } from 'framer-motion'
 import { Game } from "@/types/game";
 import GameModal from './GameModal';
 
@@ -169,9 +169,11 @@ export default function GameCard({ game }: Props) {
       </div>
     </article>
 
-    {modalOpen && (
-      <GameModal game={game} onClose={() => setModalOpen(false)} />
-    )}
+    <AnimatePresence>
+      {modalOpen && (
+        <GameModal game={game} onClose={() => setModalOpen(false)} />
+      )}
+    </AnimatePresence>
     </>
   );
 }

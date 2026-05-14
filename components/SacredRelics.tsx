@@ -41,7 +41,7 @@ const relics = [
 
 export default function SacredRelics() {
   return (
-    <section id="arsenal" className="px-8 py-24">
+    <section id="arsenal" className="px-8 pb-24 pt-14">
       <div className="mx-auto max-w-4xl">
 
         <FadeIn className="mb-16 flex flex-col items-center text-center">
