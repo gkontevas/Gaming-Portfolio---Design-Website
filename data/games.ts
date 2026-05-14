@@ -325,6 +325,31 @@ export const games: Game[] = [
     ],
   },
 
+  {
+    id: "thymesia",
+    title: "Thymesia",
+    developer: "OverBorder Studio",
+    year: 2022,
+    hours: 19.7,
+    achievements: { earned: 19, total: 19 },
+    perfect: true,
+    genre: "soulslike",
+    lore: "A kingdom that cured itself with alchemy — then became the disease. Nineteen hours tracing the memories of a broken world. Every plague weapon claimed. Every truth recovered.",
+    description: "The kingdom of Hermes destroyed itself chasing immortality through alchemy. You are Corvus, an agent of the crown with the power to read memories — and to harvest plague weapons torn from the bodies of the infected. A fast, vicious soulslike built around fluid weapon theft and the horror of a civilization that reached too far and left only rot behind.",
+    image: "/thymesia.jpg",
+    metacritic: 67,
+    platforms: ['PC', 'PS5', 'Xbox', 'Switch'],
+    difficulty: 4,
+    series: 'Standalone',
+    playtime: { main: 8, complete: 18 },
+    features: [
+      'Plague weapon system — steal and wield enemy abilities mid-combat',
+      'Fast, aggressive combat demanding near-constant offensive pressure',
+      'Memory-reading narrative told through fragmented recollections',
+      'Short but dense — a complete soulslike experience in under 20 hours',
+    ],
+  },
+
   // ── BLOODBORNE ──────────────────────────────────────────
   {
     id: "bloodborne",

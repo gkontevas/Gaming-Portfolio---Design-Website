@@ -56,8 +56,11 @@ export default function LoreWord({ word, children, className = '' }: Props) {
     >
       {/* The word itself — subtle amber underline signals interactivity */}
       <span
-        className="border-b border-dashed border-amber/40 transition-colors duration-200 hover:border-amber/80"
-        style={{ cursor: 'help' }}
+        className="text-amber font-semibold transition-all duration-200 hover:text-amber"
+        style={{
+          cursor: 'help',
+          textShadow: '0 0 12px rgba(232,201,122,0.45)',
+        }}
       >
         {children}
       </span>
