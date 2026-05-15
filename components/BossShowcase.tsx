@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import FadeIn from './FadeIn'
+import RevealText from './RevealText'
 import { bosses, type Boss } from '@/data/bosses'
 
 function BossPanel({ boss, index }: { boss: Boss; index: number }) {
@@ -35,13 +36,13 @@ function BossPanel({ boss, index }: { boss: Boss; index: number }) {
             alt={boss.name}
             fill
             loading={index === 0 ? 'eager' : 'lazy'}
-            quality={90}
+            quality={80}
             className="object-cover"
             style={{
               objectPosition: boss.objectPosition ?? 'center',
               filter: 'contrast(1.12) brightness(0.9) saturate(1.1)',
             }}
-            sizes="(max-width: 768px) 200vw, 100vw"
+            sizes="100vw"
           />
         </motion.div>
       ) : (
@@ -133,7 +134,7 @@ function BossPanel({ boss, index }: { boss: Boss; index: number }) {
 
 export default function BossShowcase() {
   return (
-    <div id="worthy">
+    <div id="worthy" className="scroll-mt-20">
 
       {/* ── SECTION INTRO ── */}
       <section className="relative px-8 py-36 text-center overflow-hidden">
@@ -146,9 +147,9 @@ export default function BossShowcase() {
             <p className="mb-3 font-display text-xs tracking-[0.5em] text-bronze/70 uppercase">
               Combat Log
             </p>
-            <h2 className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
+            <RevealText delay={0.1} className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
               The Worthy
-            </h2>
+            </RevealText>
             <div className="mx-auto my-6 h-px w-16 bg-gold/40" />
             <p className="mx-auto max-w-md font-body text-sm leading-relaxed text-bronze/80">
               Not all battles are remembered equally. These are the ones that left something permanent — in the muscle, in the mind, in the way you think about challenge itself.

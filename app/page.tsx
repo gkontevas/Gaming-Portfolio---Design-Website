@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import Nav from "@/components/Nav";
 import FadeIn from "@/components/FadeIn";
+import RevealText from "@/components/RevealText";
 import AnimatedCardGrid from "@/components/AnimatedCardGrid";
 import Embers from "@/components/Embers";
 import AnimatedCounter from "@/components/AnimatedCounter";
@@ -8,9 +9,10 @@ import Parallax from "@/components/Parallax";
 import DescendButton from "@/components/DescendButton";
 import HollowedOrigins from "@/components/HollowedOrigins";
 import HollowTrigger from "@/components/HollowTrigger";
+import HeroTitle from "@/components/HeroTitle";
 import LoreWord from "@/components/LoreWord";
 import SacredRelics from "@/components/SacredRelics";
-import EldenRingCinematic from "@/components/EldenRingCinematic";
+const EldenRingCinematic = dynamic(() => import("@/components/EldenRingCinematic"))
 
 // Loaded only when near the viewport — reduces initial JS bundle
 const BossShowcase   = dynamic(() => import("@/components/BossShowcase"))
@@ -24,7 +26,7 @@ export default function Home() {
     <>
       <Nav />
 
-      <main className="min-h-screen overflow-x-hidden">
+      <main className="min-h-screen" style={{ overflowX: 'clip' }}>
 
         {/* ═══════════════════════════════════════════════════
             HERO
@@ -34,6 +36,20 @@ export default function Home() {
           style={{ background: "radial-gradient(ellipse at 50% 40%, #221608 0%, #0D0A07 65%)" }}
         >
           <Embers />
+
+          {/* Film grain — static SVG noise, no JS, negligible cost */}
+          <svg
+            className="pointer-events-none absolute inset-0 h-full w-full"
+            aria-hidden="true"
+            style={{ opacity: 0.032, mixBlendMode: 'screen' }}
+          >
+            <filter id="hero-grain">
+              <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" stitchTiles="stitch" />
+              <feColorMatrix type="saturate" values="0" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#hero-grain)" />
+          </svg>
+
           <FadeIn delay={0}>
             <Parallax depth={0.15}>
               <p className="mb-6 font-display text-sm tracking-[0.2em] text-bronze uppercase sm:tracking-[0.7em]">
@@ -42,28 +58,7 @@ export default function Home() {
             </Parallax>
           </FadeIn>
 
-          <FadeIn delay={0.2}>
-            <Parallax depth={0.3}>
-              <h1 className="mt-2 font-display uppercase">
-                <span className="block text-5xl tracking-[0.15em] text-gold sm:text-7xl sm:tracking-[0.3em] md:text-9xl">
-                  Vestiges
-                </span>
-                <span className="mt-3 block text-lg tracking-[0.3em] text-bronze sm:text-2xl sm:tracking-[0.65em]">
-                  of the Unlit
-                </span>
-              </h1>
-            </Parallax>
-          </FadeIn>
-
-          <FadeIn delay={0.4}>
-            <Parallax depth={0.2}>
-              <div className="my-10 flex w-56 items-center gap-3">
-                <div className="h-px flex-1 bg-gold/50" />
-                <span className="text-sm text-gold/80">✦</span>
-                <div className="h-px flex-1 bg-gold/50" />
-              </div>
-            </Parallax>
-          </FadeIn>
+          <HeroTitle />
 
           <FadeIn delay={0.6}>
             <Parallax depth={0.1}>
@@ -105,16 +100,16 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════
             REMEMBRANCES
         ═══════════════════════════════════════════════════ */}
-        <section id="remembrances" className="bg-cinder px-8 py-36">
+        <section id="remembrances" className="bg-cinder px-8 py-36 scroll-mt-20">
           <div className="mx-auto max-w-6xl">
 
             <FadeIn className="mb-16 flex flex-col items-center text-center">
               <p className="mb-3 font-display text-xs tracking-[0.5em] text-bronze uppercase">
                 Location Discovered
               </p>
-              <h2 className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
+              <RevealText delay={0.1} className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
                 <LoreWord word="Remembrances">Remembrances</LoreWord> of the Fallen
-              </h2>
+              </RevealText>
               <div className="my-6 h-px w-16 bg-gold/40" />
               <p className="max-w-md font-body text-sm leading-relaxed text-bronze">
                 Worlds fully conquered. Every secret unearthed, every trial endured.
@@ -144,7 +139,7 @@ export default function Home() {
         ═══════════════════════════════════════════════════ */}
         <section
           id="scholars"
-          className="px-8 py-36"
+          className="px-8 py-36 scroll-mt-20"
           style={{ background: 'radial-gradient(ellipse at 50% 20%, #1C1409 0%, #0D0A07 60%)' }}
         >
           <div className="mx-auto max-w-4xl">
@@ -153,9 +148,9 @@ export default function Home() {
               <p className="mb-3 font-display text-xs tracking-[0.5em] text-bronze uppercase">
                 Location Discovered
               </p>
-              <h2 className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
+              <RevealText delay={0.1} className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
                 Words of Scholars
-              </h2>
+              </RevealText>
               <div className="my-6 h-px w-16 bg-gold/40" />
               <p className="font-body text-sm leading-relaxed text-bronze">
                 Inscriptions found across the worlds. Carried out.

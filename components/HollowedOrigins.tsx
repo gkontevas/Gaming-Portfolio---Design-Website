@@ -1,14 +1,16 @@
-import Image from "next/image"
 import FadeIn from "@/components/FadeIn"
+import RevealText from "@/components/RevealText"
 import AnimatedStatBars from "@/components/AnimatedStatBars"
 import AnimatedCounter from "@/components/AnimatedCounter"
+import SteamReveal from "@/components/SteamReveal"
+import HollowedIdentity from "@/components/HollowedIdentity"
 import { perfectGames } from "@/data/games"
 
 export default function HollowedOrigins() {
   return (
     <section
       id="origins"
-      className="px-8 py-36"
+      className="px-8 py-36 scroll-mt-20"
       style={{ background: 'radial-gradient(ellipse at 50% 0%, #211507 0%, #0D0A07 65%)' }}
     >
       <div className="mx-auto max-w-5xl">
@@ -17,66 +19,20 @@ export default function HollowedOrigins() {
           <p className="mb-3 font-display text-xs tracking-[0.5em] text-bronze uppercase">
             Location Discovered
           </p>
-          <h2 className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
+          <RevealText delay={0.1} className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
             Hollowed Origins
-          </h2>
+          </RevealText>
           <div className="my-6 h-px w-16 bg-gold/40" />
           <p className="max-w-md font-body text-sm leading-relaxed text-bronze">
             What the character screen reveals that no cutscene can.
           </p>
         </FadeIn>
 
-        {/* Steam screenshot — edge-to-edge, corner-framed, no outer box */}
-        <FadeIn>
-          <div className="relative w-full mb-1">
-            {/* Corner tick marks — same technique as the quote carousel */}
-            <div className="absolute top-0 left-0   z-10 w-8 h-8 border-t border-l border-gold/60" />
-            <div className="absolute top-0 right-0  z-10 w-8 h-8 border-t border-r border-gold/60" />
-            <div className="absolute bottom-0 left-0  z-10 w-8 h-8 border-b border-l border-gold/60" />
-            <div className="absolute bottom-0 right-0 z-10 w-8 h-8 border-b border-r border-gold/60" />
-            <Image
-              src="/steam.png"
-              alt="Steam profile"
-              width={1540}
-              height={784}
-              className="w-full object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-ash/40 via-transparent to-ash" />
-            <div className="absolute inset-0 bg-gradient-to-r from-ash/30 to-transparent" />
-          </div>
-        </FadeIn>
+        {/* Steam screenshot — scan-line reveal */}
+        <SteamReveal />
 
-        {/* ── IDENTITY BLOCK ──────────────────────────────────────
-            Relative container so the ghost kanji can be positioned
-            behind the text content absolutely.
-        */}
-        <FadeIn direction="left">
-          <div className="relative overflow-hidden border-b border-gold/15 pb-10 mb-10">
-
-            {/* Ghost kanji — the most visually interesting element in the section.
-                Positioned top-right, huge, barely visible.
-                Gives the identity block atmosphere without competing with text. */}
-            <span className="pointer-events-none select-none absolute -right-4 -top-6 font-display text-[8rem] sm:text-[11rem] md:text-[14rem] leading-none text-gold/[0.06]">
-              両面宿儺
-            </span>
-
-            <p className="mb-3 font-display text-xs tracking-[0.6em] text-bronze/70 uppercase">
-              Ashen One · Greece
-            </p>
-            {/* Visible kanji — intentionally smaller than the ghost, acts as a title */}
-            <h3 className="font-display text-4xl tracking-[0.1em] text-gold sm:text-5xl">
-              両面宿儺
-            </h3>
-            <p className="mt-2 font-display text-sm tracking-[0.35em] text-bronze uppercase">
-              Dimos Gkontevas
-            </p>
-            {/* "Domain Expansion" — treated as a standalone quote, not a data row */}
-            <p className="mt-6 font-body text-xl italic text-bronze/80 sm:text-2xl">
-              No build left unfinished. No questline left unseen.
-            </p>
-          </div>
-        </FadeIn>
+        {/* ── IDENTITY BLOCK — individually animated elements */}
+        <HollowedIdentity />
 
         {/* ── TWO COLUMNS ───────────────────────────────────────── */}
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2">

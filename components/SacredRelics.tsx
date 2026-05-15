@@ -1,5 +1,10 @@
-import Image from "next/image"
-import FadeIn from "@/components/FadeIn"
+'use client'
+
+import { useRef, useState, useEffect } from 'react'
+import Image from 'next/image'
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
+import RevealText from '@/components/RevealText'
+import FadeIn from '@/components/FadeIn'
 
 const relics = [
   {
@@ -40,84 +45,177 @@ const relics = [
 ]
 
 export default function SacredRelics() {
+  const outerRef = useRef<HTMLDivElement>(null)
+  const [activePanel, setActivePanel] = useState(0)
+
+  const { scrollYProgress } = useScroll({
+    target: outerRef,
+    offset: ['start start', 'end end'],
+  })
+
+  const x = useTransform(
+    scrollYProgress,
+    [0, 1],
+    ['0vw', `-${(relics.length - 1) * 100}vw`]
+  )
+
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    setActivePanel(Math.min(relics.length - 1, Math.round(v * (relics.length - 1))))
+  })
+
+  // Snap to nearest panel when scrolling stops
+  useEffect(() => {
+    const snapTimeout = { current: 0 }
+    const isSnapping = { current: false }
+
+    function snap() {
+      if (!outerRef.current || isSnapping.current) return
+      const sectionTop  = outerRef.current.getBoundingClientRect().top + window.scrollY
+      const scrollTravel = outerRef.current.offsetHeight - window.innerHeight
+      const relative     = window.scrollY - sectionTop
+
+      // Only act when inside the section
+      if (relative < 0 || relative > scrollTravel) return
+
+      const progress     = relative / scrollTravel
+      const nearest      = Math.round(progress * (relics.length - 1))
+      const target       = sectionTop + (scrollTravel * nearest / (relics.length - 1))
+
+      if (Math.abs(window.scrollY - target) < 4) return
+
+      isSnapping.current = true
+      if (window.__lenis) {
+        window.__lenis.scrollTo(target, { duration: 0.5 })
+      } else {
+        window.scrollTo({ top: target, behavior: 'smooth' })
+      }
+      setTimeout(() => { isSnapping.current = false }, 600)
+    }
+
+    function onScroll() {
+      if (isSnapping.current) return
+      clearTimeout(snapTimeout.current)
+      snapTimeout.current = window.setTimeout(snap, 80)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      clearTimeout(snapTimeout.current)
+    }
+  }, [])
+
   return (
-    <section id="arsenal" className="relative px-8 pb-24 pt-14 overflow-hidden" style={{ background: 'radial-gradient(ellipse at 50% 0%, #1a1108 0%, #0D0A07 60%)' }}>
-      <div className="mx-auto max-w-4xl">
+    <section
+      id="arsenal"
+      ref={outerRef}
+      className="scroll-mt-20"
+      style={{ height: `${relics.length * 80}vh` }}
+    >
+      <div className="sticky top-0 overflow-hidden bg-ash" style={{ height: '100dvh' }}>
 
-        <FadeIn className="mb-16 flex flex-col items-center text-center">
-          <p className="mb-3 font-display text-xs tracking-[0.5em] text-bronze uppercase">
-            Achievement Unlocked
-          </p>
-          <h2 className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
+        {/* SECTION HEADER */}
+        <div className="absolute top-0 left-0 right-0 z-30 flex flex-col items-center pt-24 sm:pt-28 text-center pointer-events-none">
+          <FadeIn>
+            <p className="font-display text-[10px] tracking-[0.5em] text-bronze/70 uppercase">
+              Achievement Unlocked
+            </p>
+          </FadeIn>
+          <RevealText delay={0.1} className="font-display text-xl sm:text-2xl tracking-[0.2em] text-gold uppercase mt-2">
             Sacred Relics
-          </h2>
-          <div className="my-6 h-px w-16 bg-gold/40" />
-          <p className="max-w-md font-body text-sm leading-relaxed text-bronze">
-            Five worlds above all others. Not chosen lightly.
-          </p>
-        </FadeIn>
+          </RevealText>
+          <FadeIn delay={0.25}>
+            <div className="mt-4 h-px w-10 bg-gold/40" />
+          </FadeIn>
+        </div>
 
-        <div className="flex flex-col">
-          {relics.map((entry, i) => (
-            <FadeIn key={entry.rank} delay={i * 0.08}>
-              <div className={`group relative flex items-center gap-6 sm:gap-10 border-t py-12 sm:py-14 last:border-b overflow-hidden transition-all duration-500 ${
-                entry.rank === 1
-                  ? "border-amber/25 hover:border-amber/50"
-                  : "border-gold/15 hover:border-gold/30"
-              }`}>
+        {/* HORIZONTAL STRIP */}
+        <motion.div
+          className="flex h-full"
+          style={{ x, width: `${relics.length * 100}vw` }}
+        >
+          {relics.map((relic) => (
+            <div
+              key={relic.rank}
+              className="relative h-full overflow-hidden shrink-0"
+              style={{ width: '100vw' }}
+            >
+              <Image
+                src={relic.image}
+                alt={relic.title}
+                fill
+                className="object-cover object-center"
+                sizes="100vw"
+                quality={90}
+              />
 
-                {/* Background image — always visible at low opacity, brightens on hover */}
-                <Image
-                  src={entry.image}
-                  alt=""
-                  fill
-                  className="object-cover object-center opacity-[0.15] group-hover:opacity-[0.35] transition-opacity duration-700 pointer-events-none"
-                  sizes="(min-width: 1024px) 896px, 100vw"
-                />
-                {/* Left-heavy gradient keeps the text readable */}
-                <div className="absolute inset-0 bg-gradient-to-r from-ash via-ash/85 to-ash/30 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-ash via-ash/80 to-ash/10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ash/80 via-transparent to-ash/60" />
+              <div className="absolute inset-0" style={{
+                background: 'radial-gradient(ellipse at center, transparent 35%, rgba(13,10,7,0.65) 100%)'
+              }} />
 
-                {/* Left accent bar — rank 1 always glowing, others reveal on hover */}
-                <div className={`absolute left-0 top-0 bottom-0 w-[2px] transition-all duration-500 ${
-                  entry.rank === 1
-                    ? "bg-amber/70 group-hover:bg-amber"
-                    : "bg-transparent group-hover:bg-gold/40"
-                }`} />
+              <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${
+                relic.rank === 1 ? 'bg-amber/80' : 'bg-gold/25'
+              }`} />
 
-                {/* Ghost rank — massive number in the background, purely atmospheric */}
-                <span className="pointer-events-none absolute right-4 select-none font-display text-[7rem] leading-none text-gold/[0.05] group-hover:text-gold/[0.10] transition-colors duration-500">
-                  {String(entry.rank).padStart(2, "0")}
-                </span>
+              <span
+                className="pointer-events-none select-none absolute right-6 sm:right-12 top-1/2 -translate-y-1/2 font-display leading-none text-gold/[0.05]"
+                style={{ fontSize: 'clamp(6rem, 20vw, 18rem)' }}
+              >
+                {String(relic.rank).padStart(2, '0')}
+              </span>
 
-                {/* Visible rank — rank 1 gets amber, others are muted */}
-                <span className={`relative z-10 font-display text-5xl sm:text-7xl leading-none shrink-0 w-16 sm:w-24 tabular-nums pl-4 sm:pl-6 transition-colors duration-300 ${
-                  entry.rank === 1 ? "text-amber/60 group-hover:text-amber" : "text-bronze/20 group-hover:text-bronze/50"
-                }`}>
-                  {String(entry.rank).padStart(2, "0")}
-                </span>
+              <div className="absolute inset-0 flex flex-col justify-center px-8 sm:px-16 md:px-24 lg:px-32">
+                <p className="mb-3 font-display text-[10px] tracking-[0.6em] text-bronze/50 uppercase">
+                  {String(relic.rank).padStart(2, '0')} / 05
+                </p>
 
-                {/* Content */}
-                <div className="relative z-10 flex-1 flex flex-col gap-2 pr-16 sm:pr-24">
-                  <h3 className={`font-display tracking-[0.15em] uppercase transition-colors duration-300 ${
-                    entry.rank === 1
-                      ? "text-xl sm:text-2xl text-amber group-hover:text-amber"
-                      : "text-lg text-gold group-hover:text-amber"
-                  }`}>
-                    {entry.title}
-                  </h3>
-                  <p className="font-body text-base italic leading-relaxed text-bronze">
-                    {entry.note}
-                  </p>
-                  <div className="mt-2 flex gap-6 font-display text-xs tracking-widest text-bronze/50 uppercase">
-                    <span>{entry.hours}h</span>
-                    <span>·</span>
-                    <span>{entry.achievements}</span>
-                  </div>
+                <h3
+                  className={`font-display uppercase leading-[0.9] mb-4 ${
+                    relic.rank === 1 ? 'text-amber' : 'text-gold'
+                  }`}
+                  style={{ fontSize: 'clamp(1.8rem, 5vw, 4.5rem)' }}
+                >
+                  {relic.title}
+                </h3>
+
+                <p className="font-body italic leading-relaxed text-bronze/80 max-w-xs sm:max-w-sm mb-6"
+                   style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)' }}>
+                  {relic.note}
+                </p>
+
+                <div className="flex gap-5 font-display text-xs tracking-widest text-bronze/40 uppercase">
+                  <span>{relic.hours}h</span>
+                  <span>·</span>
+                  <span>{relic.achievements}</span>
                 </div>
-
               </div>
-            </FadeIn>
+            </div>
           ))}
+        </motion.div>
+
+        {/* PROGRESS DOTS */}
+        <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+          {relics.map((_, i) => (
+            <motion.div
+              key={i}
+              className="h-px bg-gold rounded-full"
+              animate={{ width: i === activePanel ? 28 : 12, opacity: i === activePanel ? 1 : 0.3 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            />
+          ))}
+        </div>
+
+        {/* SCROLL HINT desktop only */}
+        <div className="absolute bottom-6 right-6 z-30 hidden sm:flex flex-col items-center gap-2">
+          <span className="font-display text-[8px] tracking-[0.4em] text-bronze/30 uppercase"
+                style={{ writingMode: 'vertical-rl' }}>scroll</span>
+          <motion.span
+            className="text-bronze/30 text-sm"
+            animate={{ y: [0, 5, 0] }}
+            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+          >↓</motion.span>
         </div>
 
       </div>

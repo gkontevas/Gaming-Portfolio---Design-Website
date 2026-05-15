@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const containerVariants = {
@@ -112,15 +112,15 @@ export default function IntroScreen() {
   const [mounted, setMounted] = useState(false)
   const skippedRef = useRef(false)
 
-  useEffect(() => {
-    // Check sessionStorage BEFORE revealing anything, then remove the cover
+  useLayoutEffect(() => {
+    // Runs synchronously before paint — removes intro-cover and sets state
+    // in the same flush, so there's never a frame where neither covers the page.
     if (sessionStorage.getItem('intro-seen')) {
       skippedRef.current = true
       setStep(2)
     } else {
       document.body.style.overflow = 'hidden'
     }
-    // Remove cover only after we know the step — React batches these into one render
     document.getElementById('intro-cover')?.remove()
     setMounted(true)
     return () => { document.body.style.overflow = '' }
@@ -140,6 +140,7 @@ export default function IntroScreen() {
       function dismiss() {
         document.body.style.overflow = ''
         sessionStorage.setItem('intro-seen', '1')
+        window.dispatchEvent(new Event('intro-dismissed'))
         setStep(2)
       }
       document.addEventListener('keydown', dismiss)
@@ -258,6 +259,7 @@ export default function IntroScreen() {
                   muted
                   loop
                   playsInline
+                  preload="none"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
 

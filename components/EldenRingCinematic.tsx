@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, useMotionValue, useInView, animate, MotionValue } from 'framer-motion'
+import { motion, useMotionValue, useInView, animate, MotionValue } from 'framer-motion'
 
 function AnimatedNumber({ motionValue }: { motionValue: MotionValue<number> }) {
   const [display, setDisplay] = useState(0)
@@ -12,31 +12,7 @@ function AnimatedNumber({ motionValue }: { motionValue: MotionValue<number> }) {
 }
 
 export default function EldenRingCinematic() {
-  const outerRef = useRef<HTMLDivElement>(null)
-
-  const { scrollYProgress } = useScroll({
-    target: outerRef,
-    offset: ['start start', 'end end'],
-  })
-
-  // Video — scroll-driven parallax + cinematic grade
-  const videoY = useTransform(scrollYProgress, [0, 1], ['0%', '12%'])
-  const videoFilter = useTransform(
-    scrollYProgress,
-    [0, 0.05, 0.7, 1.0],
-    [
-      'brightness(0.55) contrast(1.15) saturate(1.2)',
-      'brightness(0.72) contrast(1.12) saturate(1.15)',
-      'brightness(0.72) contrast(1.12) saturate(1.15)',
-      'brightness(0.25) contrast(1.15) saturate(1.2)',
-    ]
-  )
-
-  // All content exits on scroll
-  const exitOpacity = useTransform(scrollYProgress, [0.3, 1.0], [1, 0])
-
-  // Scroll hint
-  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0])
+  const ref = useRef<HTMLDivElement>(null)
 
   // Entry — opacity
   const eyebrowOp  = useMotionValue(0)
@@ -52,10 +28,10 @@ export default function EldenRingCinematic() {
   const titleY   = useMotionValue(28)
   const bodyY    = useMotionValue(18)
 
-  // Title letter-spacing — expands on reveal for drama
+  // Title letter-spacing expands on reveal
   const titleTracking = useMotionValue('0em')
 
-  // Cinematic flash — warm pulse as bars open
+  // Cinematic flash
   const flashOp = useMotionValue(0)
 
   // Letterbox bars
@@ -67,24 +43,18 @@ export default function EldenRingCinematic() {
   const achievementCount = useMotionValue(0)
   const metacriticCount  = useMotionValue(0)
 
-  const inView = useInView(outerRef, { once: true, margin: '0px 0px -5% 0px' })
+  const inView = useInView(ref, { once: true, margin: '0px 0px -5% 0px' })
 
   useEffect(() => {
     if (!inView) return
     const e = 'easeOut'
     const d = 0.55
 
-    // Warm flash as bars open
     animate(flashOp, [0, 0.18, 0], { duration: 0.65, ease: 'easeOut' })
-
-    // Bars slide away
     animate(barTop,    '0%', { duration: 0.75, ease: [0.16, 1, 0.3, 1] })
     animate(barBottom, '0%', { duration: 0.75, ease: [0.16, 1, 0.3, 1] })
-
-    // Title letter-spacing expands dramatically
     animate(titleTracking, '0.07em', { delay: 0.22, duration: 1.1, ease: [0.16, 1, 0.3, 1] })
 
-    // Content cascade
     animate(eyebrowOp,  1, { delay: 0.1,  duration: d, ease: e })
     animate(eyebrowY,   0, { delay: 0.1,  duration: d, ease: e })
     animate(titleOp,    1, { delay: 0.22, duration: d, ease: e })
@@ -102,148 +72,126 @@ export default function EldenRingCinematic() {
   }, [inView])
 
   return (
-    <div ref={outerRef} className="relative" style={{ height: '120dvh' }}>
-      <div className="sticky top-0 overflow-hidden" style={{ height: '100dvh' }}>
+    <div ref={ref} className="relative overflow-hidden" style={{ height: '100dvh' }}>
 
-        {/* ── VIDEO ── */}
-        <motion.div className="absolute inset-0" style={{ y: videoY }}>
-          <motion.video
-            src="/elden-ring.mp4"
-            autoPlay muted loop playsInline
-            className="h-full w-full object-cover"
-            style={{ filter: videoFilter }}
-          />
-        </motion.div>
+      {/* ── VIDEO ── */}
+      <video
+        src="/elden-ring.mp4"
+        autoPlay muted loop playsInline preload="none"
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{ filter: 'brightness(0.72) contrast(1.12) saturate(1.15)' }}
+      />
 
-        {/* ── VIGNETTE — strong corner darkening ── */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse at 40% 50%, transparent 20%, rgba(0,0,0,0.85) 100%)' }}
-        />
+      {/* ── VIGNETTE ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse at 40% 50%, transparent 20%, rgba(0,0,0,0.85) 100%)' }}
+      />
 
-        {/* ── OVERLAYS ── */}
-        <div className="absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-black/95 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-ash via-black/85 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/35 to-transparent" />
+      {/* ── OVERLAYS ── */}
+      <div className="absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-black/95 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-ash via-black/85 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/35 to-transparent" />
 
-        {/* ── WARM FLASH ── */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{ opacity: flashOp, background: 'radial-gradient(ellipse at 40% 50%, rgba(201,169,110,0.3) 0%, transparent 70%)' }}
-        />
+      {/* ── WARM FLASH ── */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{ opacity: flashOp, background: 'radial-gradient(ellipse at 40% 50%, rgba(201,169,110,0.3) 0%, transparent 70%)' }}
+      />
 
-        {/* ── LETTERBOX BARS ── */}
-        <motion.div className="absolute inset-x-0 top-0 z-10 bg-black" style={{ height: barTop }} />
-        <motion.div className="absolute inset-x-0 bottom-0 z-10 bg-black" style={{ height: barBottom }} />
+      {/* ── LETTERBOX BARS ── */}
+      <motion.div className="absolute inset-x-0 top-0 z-10 bg-black" style={{ height: barTop }} />
+      <motion.div className="absolute inset-x-0 bottom-0 z-10 bg-black" style={{ height: barBottom }} />
 
-        {/* ── CONTENT ── */}
-        <motion.div
-          className="absolute inset-0 flex flex-col justify-center px-8 sm:px-14 md:px-20 lg:px-28"
-          style={{ opacity: exitOpacity }}
+      {/* ── CONTENT ── */}
+      <div className="absolute inset-0 flex flex-col justify-center px-8 sm:px-14 md:px-20 lg:px-28">
+        <motion.p
+          className="font-display text-[9px] tracking-[0.6em] text-bronze/60 uppercase sm:text-[10px]"
+          style={{ opacity: eyebrowOp, y: eyebrowY }}
         >
-          <motion.p
-            className="font-display text-[9px] tracking-[0.6em] text-bronze/60 uppercase sm:text-[10px]"
-            style={{ opacity: eyebrowOp, y: eyebrowY }}
-          >
-            FromSoftware · 2022 · Featured Remembrance
-          </motion.p>
+          FromSoftware · 2022 · Featured Remembrance
+        </motion.p>
 
-          <motion.h2
-            className="mt-3 font-display uppercase leading-none"
-            style={{
-              fontSize: 'clamp(3rem, 9vw, 7.5rem)',
-              letterSpacing: titleTracking,
-              color: '#C9A96E',
-              textShadow: '0 2px 60px rgba(0,0,0,0.9), 0 0 100px rgba(201,169,110,0.3)',
-              opacity: titleOp,
-              y: titleY,
-            }}
-          >
-            Elden Ring
-          </motion.h2>
+        <motion.h2
+          className="mt-3 font-display uppercase leading-none"
+          style={{
+            fontSize: 'clamp(3rem, 9vw, 7.5rem)',
+            letterSpacing: titleTracking,
+            color: '#C9A96E',
+            textShadow: '0 2px 60px rgba(0,0,0,0.9), 0 0 100px rgba(201,169,110,0.3)',
+            opacity: titleOp,
+            y: titleY,
+          }}
+        >
+          Elden Ring
+        </motion.h2>
 
-          <motion.p
-            className="mt-3 font-display text-xs tracking-[0.35em] text-amber/75 uppercase sm:text-sm"
-            style={{ opacity: subtitleOp, y: titleY }}
-          >
-            Game of the Year · Metacritic 96
-          </motion.p>
+        <motion.p
+          className="mt-3 font-display text-xs tracking-[0.35em] text-amber/75 uppercase sm:text-sm"
+          style={{ opacity: subtitleOp, y: titleY }}
+        >
+          Game of the Year · Metacritic 96
+        </motion.p>
 
-          <motion.div
-            className="my-6 h-px w-16 bg-gold/35"
-            style={{ opacity: dividerOp, y: bodyY }}
-          />
+        <motion.div
+          className="my-6 h-px w-16 bg-gold/35"
+          style={{ opacity: dividerOp, y: bodyY }}
+        />
 
-          <motion.p
-            className="max-w-xs font-body text-sm italic leading-relaxed text-bronze/80 sm:max-w-sm sm:text-base md:text-lg"
-            style={{ opacity: loreOp, y: bodyY }}
-          >
-            A shattered ring. A shattered world. Three hundred hours wandered
-            between their pieces. The Elden Ring was mended — every fragment
-            accounted for.
-          </motion.p>
+        <motion.p
+          className="max-w-xs font-body text-sm italic leading-relaxed text-bronze/80 sm:max-w-sm sm:text-base md:text-lg"
+          style={{ opacity: loreOp, y: bodyY }}
+        >
+          A shattered ring. A shattered world. Three hundred hours wandered
+          between their pieces. The Elden Ring was mended — every fragment
+          accounted for.
+        </motion.p>
 
-          <motion.div
-            className="mt-7 flex flex-wrap gap-x-7 gap-y-4 sm:gap-x-10 sm:flex-nowrap"
-            style={{ opacity: statsOp, y: bodyY }}
-          >
-            <div className="flex flex-col gap-1">
-              <span
-                className="font-display text-xl leading-none sm:text-3xl md:text-4xl"
-                style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
-              >
-                <AnimatedNumber motionValue={hoursCount} />h
-              </span>
-              <span className="font-display text-[9px] tracking-[0.45em] text-bronze/50 uppercase">Hours Bound</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span
-                className="font-display text-xl leading-none sm:text-3xl md:text-4xl"
-                style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
-              >
-                <AnimatedNumber motionValue={achievementCount} />/42
-              </span>
-              <span className="font-display text-[9px] tracking-[0.45em] text-bronze/50 uppercase">Achievements</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span
-                className="font-display text-xl leading-none sm:text-3xl md:text-4xl"
-                style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
-              >
-                <AnimatedNumber motionValue={metacriticCount} />
-              </span>
-              <span className="font-display text-[9px] tracking-[0.45em] text-bronze/50 uppercase">Metacritic</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="mt-7 inline-flex items-center gap-2.5 self-start border border-amber/30 px-3 py-1.5 sm:px-4 sm:py-2"
-            style={{ opacity: badgeOp, y: bodyY }}
-          >
-            <span className="text-amber/70 text-[10px]">✦</span>
-            <span className="font-display text-[9px] tracking-[0.45em] text-amber/75 uppercase sm:text-[10px]">
-              Remembrance · All Achievements
+        <motion.div
+          className="mt-7 flex flex-wrap gap-x-7 gap-y-4 sm:gap-x-10 sm:flex-nowrap"
+          style={{ opacity: statsOp, y: bodyY }}
+        >
+          <div className="flex flex-col gap-1">
+            <span
+              className="font-display text-xl leading-none sm:text-3xl md:text-4xl"
+              style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
+            >
+              <AnimatedNumber motionValue={hoursCount} />h
             </span>
-            <span className="text-amber/70 text-[10px]">✦</span>
-          </motion.div>
+            <span className="font-display text-[9px] tracking-[0.45em] text-bronze/50 uppercase">Hours Bound</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span
+              className="font-display text-xl leading-none sm:text-3xl md:text-4xl"
+              style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
+            >
+              <AnimatedNumber motionValue={achievementCount} />/42
+            </span>
+            <span className="font-display text-[9px] tracking-[0.45em] text-bronze/50 uppercase">Achievements</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span
+              className="font-display text-xl leading-none sm:text-3xl md:text-4xl"
+              style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
+            >
+              <AnimatedNumber motionValue={metacriticCount} />
+            </span>
+            <span className="font-display text-[9px] tracking-[0.45em] text-bronze/50 uppercase">Metacritic</span>
+          </div>
         </motion.div>
 
-        {/* ── SCROLL HINT ── */}
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          style={{ opacity: scrollHintOpacity }}
+          className="mt-7 inline-flex items-center gap-2.5 self-start border border-amber/30 px-3 py-1.5 sm:px-4 sm:py-2"
+          style={{ opacity: badgeOp, y: bodyY }}
         >
-          <span className="font-display text-[8px] tracking-[0.5em] text-bronze/40 uppercase">Scroll</span>
-          <motion.span
-            className="text-bronze/40 text-sm"
-            animate={{ y: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-          >
-            ↓
-          </motion.span>
+          <span className="text-amber/70 text-[10px]">✦</span>
+          <span className="font-display text-[9px] tracking-[0.45em] text-amber/75 uppercase sm:text-[10px]">
+            Remembrance · All Achievements
+          </span>
+          <span className="text-amber/70 text-[10px]">✦</span>
         </motion.div>
-
       </div>
+
     </div>
   )
 }

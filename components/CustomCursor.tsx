@@ -122,8 +122,6 @@ export default function CustomCursor() {
 
     // ── Animation loop ────────────────────────────────────────────────────
     function draw() {
-      if (document.hidden) { rafRef.current = requestAnimationFrame(draw); return }
-
       // Spawn embers once per frame at the spring position —
       // this is exactly where the cursor ring is drawn, so particles
       // are always perfectly in sync with the visible cursor
@@ -177,9 +175,19 @@ export default function CustomCursor() {
     }
     rafRef.current = requestAnimationFrame(draw)
 
+    function onVisibilityChange() {
+      if (document.hidden) {
+        cancelAnimationFrame(rafRef.current)
+      } else {
+        rafRef.current = requestAnimationFrame(draw)
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+
     return () => {
       window.removeEventListener('resize', resize)
       window.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
       cancelAnimationFrame(rafRef.current)
     }
   }, [isHoverDevice]) // eslint-disable-line react-hooks/exhaustive-deps
