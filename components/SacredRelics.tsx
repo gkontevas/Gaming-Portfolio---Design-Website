@@ -41,7 +41,7 @@ const relics = [
 
 export default function SacredRelics() {
   return (
-    <section id="arsenal" className="px-8 pb-24 pt-14">
+    <section id="arsenal" className="relative px-8 pb-24 pt-14 overflow-hidden" style={{ background: 'radial-gradient(ellipse at 50% 0%, #1a1108 0%, #0D0A07 60%)' }}>
       <div className="mx-auto max-w-4xl">
 
         <FadeIn className="mb-16 flex flex-col items-center text-center">
@@ -71,11 +71,11 @@ export default function SacredRelics() {
                   src={entry.image}
                   alt=""
                   fill
-                  className="object-cover object-center opacity-[0.12] group-hover:opacity-[0.28] transition-opacity duration-700 pointer-events-none"
+                  className="object-cover object-center opacity-[0.15] group-hover:opacity-[0.35] transition-opacity duration-700 pointer-events-none"
                   sizes="(min-width: 1024px) 896px, 100vw"
                 />
                 {/* Left-heavy gradient keeps the text readable */}
-                <div className="absolute inset-0 bg-gradient-to-r from-ash via-ash/90 to-ash/50 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-ash via-ash/85 to-ash/30 pointer-events-none" />
 
                 {/* Left accent bar — rank 1 always glowing, others reveal on hover */}
                 <div className={`absolute left-0 top-0 bottom-0 w-[2px] transition-all duration-500 ${

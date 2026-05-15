@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useInView, animate, MotionValue } from 'framer-motion'
+import { motion, useScroll, useTransform, useMotionValue, useInView, animate, MotionValue } from 'framer-motion'
 
 function AnimatedNumber({ motionValue }: { motionValue: MotionValue<number> }) {
   const [display, setDisplay] = useState(0)
@@ -19,60 +19,90 @@ export default function EldenRingCinematic() {
     offset: ['start start', 'end end'],
   })
 
-  // Parallax — video drifts up as you scroll through
+  // Video — scroll-driven parallax + cinematic grade
   const videoY = useTransform(scrollYProgress, [0, 1], ['0%', '12%'])
-
-  // Brightness — starts visible, fades out at the very end only
   const videoFilter = useTransform(
     scrollYProgress,
     [0, 0.05, 0.85, 1.0],
     [
-      'brightness(0.65) contrast(1.05)',
-      'brightness(0.75) contrast(1.05)',
-      'brightness(0.75) contrast(1.05)',
-      'brightness(0.3)  contrast(1.05)',
+      'brightness(0.55) contrast(1.15) saturate(1.2)',
+      'brightness(0.72) contrast(1.12) saturate(1.15)',
+      'brightness(0.72) contrast(1.12) saturate(1.15)',
+      'brightness(0.25) contrast(1.15) saturate(1.2)',
     ]
   )
 
-  // Smoothed progress for content — adds physical lag so elements ease in rather than pop
-  const contentProgress = useSpring(scrollYProgress, { stiffness: 120, damping: 25, restDelta: 0.001 })
+  // All content exits on scroll
+  const exitOpacity = useTransform(scrollYProgress, [0.78, 0.94], [1, 0])
 
-  // Shared exit range
-  const exitStart = 0.82
-  const exitEnd   = 0.95
+  // Scroll hint
+  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0])
 
-  // Per-element staggered fade-in — all complete by ~2% scroll
-  const eyebrowOpacity  = useTransform(contentProgress, [0,     0.006, exitStart, exitEnd], [0, 1, 1, 0])
-  const titleOpacity    = useTransform(contentProgress, [0.003, 0.009, exitStart, exitEnd], [0, 1, 1, 0])
-  const subtitleOpacity = useTransform(contentProgress, [0.005, 0.011, exitStart, exitEnd], [0, 1, 1, 0])
-  const dividerOpacity  = useTransform(contentProgress, [0.007, 0.013, exitStart, exitEnd], [0, 1, 1, 0])
-  const loreOpacity     = useTransform(contentProgress, [0.009, 0.015, exitStart, exitEnd], [0, 1, 1, 0])
-  const statsOpacity    = useTransform(contentProgress, [0.011, 0.018, exitStart, exitEnd], [0, 1, 1, 0])
-  const badgeOpacity    = useTransform(contentProgress, [0.014, 0.021, exitStart, exitEnd], [0, 1, 1, 0])
+  // Entry — opacity
+  const eyebrowOp  = useMotionValue(0)
+  const titleOp    = useMotionValue(0)
+  const subtitleOp = useMotionValue(0)
+  const dividerOp  = useMotionValue(0)
+  const loreOp     = useMotionValue(0)
+  const statsOp    = useMotionValue(0)
+  const badgeOp    = useMotionValue(0)
 
-  // Staggered Y lifts on entry
-  const eyebrowY = useTransform(contentProgress, [0,     0.012], [20, 0])
-  const titleY   = useTransform(contentProgress, [0.003, 0.014], [28, 0])
-  const bodyY    = useTransform(contentProgress, [0.005, 0.016], [18, 0])
+  // Entry — Y lifts
+  const eyebrowY = useMotionValue(20)
+  const titleY   = useMotionValue(28)
+  const bodyY    = useMotionValue(18)
 
-  // Stat counters — animate on entry, not tied to scroll
+  // Title letter-spacing — expands on reveal for drama
+  const titleTracking = useMotionValue('0em')
+
+  // Cinematic flash — warm pulse as bars open
+  const flashOp = useMotionValue(0)
+
+  // Letterbox bars
+  const barTop    = useMotionValue('22%')
+  const barBottom = useMotionValue('22%')
+
+  // Stat counters
   const hoursCount       = useMotionValue(0)
   const achievementCount = useMotionValue(0)
   const metacriticCount  = useMotionValue(0)
-  const inView = useInView(outerRef, { once: true, margin: '0px 0px -10% 0px' })
+
+  const inView = useInView(outerRef, { once: true, margin: '0px 0px -5% 0px' })
+
   useEffect(() => {
     if (!inView) return
-    const a = animate(hoursCount,       300, { duration: 2.2, ease: 'easeOut' })
-    const b = animate(achievementCount,  42, { duration: 2.0, ease: 'easeOut' })
-    const c = animate(metacriticCount,   96, { duration: 1.8, ease: 'easeOut' })
-    return () => { a.stop(); b.stop(); c.stop() }
+    const e = 'easeOut'
+    const d = 0.55
+
+    // Warm flash as bars open
+    animate(flashOp, [0, 0.18, 0], { duration: 0.65, ease: 'easeOut' })
+
+    // Bars slide away
+    animate(barTop,    '0%', { duration: 0.75, ease: [0.16, 1, 0.3, 1] })
+    animate(barBottom, '0%', { duration: 0.75, ease: [0.16, 1, 0.3, 1] })
+
+    // Title letter-spacing expands dramatically
+    animate(titleTracking, '0.07em', { delay: 0.22, duration: 1.1, ease: [0.16, 1, 0.3, 1] })
+
+    // Content cascade
+    animate(eyebrowOp,  1, { delay: 0.1,  duration: d, ease: e })
+    animate(eyebrowY,   0, { delay: 0.1,  duration: d, ease: e })
+    animate(titleOp,    1, { delay: 0.22, duration: d, ease: e })
+    animate(titleY,     0, { delay: 0.22, duration: d, ease: e })
+    animate(subtitleOp, 1, { delay: 0.38, duration: d, ease: e })
+    animate(dividerOp,  1, { delay: 0.46, duration: d, ease: e })
+    animate(loreOp,     1, { delay: 0.54, duration: d, ease: e })
+    animate(bodyY,      0, { delay: 0.38, duration: d, ease: e })
+    animate(statsOp,    1, { delay: 0.64, duration: d, ease: e })
+    animate(badgeOp,    1, { delay: 0.74, duration: d, ease: e })
+
+    animate(hoursCount,        300, { delay: 0.64, duration: 2.2, ease: e })
+    animate(achievementCount,   42, { delay: 0.64, duration: 2.0, ease: e })
+    animate(metacriticCount,    96, { delay: 0.64, duration: 1.8, ease: e })
   }, [inView])
 
-  // Scroll hint — fades out as soon as user starts scrolling
-  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.04], [1, 0])
-
   return (
-    <div ref={outerRef} className="relative h-[300vh]">
+    <div ref={outerRef} className="relative h-[110vh]">
       <div className="sticky top-0 h-screen overflow-hidden">
 
         {/* ── VIDEO ── */}
@@ -85,76 +115,82 @@ export default function EldenRingCinematic() {
           />
         </motion.div>
 
-        {/* ── VIGNETTE ── */}
+        {/* ── VIGNETTE — strong corner darkening ── */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.72) 100%)' }}
+          style={{ background: 'radial-gradient(ellipse at 40% 50%, transparent 20%, rgba(0,0,0,0.85) 100%)' }}
         />
 
         {/* ── OVERLAYS ── */}
         <div className="absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-black/95 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-t from-ash via-black/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-ash via-black/85 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/35 to-transparent" />
+
+        {/* ── WARM FLASH ── */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{ opacity: flashOp, background: 'radial-gradient(ellipse at 40% 50%, rgba(201,169,110,0.3) 0%, transparent 70%)' }}
+        />
+
+        {/* ── LETTERBOX BARS ── */}
+        <motion.div className="absolute inset-x-0 top-0 z-10 bg-black" style={{ height: barTop }} />
+        <motion.div className="absolute inset-x-0 bottom-0 z-10 bg-black" style={{ height: barBottom }} />
 
         {/* ── CONTENT ── */}
-        <div className="absolute inset-0 flex flex-col justify-center px-8 sm:px-14 md:px-20 lg:px-28">
-
-          {/* Eyebrow */}
+        <motion.div
+          className="absolute inset-0 flex flex-col justify-center px-8 sm:px-14 md:px-20 lg:px-28"
+          style={{ opacity: exitOpacity }}
+        >
           <motion.p
             className="font-display text-[9px] tracking-[0.6em] text-bronze/60 uppercase sm:text-[10px]"
-            style={{ y: eyebrowY, opacity: eyebrowOpacity }}
+            style={{ opacity: eyebrowOp, y: eyebrowY }}
           >
             FromSoftware · 2022 · Featured Remembrance
           </motion.p>
 
-          {/* Title */}
           <motion.h2
             className="mt-3 font-display uppercase leading-none"
             style={{
               fontSize: 'clamp(3rem, 9vw, 7.5rem)',
-              letterSpacing: '0.07em',
+              letterSpacing: titleTracking,
               color: '#C9A96E',
-              textShadow: '0 2px 60px rgba(0,0,0,0.8), 0 0 80px rgba(201,169,110,0.2)',
+              textShadow: '0 2px 60px rgba(0,0,0,0.9), 0 0 100px rgba(201,169,110,0.3)',
+              opacity: titleOp,
               y: titleY,
-              opacity: titleOpacity,
             }}
           >
             Elden Ring
           </motion.h2>
 
-          {/* Subtitle */}
           <motion.p
             className="mt-3 font-display text-xs tracking-[0.35em] text-amber/75 uppercase sm:text-sm"
-            style={{ y: titleY, opacity: subtitleOpacity }}
+            style={{ opacity: subtitleOp, y: titleY }}
           >
             Game of the Year · Metacritic 96
           </motion.p>
 
-          {/* Divider */}
           <motion.div
             className="my-6 h-px w-16 bg-gold/35"
-            style={{ y: bodyY, opacity: dividerOpacity }}
+            style={{ opacity: dividerOp, y: bodyY }}
           />
 
-          {/* Lore */}
           <motion.p
             className="max-w-xs font-body text-sm italic leading-relaxed text-bronze/80 sm:max-w-sm sm:text-base md:text-lg"
-            style={{ y: bodyY, opacity: loreOpacity }}
+            style={{ opacity: loreOp, y: bodyY }}
           >
             A shattered ring. A shattered world. Three hundred hours wandered
             between their pieces. The Elden Ring was mended — every fragment
             accounted for.
           </motion.p>
 
-          {/* Stats */}
           <motion.div
             className="mt-7 flex gap-7 sm:gap-10"
-            style={{ y: bodyY, opacity: statsOpacity }}
+            style={{ opacity: statsOp, y: bodyY }}
           >
             <div className="flex flex-col gap-1">
               <span
                 className="font-display text-2xl leading-none sm:text-3xl md:text-4xl"
-                style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.25)' }}
+                style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
               >
                 <AnimatedNumber motionValue={hoursCount} />h
               </span>
@@ -163,7 +199,7 @@ export default function EldenRingCinematic() {
             <div className="flex flex-col gap-1">
               <span
                 className="font-display text-2xl leading-none sm:text-3xl md:text-4xl"
-                style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.25)' }}
+                style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
               >
                 <AnimatedNumber motionValue={achievementCount} />/42
               </span>
@@ -172,7 +208,7 @@ export default function EldenRingCinematic() {
             <div className="flex flex-col gap-1">
               <span
                 className="font-display text-2xl leading-none sm:text-3xl md:text-4xl"
-                style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.25)' }}
+                style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
               >
                 <AnimatedNumber motionValue={metacriticCount} />
               </span>
@@ -180,10 +216,9 @@ export default function EldenRingCinematic() {
             </div>
           </motion.div>
 
-          {/* Badge */}
           <motion.div
             className="mt-7 inline-flex items-center gap-2.5 self-start border border-amber/30 px-3 py-1.5 sm:px-4 sm:py-2"
-            style={{ y: bodyY, opacity: badgeOpacity }}
+            style={{ opacity: badgeOp, y: bodyY }}
           >
             <span className="text-amber/70 text-[10px]">✦</span>
             <span className="font-display text-[9px] tracking-[0.45em] text-amber/75 uppercase sm:text-[10px]">
@@ -191,8 +226,7 @@ export default function EldenRingCinematic() {
             </span>
             <span className="text-amber/70 text-[10px]">✦</span>
           </motion.div>
-
-        </div>
+        </motion.div>
 
         {/* ── SCROLL HINT ── */}
         <motion.div

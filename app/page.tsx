@@ -31,7 +31,7 @@ export default function Home() {
         ═══════════════════════════════════════════════════ */}
         <section
           className="relative flex min-h-screen flex-col items-center justify-center px-8 text-center"
-          style={{ background: "radial-gradient(ellipse at 50% 50%, #1C1409 0%, #0D0A07 70%)" }}
+          style={{ background: "radial-gradient(ellipse at 50% 40%, #221608 0%, #0D0A07 65%)" }}
         >
           <Embers />
           <FadeIn delay={0}>
@@ -100,33 +100,7 @@ export default function Home() {
           <DescendButton />
         </section>
 
-        {/* ── SECTION DIVIDER ── */}
-        <FadeIn>
-          <div className="flex items-center gap-6 px-16 py-12">
-            <div className="h-px flex-1 bg-gold/25" />
-            <div className="flex items-center gap-3">
-              <div className="h-px w-8 bg-gold/50" />
-              <span className="font-display text-sm text-gold/70">✦</span>
-              <div className="h-px w-8 bg-gold/50" />
-            </div>
-            <div className="h-px flex-1 bg-gold/25" />
-          </div>
-        </FadeIn>
-
         <HollowedOrigins />
-
-        {/* ── SECTION DIVIDER ── */}
-        <FadeIn>
-          <div className="flex items-center gap-6 px-16 py-12">
-            <div className="h-px flex-1 bg-gold/25" />
-            <div className="flex items-center gap-3">
-              <div className="h-px w-8 bg-gold/50" />
-              <span className="font-display text-sm text-gold/70">✦</span>
-              <div className="h-px w-8 bg-gold/50" />
-            </div>
-            <div className="h-px flex-1 bg-gold/25" />
-          </div>
-        </FadeIn>
 
         {/* ═══════════════════════════════════════════════════
             REMEMBRANCES
@@ -171,7 +145,7 @@ export default function Home() {
         <section
           id="scholars"
           className="px-8 py-24"
-          style={{ background: 'radial-gradient(ellipse at 50% 30%, #1C1409 0%, #0D0A07 70%)' }}
+          style={{ background: 'radial-gradient(ellipse at 50% 20%, #1C1409 0%, #0D0A07 60%)' }}
         >
           <div className="mx-auto max-w-4xl">
 

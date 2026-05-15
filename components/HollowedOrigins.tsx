@@ -9,7 +9,7 @@ export default function HollowedOrigins() {
     <section
       id="origins"
       className="px-8 py-24"
-      style={{ background: 'radial-gradient(ellipse at 50% 0%, #1C1409 0%, #0D0A07 75%)' }}
+      style={{ background: 'radial-gradient(ellipse at 50% 0%, #211507 0%, #0D0A07 65%)' }}
     >
       <div className="mx-auto max-w-5xl">
 
@@ -30,8 +30,10 @@ export default function HollowedOrigins() {
         <FadeIn>
           <div className="relative w-full mb-1">
             {/* Corner tick marks — same technique as the quote carousel */}
-            <div className="absolute top-0 left-0   z-10 w-6 h-6 border-t-2 border-l-2 border-gold/50" />
-            <div className="absolute top-0 right-0  z-10 w-6 h-6 border-t-2 border-r-2 border-gold/50" />
+            <div className="absolute top-0 left-0   z-10 w-8 h-8 border-t border-l border-gold/60" />
+            <div className="absolute top-0 right-0  z-10 w-8 h-8 border-t border-r border-gold/60" />
+            <div className="absolute bottom-0 left-0  z-10 w-8 h-8 border-b border-l border-gold/60" />
+            <div className="absolute bottom-0 right-0 z-10 w-8 h-8 border-b border-r border-gold/60" />
             <Image
               src="/steam.png"
               alt="Steam profile"
@@ -40,7 +42,8 @@ export default function HollowedOrigins() {
               className="w-full object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-ash" />
+            <div className="absolute inset-0 bg-gradient-to-b from-ash/40 via-transparent to-ash" />
+            <div className="absolute inset-0 bg-gradient-to-r from-ash/30 to-transparent" />
           </div>
         </FadeIn>
 

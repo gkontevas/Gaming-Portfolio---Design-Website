@@ -3,19 +3,13 @@
 import { useRef } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
-// useInView still used for health bar
 import FadeIn from './FadeIn'
 import { bosses, type Boss } from '@/data/bosses'
 
-
 function BossPanel({ boss, index }: { boss: Boss; index: number }) {
   const ref = useRef<HTMLElement>(null)
+  const isInView = useInView(ref, { once: true, margin: '-12% 0px' })
 
-  // isInView drives both the letter stagger and the health bar fill.
-  // margin: '-15% 0px' means the panel must be 15% into the viewport before triggering.
-  const isInView = useInView(ref, { once: true, margin: '-15% 0px' })
-
-  // Parallax: image drifts ±80px as the panel scrolls through the viewport
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
@@ -24,10 +18,16 @@ function BossPanel({ boss, index }: { boss: Boss; index: number }) {
 
   const isLeft = index % 2 === 0
 
+  const reveal = (delay: number) => ({
+    initial: { opacity: 0, y: 16 },
+    animate: isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 },
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number,number,number,number], delay },
+  })
+
   return (
     <section ref={ref} className="relative h-screen overflow-hidden">
 
-      {/* ── BACKGROUND IMAGE or dark fallback ── */}
+      {/* ── BACKGROUND IMAGE ── */}
       {boss.image ? (
         <motion.div className="absolute inset-0 scale-125" style={{ y: imageY }}>
           <Image
@@ -39,7 +39,7 @@ function BossPanel({ boss, index }: { boss: Boss; index: number }) {
             className="object-cover"
             style={{
               objectPosition: boss.objectPosition ?? 'center',
-              filter: 'contrast(1.08) brightness(0.95)',
+              filter: 'contrast(1.12) brightness(0.9) saturate(1.1)',
             }}
             sizes="(max-width: 768px) 200vw, 100vw"
           />
@@ -52,80 +52,79 @@ function BossPanel({ boss, index }: { boss: Boss; index: number }) {
       )}
 
       {/* ── GRADIENT OVERLAYS ── */}
-      <div className="absolute inset-0 bg-gradient-to-t from-ash via-ash/70 to-ash/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ash via-ash/60 to-transparent" />
       <div className={`absolute inset-0 ${
         isLeft
-          ? 'bg-gradient-to-r from-ash/85 via-ash/30 to-transparent'
-          : 'bg-gradient-to-l from-ash/85 via-ash/30 to-transparent'
+          ? 'bg-gradient-to-r from-ash/90 via-ash/40 to-transparent'
+          : 'bg-gradient-to-l from-ash/90 via-ash/40 to-transparent'
       }`} />
+      {/* Top darkening */}
+      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-ash/60 to-transparent" />
+      {/* Vignette */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(ellipse at center, transparent 40%, rgba(13,10,7,0.55) 100%)'
+      }} />
 
-      {/* ── GHOST INDEX NUMBER ── */}
-      <div className={`absolute top-6 select-none md:top-12 ${
-        isLeft ? 'right-6 md:right-12' : 'left-6 md:left-12'
-      }`}>
+      {/* ── GHOST INDEX ── */}
+      <div className={`absolute top-6 select-none md:top-12 ${isLeft ? 'right-6 md:right-12' : 'left-6 md:left-12'}`}>
         <span className="font-display text-[96px] leading-none text-gold/[0.06]">
           {String(index + 1).padStart(2, '0')}
         </span>
       </div>
 
-      {/* ── CONTENT ──
-          Always left on mobile.
-          Alternates left/right on sm+ screens.
-      ── */}
-      <div className={`absolute bottom-0 max-w-2xl p-8 md:p-16 left-0 ${
-        !isLeft ? 'sm:left-auto sm:right-0 sm:text-right' : ''
-      }`}>
+      {/* ── CONTENT ── */}
+      <div className={`absolute bottom-0 max-w-2xl p-8 md:p-16 left-0 ${!isLeft ? 'sm:left-auto sm:right-0 sm:text-right' : ''}`}>
 
-        {/* Game label */}
-        <FadeIn delay={0.05}>
-          <p className="mb-4 font-display text-[10px] tracking-[0.45em] text-bronze uppercase">
-            {boss.game}
-          </p>
-        </FadeIn>
+        <motion.p
+          className="mb-4 font-display text-[10px] tracking-[0.5em] text-bronze/70 uppercase"
+          {...reveal(0.05)}
+        >
+          {boss.game}
+        </motion.p>
 
-        {/* Boss name */}
-        <FadeIn delay={0.15}>
-          <h2 className="font-display text-5xl leading-none text-gold sm:text-7xl md:text-8xl">
-            {boss.name}
-          </h2>
-        </FadeIn>
+        <motion.h2
+          className="font-display text-5xl leading-none text-gold sm:text-7xl md:text-8xl"
+          style={{ textShadow: '0 4px 40px rgba(0,0,0,0.8)' }}
+          {...reveal(0.15)}
+        >
+          {boss.name}
+        </motion.h2>
 
-        {/* ── BOSS HEALTH BAR ──
-            Styled after Souls boss HP bars:
-            - Thin container with subtle border
-            - Amber→gold gradient fill animates from 0→100% on enter
-            - "HP" label in tiny display font
-            - Aligns right on right-side panels
-        ── */}
-        <div className={`mt-2 mb-1 flex items-center gap-3 ${!isLeft ? 'sm:justify-end' : ''}`}>
-<div className="relative h-[5px] w-44 md:w-64 overflow-hidden border border-gold/20 bg-white/[0.03]">
+        {/* HP bar */}
+        <motion.div
+          className={`mt-4 mb-1 flex items-center gap-3 ${!isLeft ? 'sm:justify-end' : ''}`}
+          {...reveal(0.25)}
+        >
+          <span className="font-display text-[8px] tracking-[0.4em] text-bronze/40 uppercase">HP</span>
+          <div className="relative h-[6px] w-44 md:w-64 overflow-hidden border border-gold/15 bg-white/[0.03]">
             <motion.div
-              className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber via-gold to-gold/50"
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber via-gold to-gold/40"
               initial={{ width: '0%' }}
               animate={isInView ? { width: '100%' } : { width: '0%' }}
-              transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
+              transition={{ duration: 2.0, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
             />
           </div>
-        </div>
+        </motion.div>
 
-        {/* Boss subtitle */}
-        <FadeIn delay={0.3}>
-          <p className="mt-3 font-display text-[10px] tracking-[0.3em] text-amber uppercase">
-            {boss.title}
-          </p>
-        </FadeIn>
+        <motion.p
+          className="mt-3 font-display text-[10px] tracking-[0.35em] text-amber uppercase"
+          {...reveal(0.3)}
+        >
+          {boss.title}
+        </motion.p>
 
-        {/* Divider */}
-        <FadeIn delay={0.35}>
-          <div className={`my-6 h-px w-16 bg-gold/40 ${!isLeft ? 'sm:ml-auto' : ''}`} />
-        </FadeIn>
+        <motion.div
+          className={`my-6 h-px w-16 bg-gold/35 ${!isLeft ? 'sm:ml-auto' : ''}`}
+          {...reveal(0.38)}
+        />
 
-        {/* Personal quote */}
-        <FadeIn delay={0.45}>
-          <p className="font-body text-base italic leading-relaxed text-bronze/80 md:text-lg">
-            {boss.quote}
-          </p>
-        </FadeIn>
+        <motion.p
+          className="font-body text-base italic leading-relaxed text-bronze/80 md:text-lg"
+          style={{ textShadow: '0 2px 20px rgba(0,0,0,0.6)' }}
+          {...reveal(0.46)}
+        >
+          {boss.quote}
+        </motion.p>
 
       </div>
     </section>
@@ -137,31 +136,32 @@ export default function BossShowcase() {
     <div id="worthy">
 
       {/* ── SECTION INTRO ── */}
-      <section className="relative px-8 py-28 text-center">
-        <div className="absolute inset-0 bg-gradient-to-b from-cinder via-ash to-ash pointer-events-none" />
+      <section className="relative px-8 py-28 text-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-ash via-cinder to-ash pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at 50% 60%, rgba(201,169,110,0.04) 0%, transparent 70%)'
+        }} />
         <div className="relative">
           <FadeIn>
-            <p className="mb-3 font-display text-xs tracking-[0.5em] text-bronze uppercase">
+            <p className="mb-3 font-display text-xs tracking-[0.5em] text-bronze/70 uppercase">
               Combat Log
             </p>
             <h2 className="font-display text-2xl tracking-[0.2em] text-gold uppercase">
               The Worthy
             </h2>
             <div className="mx-auto my-6 h-px w-16 bg-gold/40" />
-            <p className="mx-auto max-w-md font-body text-sm leading-relaxed text-bronze">
+            <p className="mx-auto max-w-md font-body text-sm leading-relaxed text-bronze/80">
               Not all battles are remembered equally. These are the ones that left something permanent — in the muscle, in the mind, in the way you think about challenge itself.
             </p>
           </FadeIn>
         </div>
       </section>
 
-      {/* ── BOSS PANELS ── */}
       {bosses.map((boss, index) => (
         <BossPanel key={boss.id} boss={boss} index={index} />
       ))}
 
-      {/* ── CLOSING BREATH ── */}
-      <div className="h-px bg-gold/15" />
+      <div className="h-px bg-gold/10" />
     </div>
   )
 }
