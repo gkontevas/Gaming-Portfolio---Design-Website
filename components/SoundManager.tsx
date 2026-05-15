@@ -34,7 +34,7 @@ declare global {
   }
 }
 
-const AUDIO_SRC  = '/ambient.mp3'
+const AUDIO_SRC  = '/ds.mp3'
 const CROSSFADE  = 2.5   // seconds of overlap between loop end and next loop start
 const AMBIENT_VOL = 0.15 // ambient volume relative to master
 

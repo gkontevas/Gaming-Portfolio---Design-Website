@@ -23,7 +23,7 @@ export default function EldenRingCinematic() {
   const videoY = useTransform(scrollYProgress, [0, 1], ['0%', '12%'])
   const videoFilter = useTransform(
     scrollYProgress,
-    [0, 0.05, 0.85, 1.0],
+    [0, 0.05, 0.7, 1.0],
     [
       'brightness(0.55) contrast(1.15) saturate(1.2)',
       'brightness(0.72) contrast(1.12) saturate(1.15)',
@@ -33,7 +33,7 @@ export default function EldenRingCinematic() {
   )
 
   // All content exits on scroll
-  const exitOpacity = useTransform(scrollYProgress, [0.78, 0.94], [1, 0])
+  const exitOpacity = useTransform(scrollYProgress, [0.3, 1.0], [1, 0])
 
   // Scroll hint
   const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0])
@@ -102,8 +102,8 @@ export default function EldenRingCinematic() {
   }, [inView])
 
   return (
-    <div ref={outerRef} className="relative h-[110vh]">
-      <div className="sticky top-0 h-screen overflow-hidden">
+    <div ref={outerRef} className="relative" style={{ height: '120dvh' }}>
+      <div className="sticky top-0 overflow-hidden" style={{ height: '100dvh' }}>
 
         {/* ── VIDEO ── */}
         <motion.div className="absolute inset-0" style={{ y: videoY }}>
@@ -184,12 +184,12 @@ export default function EldenRingCinematic() {
           </motion.p>
 
           <motion.div
-            className="mt-7 flex gap-7 sm:gap-10"
+            className="mt-7 flex flex-wrap gap-x-7 gap-y-4 sm:gap-x-10 sm:flex-nowrap"
             style={{ opacity: statsOp, y: bodyY }}
           >
             <div className="flex flex-col gap-1">
               <span
-                className="font-display text-2xl leading-none sm:text-3xl md:text-4xl"
+                className="font-display text-xl leading-none sm:text-3xl md:text-4xl"
                 style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
               >
                 <AnimatedNumber motionValue={hoursCount} />h
@@ -198,7 +198,7 @@ export default function EldenRingCinematic() {
             </div>
             <div className="flex flex-col gap-1">
               <span
-                className="font-display text-2xl leading-none sm:text-3xl md:text-4xl"
+                className="font-display text-xl leading-none sm:text-3xl md:text-4xl"
                 style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
               >
                 <AnimatedNumber motionValue={achievementCount} />/42
@@ -207,7 +207,7 @@ export default function EldenRingCinematic() {
             </div>
             <div className="flex flex-col gap-1">
               <span
-                className="font-display text-2xl leading-none sm:text-3xl md:text-4xl"
+                className="font-display text-xl leading-none sm:text-3xl md:text-4xl"
                 style={{ color: '#C9A96E', textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(201,169,110,0.3)' }}
               >
                 <AnimatedNumber motionValue={metacriticCount} />

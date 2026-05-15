@@ -136,7 +136,7 @@ export default function BossShowcase() {
     <div id="worthy">
 
       {/* ── SECTION INTRO ── */}
-      <section className="relative px-8 py-28 text-center overflow-hidden">
+      <section className="relative px-8 py-36 text-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-ash via-cinder to-ash pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none" style={{
           background: 'radial-gradient(ellipse at 50% 60%, rgba(201,169,110,0.04) 0%, transparent 70%)'

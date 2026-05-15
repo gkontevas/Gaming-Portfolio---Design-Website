@@ -8,7 +8,7 @@ export default function HollowedOrigins() {
   return (
     <section
       id="origins"
-      className="px-8 py-24"
+      className="px-8 py-36"
       style={{ background: 'radial-gradient(ellipse at 50% 0%, #211507 0%, #0D0A07 65%)' }}
     >
       <div className="mx-auto max-w-5xl">
@@ -73,7 +73,7 @@ export default function HollowedOrigins() {
             </p>
             {/* "Domain Expansion" — treated as a standalone quote, not a data row */}
             <p className="mt-6 font-body text-xl italic text-bronze/80 sm:text-2xl">
-              Domain Expansion: Panic Roll.
+              No build left unfinished. No questline left unseen.
             </p>
           </div>
         </FadeIn>
@@ -84,19 +84,18 @@ export default function HollowedOrigins() {
           {/* LEFT */}
           <FadeIn direction="left" className="flex flex-col gap-8">
             <p className="font-body text-lg leading-relaxed text-bronze">
-              No incantation ever whispered. No phantom summoned from beyond the fog.
-              Only the blade and the muscle memory of ten thousand deaths.
-              Swift where others are heavy. Patient where others are reckless.
-              Dexterity is not a build — it is a philosophy.
+              Every build tried. Every school of magic studied. Every weapon class mastered.
+              Always alone — no phantoms, no summons, no shortcuts.
+              The world deserves to be conquered on your own terms.
             </p>
 
             <div className="flex flex-col gap-5 border-t border-gold/15 pt-6">
               {[
-                { label: "Weapons",   value: "Katanas · Twin Blades · Curved Swords · Spears", accent: false },
-                { label: "Playstyle", value: "Parry & punish — or aggressive dodge on recovery", accent: false },
-                { label: "Summons",   value: "None. Ever.",                                      accent: true  },
-                { label: "Magic",     value: "Not once.",                                        accent: true  },
-                { label: "Covenant",  value: "None — allegiance to the self",                   accent: false },
+                { label: "Weapons",   value: "All classes — blade, staff, bow, fist, hex", accent: false },
+                { label: "Playstyle", value: "Adapts to the encounter. Always.",           accent: false },
+                { label: "Summons",   value: "None. Solo, always.",                       accent: true  },
+                { label: "Magic",     value: "Sorcery · Incantations · Pyromancy",        accent: false },
+                { label: "Covenant",  value: "All of them. Every questline. No NPC left.", accent: true  },
               ].map((row) => (
                 <div key={row.label} className="flex justify-between gap-4 font-display text-xs tracking-widest">
                   <span className="text-bronze/60 uppercase shrink-0">{row.label}</span>
@@ -111,12 +110,12 @@ export default function HollowedOrigins() {
           {/* RIGHT — animated stat bars */}
           <FadeIn direction="right">
             <AnimatedStatBars stats={[
+              { name: "Vigor",        value: 99, color: "bg-amber"  },
               { name: "Dexterity",    value: 99, color: "bg-amber"  },
-              { name: "Endurance",    value: 86, color: "bg-gold"   },
-              { name: "Vigor",        value: 70, color: "bg-gold"   },
-              { name: "Strength",     value: 18, color: "bg-bronze" },
-              { name: "Intelligence", value:  6, color: "bg-ember"  },
-              { name: "Faith",        value:  6, color: "bg-ember"  },
+              { name: "Strength",     value: 99, color: "bg-gold"   },
+              { name: "Intelligence", value: 99, color: "bg-gold"   },
+              { name: "Faith",        value: 99, color: "bg-gold"   },
+              { name: "Endurance",    value: 99, color: "bg-bronze" },
             ]} />
           </FadeIn>
 

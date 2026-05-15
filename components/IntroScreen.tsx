@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const containerVariants = {
@@ -107,28 +107,54 @@ function Divider({ delay = 0 }: { delay?: number }) {
 }
 
 export default function IntroScreen() {
-  const [visible, setVisible] = useState(true)
+  // step 0 = disclaimer, step 1 = intro, step 2 = dismissed
+  const [step, setStep] = useState<0 | 1 | 2>(0)
+  const [mounted, setMounted] = useState(false)
+  const skippedRef = useRef(false)
 
   useEffect(() => {
-    // Remove the server-side cover — IntroScreen has taken over
+    // Check sessionStorage BEFORE revealing anything, then remove the cover
+    if (sessionStorage.getItem('intro-seen')) {
+      skippedRef.current = true
+      setStep(2)
+    } else {
+      document.body.style.overflow = 'hidden'
+    }
+    // Remove cover only after we know the step — React batches these into one render
     document.getElementById('intro-cover')?.remove()
-
-    // Hide scrollbar while intro is covering the page
-    document.body.style.overflow = 'hidden'
-
-    function dismiss() {
-      document.body.style.overflow = ''
-      setVisible(false)
-    }
-
-    document.addEventListener('keydown', dismiss)
-    document.addEventListener('click',   dismiss)
-    return () => {
-      document.body.style.overflow = ''
-      document.removeEventListener('keydown', dismiss)
-      document.removeEventListener('click',   dismiss)
-    }
+    setMounted(true)
+    return () => { document.body.style.overflow = '' }
   }, [])
+
+  useEffect(() => {
+    if (step === 0) {
+      function advance() { setStep(1) }
+      document.addEventListener('keydown', advance)
+      document.addEventListener('click',   advance)
+      return () => {
+        document.removeEventListener('keydown', advance)
+        document.removeEventListener('click',   advance)
+      }
+    }
+    if (step === 1) {
+      function dismiss() {
+        document.body.style.overflow = ''
+        sessionStorage.setItem('intro-seen', '1')
+        setStep(2)
+      }
+      document.addEventListener('keydown', dismiss)
+      document.addEventListener('click',   dismiss)
+      return () => {
+        document.removeEventListener('keydown', dismiss)
+        document.removeEventListener('click',   dismiss)
+      }
+    }
+  }, [step])
+
+  // Don't render anything until we've checked sessionStorage — prevents the disclaimer flash
+  if (!mounted || step === 2) return null
+
+  const visible = step < 2
 
   return (
     <AnimatePresence>
@@ -137,107 +163,176 @@ export default function IntroScreen() {
           className="fixed inset-0 z-[10000] flex flex-col items-center justify-center overflow-hidden bg-ash"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.5, ease: 'easeInOut' }}
+          transition={{ duration: skippedRef.current ? 0 : 1.5, ease: 'easeInOut' }}
         >
-
-          {/* ── VIDEO BACKGROUND ──────────────────────────────
-              autoPlay + muted required by browsers for autoplay to work.
-              playsInline prevents iOS from opening the system player.
-              object-cover fills the screen at any aspect ratio.
-          */}
-          <video
-            src="/fire-bg.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-
-          {/* Single overlay: full ash at edges, lighter in the centre */}
-          <div className="absolute inset-0" style={{
-            background: 'linear-gradient(to bottom, #0D0A07 0%, rgba(13,10,7,0.70) 22%, rgba(13,10,7,0.70) 78%, #0D0A07 100%)'
-          }} />
-
-          {/* ── ALL CONTENT — relative so it paints above the absolute overlays ── */}
-          <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
-
-            {/* ── CORNER ORNAMENTS ────────────────────────────── */}
-            <CornerOrnament style={{ top: 24, left: 24 }} />
-            <CornerOrnament style={{ top: 24, right: 24, transform: 'scaleX(-1)' }} />
-            <CornerOrnament style={{ bottom: 24, left: 24, transform: 'scaleY(-1)' }} />
-            <CornerOrnament style={{ bottom: 24, right: 24, transform: 'scale(-1,-1)' }} />
-
-            {/* ── TOP LABEL ───────────────────────────────────── */}
-            <FadeUp delay={0.2} className="relative mb-10 text-center">
-              <p className="font-display text-xs tracking-[0.2em] sm:tracking-[0.6em] text-bronze uppercase px-4">
-                A Record of Worlds Consumed
-              </p>
-            </FadeUp>
-
-            {/* ── DIVIDER above title ───────────────────────── */}
-            <Divider delay={0.4} />
-
-            {/* ── TITLE ────────────────────────────────────────
-                Much larger — text-7xl on desktop.
-                Letters stagger in one by one, 60ms apart.
-            */}
-            <h1 className="relative font-display text-center uppercase mt-8 mb-4">
-
+          {/* ── DISCLAIMER STEP ─────────────────────────────── */}
+          <AnimatePresence>
+            {step === 0 && (
               <motion.div
-                className="flex justify-center gap-[0.2em] sm:gap-[0.3em]"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {LETTERS.map((letter, i) => (
-                  <motion.span
-                    key={i}
-                    variants={letterVariants}
-                    className="block text-6xl text-gold sm:text-7xl md:text-8xl lg:text-9xl"
-                  >
-                    {letter}
-                  </motion.span>
-                ))}
-              </motion.div>
-
-              <motion.span
-                className="mt-4 block text-xl tracking-[0.8em] text-bronze"
+                key="disclaimer"
+                className="absolute inset-0 z-10 flex items-center justify-center px-6 sm:px-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 1.7 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
               >
-                of the Unlit
-              </motion.span>
+                <div className="relative z-10 max-w-md w-full text-center">
+                  {/* corner marks */}
+                  <div className="absolute -top-5 -left-5  w-5 h-5 border-t border-l border-gold/40" />
+                  <div className="absolute -top-5 -right-5 w-5 h-5 border-t border-r border-gold/40" />
+                  <div className="absolute -bottom-5 -left-5  w-5 h-5 border-b border-l border-gold/40" />
+                  <div className="absolute -bottom-5 -right-5 w-5 h-5 border-b border-r border-gold/40" />
 
-            </h1>
+                  <motion.p
+                    className="mb-3 font-display text-[10px] tracking-[0.5em] text-bronze/60 uppercase"
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    Before You Enter
+                  </motion.p>
 
-            {/* ── DIVIDER below title ───────────────────────── */}
-            <Divider delay={1.8} />
+                  <motion.h2
+                    className="font-display text-lg sm:text-xl tracking-[0.2em] text-gold uppercase mb-5"
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                  >
+                    Asset Credits
+                  </motion.h2>
 
-            {/* ── YEAR / LORE LINE ─────────────────────────────
-                Sets the fictional date — matches the footer.
-            */}
-            <FadeUp delay={2.0} className="relative mt-6 text-center">
-              <p className="font-display text-xs tracking-[0.5em] text-bronze uppercase">
-                Age of Fire · Year 2026
-              </p>
-            </FadeUp>
+                  <motion.div
+                    className="h-px w-10 bg-gold/30 mx-auto mb-5"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                  />
 
-            {/* ── PRESS ANY KEY ────────────────────────────────  */}
-            <motion.p
-              className="relative mt-10 font-display text-sm tracking-[0.4em] text-gold uppercase"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 2.5 }}
-              style={{ animation: 'blink 1.4s ease-in-out infinite', animationDelay: '2.5s' }}
-            >
-              {/* Show different text depending on device input method */}
-              <span className="sm:hidden">Tap to continue</span>
-              <span className="hidden sm:inline">Press any key to continue</span>
-            </motion.p>
+                  <motion.p
+                    className="font-body text-sm leading-relaxed text-bronze/80 mb-3"
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                  >
+                    Some visual and audio assets featured on this site — including game artwork,
+                    screenshots, and music — belong to their respective creators and publishers.
+                    They are used here solely for personal, non-commercial portfolio purposes.
+                    No ownership or affiliation is claimed.
+                  </motion.p>
 
-          </div>
+                  <motion.p
+                    className="font-body text-sm leading-relaxed text-bronze/60 mb-8"
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                  >
+                    If you have a concern, contact me at{' '}
+                    <span className="text-amber">dimosgkontevas1@gmail.com</span>
+                    {' '}and it will be addressed promptly.
+                  </motion.p>
+
+                  <motion.p
+                    className="font-display text-sm tracking-[0.4em] text-gold uppercase"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.85 }}
+                    style={{ animation: 'blink 1.4s ease-in-out infinite', animationDelay: '0.85s' }}
+                  >
+                    <span className="sm:hidden">Tap to continue</span>
+                    <span className="hidden sm:inline">Click anywhere to continue</span>
+                  </motion.p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ── INTRO STEP ──────────────────────────────────── */}
+          <AnimatePresence>
+            {step === 1 && (
+              <motion.div
+                key="intro"
+                className="absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+              >
+                {/* VIDEO BACKGROUND */}
+                <video
+                  src="/fire-bg.mp4"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+
+                {/* Single overlay: full ash at edges, lighter in the centre */}
+                <div className="absolute inset-0" style={{
+                  background: 'linear-gradient(to bottom, #0D0A07 0%, rgba(13,10,7,0.70) 22%, rgba(13,10,7,0.70) 78%, #0D0A07 100%)'
+                }} />
+
+                {/* ALL CONTENT */}
+                <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
+
+                  <CornerOrnament style={{ top: 24, left: 24 }} />
+                  <CornerOrnament style={{ top: 24, right: 24, transform: 'scaleX(-1)' }} />
+                  <CornerOrnament style={{ bottom: 24, left: 24, transform: 'scaleY(-1)' }} />
+                  <CornerOrnament style={{ bottom: 24, right: 24, transform: 'scale(-1,-1)' }} />
+
+                  <FadeUp delay={0.2} className="relative mb-10 text-center">
+                    <p className="font-display text-xs tracking-[0.2em] sm:tracking-[0.6em] text-bronze uppercase px-4">
+                      A Record of Worlds Consumed
+                    </p>
+                  </FadeUp>
+
+                  <Divider delay={0.4} />
+
+                  <h1 className="relative font-display text-center uppercase mt-8 mb-4">
+                    <motion.div
+                      className="flex justify-center gap-[0.2em] sm:gap-[0.3em]"
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                    >
+                      {LETTERS.map((letter, i) => (
+                        <motion.span
+                          key={i}
+                          variants={letterVariants}
+                          className="block text-6xl text-gold sm:text-7xl md:text-8xl lg:text-9xl"
+                        >
+                          {letter}
+                        </motion.span>
+                      ))}
+                    </motion.div>
+
+                    <motion.span
+                      className="mt-4 block text-xl tracking-[0.8em] text-bronze"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.8, delay: 1.7 }}
+                    >
+                      of the Unlit
+                    </motion.span>
+                  </h1>
+
+                  <Divider delay={1.8} />
+
+                  <FadeUp delay={2.0} className="relative mt-6 text-center">
+                    <p className="font-display text-xs tracking-[0.5em] text-bronze uppercase">
+                      Age of Fire · Year 2026
+                    </p>
+                  </FadeUp>
+
+                  <motion.p
+                    className="relative mt-10 font-display text-sm tracking-[0.4em] text-gold uppercase"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 2.5 }}
+                    style={{ animation: 'blink 1.4s ease-in-out infinite', animationDelay: '2.5s' }}
+                  >
+                    <span className="sm:hidden">Tap to continue</span>
+                    <span className="hidden sm:inline">Press any key to continue</span>
+                  </motion.p>
+
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
         </motion.div>
       )}

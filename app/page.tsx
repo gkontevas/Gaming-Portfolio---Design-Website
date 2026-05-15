@@ -105,7 +105,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════
             REMEMBRANCES
         ═══════════════════════════════════════════════════ */}
-        <section id="remembrances" className="bg-cinder px-8 py-24">
+        <section id="remembrances" className="bg-cinder px-8 py-36">
           <div className="mx-auto max-w-6xl">
 
             <FadeIn className="mb-16 flex flex-col items-center text-center">
@@ -144,7 +144,7 @@ export default function Home() {
         ═══════════════════════════════════════════════════ */}
         <section
           id="scholars"
-          className="px-8 py-24"
+          className="px-8 py-36"
           style={{ background: 'radial-gradient(ellipse at 50% 20%, #1C1409 0%, #0D0A07 60%)' }}
         >
           <div className="mx-auto max-w-4xl">
@@ -173,7 +173,7 @@ export default function Home() {
             FOOTER
         ═══════════════════════════════════════════════════ */}
         <FadeIn>
-          <footer className="border-t border-gold/20 px-8 py-16 text-center">
+          <footer className="border-t border-gold/20 px-8 py-24 text-center">
 
             <div className="flex items-center justify-center gap-6 mb-10">
               <div className="h-px w-16 bg-gold/20" />
