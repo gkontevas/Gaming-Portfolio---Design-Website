@@ -8,7 +8,6 @@ import SoundManager from "@/components/SoundManager";
 import AreaToast from "@/components/AreaToast";
 import KeyboardNav from "@/components/KeyboardNav";
 import MobileWarning from "@/components/MobileWarning";
-import ItemToast from "@/components/ItemToast";
 import "./globals.css";
 
 /*
@@ -76,7 +75,6 @@ export default function RootLayout({
         <AreaToast />
         <KeyboardNav />
         <MobileWarning />
-        <ItemToast />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

@@ -146,7 +146,8 @@ export default function SacredRelics() {
                 fill
                 className="object-cover object-center"
                 sizes="100vw"
-                quality={90}
+                quality={80}
+                loading={relic.rank === 1 ? 'eager' : 'lazy'}
               />
 
               <div className="absolute inset-0 bg-gradient-to-r from-ash via-ash/80 to-ash/10" />

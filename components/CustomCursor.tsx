@@ -4,58 +4,60 @@
   CustomCursor.tsx
   ────────────────
   Two layers:
-  1. <canvas>      → falling ember particles  (pure canvas, zero React re-renders)
-  2. <motion.div>  → cursor ring              (Framer Motion spring)
+  1. <canvas>     → falling ember particles  (pure canvas, zero React re-renders)
+  2. <motion.div> → cursor ring              (Framer Motion spring)
 
-  Ember physics per frame:
-    vy += GRAVITY          → accelerates downward
-    vx *= AIR_RESISTANCE   → slight horizontal drag
-    x  += vx
-    y  += vy
-    life -= decay          → fades and shrinks until dead
-
-  Spawn count scales with mouse speed so fast flicks produce bursts,
-  slow drifts produce a gentle trickle.
+  Cursor states:
+  - default : small ember dot
+  - pointer : dot + expanding ring (hovering links / buttons)
+  - text    : vertical I-beam bar  (hovering inputs / textareas)
+  - pressing: everything scales down on mousedown
 */
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
 
 interface Ember {
-  x:     number
-  y:     number
-  vx:    number   // horizontal velocity (px/frame)
-  vy:    number   // vertical velocity   (px/frame, negative = up)
-  life:  number   // 1 → 0
-  decay: number   // life lost per frame
-  size:  number   // radius at full life
-  r: number; g: number; b: number  // warm ember color components
+  x: number; y: number
+  vx: number; vy: number
+  life: number; decay: number; size: number
+  r: number; g: number; b: number
 }
 
-const MAX_EMBERS    = 180
-const GRAVITY       = 0.055   // added to vy each frame — feels like real rising sparks
-const AIR_RESIST    = 0.985   // multiplied on vx each frame — gentle drag
-const GLOW_BLUR     = 7       // canvas shadowBlur — the ember glow radius
+const MAX_EMBERS = 180
+const GRAVITY    = 0.055
+const AIR_RESIST = 0.985
+const GLOW_BLUR  = 7
+
+type CursorState = 'default' | 'pointer' | 'text'
+
+function detectState(el: Element): CursorState {
+  if (el.closest('input, textarea')) return 'text'
+  if (el.closest('a, button, [role="button"], label, select, [tabindex]')) return 'pointer'
+  return 'default'
+}
 
 export default function CustomCursor() {
-  const canvasRef       = useRef<HTMLCanvasElement>(null)
-  const embersRef       = useRef<Ember[]>([])
-  const rafRef          = useRef<number>(0)
-  const mouseRef        = useRef({ x: -999, y: -999 })
-  const lastSpawnRef    = useRef({ x: -999, y: -999 })  // last position we spawned at
-  const [isHoverDevice, setIsHoverDevice] = useState(false)
+  const canvasRef    = useRef<HTMLCanvasElement>(null)
+  const embersRef    = useRef<Ember[]>([])
+  const rafRef       = useRef<number>(0)
+  const lastSpawnRef = useRef({ x: -999, y: -999 })
 
+  const [isHoverDevice, setIsHoverDevice] = useState(false)
+  const [cursorState, setCursorState]     = useState<CursorState>('default')
+  const [pressing, setPressing]           = useState(false)
+
+  // cursor position — set to exact mouse coords (no offset)
   const cursorX = useMotionValue(-999)
   const cursorY = useMotionValue(-999)
   const springX = useSpring(cursorX, { stiffness: 600, damping: 35 })
   const springY = useSpring(cursorY, { stiffness: 600, damping: 35 })
 
-  // Effect 1: detect hover capability — triggers re-render that mounts the canvas
   useEffect(() => {
     if (!window.matchMedia('(hover: none)').matches) setIsHoverDevice(true)
   }, [])
 
-  // Effect 2: canvas setup — only runs after isHoverDevice=true causes canvas to mount
+  // ── Canvas / ember effect ─────────────────────────────────
   useEffect(() => {
     if (!isHoverDevice) return
 
@@ -69,118 +71,68 @@ export default function CustomCursor() {
     resize()
     window.addEventListener('resize', resize)
 
-    // ── Spawn embers at (x, y) ─────────────────────────────────────────────
     function spawnEmbers(x: number, y: number, speed: number) {
       if (embersRef.current.length >= MAX_EMBERS) return
-
-      // 1 ember for slow movement, up to 3 for fast flicks
       const count = speed < 4 ? 1 : speed < 12 ? 2 : 3
-
       for (let i = 0; i < count; i++) {
-        // Pick a warm color — mix of gold, orange, and deep ember red
         const roll = Math.random()
         let r: number, g: number, b: number
-        if (roll > 0.65) {
-          // Amber / gold
-          r = 225 + Math.random() * 15
-          g = 165 + Math.random() * 30
-          b = 60  + Math.random() * 40
-        } else if (roll > 0.3) {
-          // Orange
-          r = 220 + Math.random() * 20
-          g = 80  + Math.random() * 60
-          b = 10  + Math.random() * 20
-        } else {
-          // Deep ember red
-          r = 160 + Math.random() * 50
-          g = 30  + Math.random() * 40
-          b = 10
-        }
+        if (roll > 0.65)      { r = 225 + Math.random() * 15; g = 165 + Math.random() * 30; b = 60  + Math.random() * 40 }
+        else if (roll > 0.3)  { r = 220 + Math.random() * 20; g = 80  + Math.random() * 60; b = 10  + Math.random() * 20 }
+        else                  { r = 160 + Math.random() * 50; g = 30  + Math.random() * 40; b = 10 }
 
         embersRef.current.push({
-          x,
-          y,
-          // Horizontal: small random drift
+          x, y,
           vx: (Math.random() - 0.5) * 2.2,
-          // Vertical: slight downward drift from spawn — no upward kick
           vy: Math.random() * 0.8,
-          life:  1,
-          decay: 0.016 + Math.random() * 0.014,  // dies in ~40–62 frames (0.65–1s)
-          size:  Math.random() * 2.2 + 0.9,
+          life: 1,
+          decay: 0.016 + Math.random() * 0.014,
+          size: Math.random() * 2.2 + 0.9,
           r, g, b,
         })
       }
     }
 
-    // ── Mouse move — only update position, no spawning here ──────────────
     function onMouseMove(e: MouseEvent) {
-      mouseRef.current = { x: e.clientX, y: e.clientY }
-      cursorX.set(e.clientX - 12)
-      cursorY.set(e.clientY - 12)
+      cursorX.set(e.clientX)
+      cursorY.set(e.clientY)
     }
     window.addEventListener('mousemove', onMouseMove)
 
-    // ── Animation loop ────────────────────────────────────────────────────
     function draw() {
-      // Spawn embers once per frame at the spring position —
-      // this is exactly where the cursor ring is drawn, so particles
-      // are always perfectly in sync with the visible cursor
-      const sx   = springX.get() + 12
-      const sy   = springY.get() + 12
+      const sx   = springX.get()
+      const sy   = springY.get()
       const last = lastSpawnRef.current
-      // Only act once the spring has settled on a real position
       if (sx > -100) {
         const moved = last.x === -999 ? 0 : Math.hypot(sx - last.x, sy - last.y)
         if (moved > 1.5) spawnEmbers(sx, sy, moved)
-        // Always update so next frame has a valid reference point
         lastSpawnRef.current = { x: sx, y: sy }
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      const embers = embersRef.current
-
-      // Set glow once for the whole batch — cheaper than per-particle
       ctx.shadowBlur = GLOW_BLUR
 
-      for (let i = embers.length - 1; i >= 0; i--) {
-        const e = embers[i]
-
-        // ── Physics ──────────────────────────────────────
-        e.vy  += GRAVITY
-        e.vx  *= AIR_RESIST
-        e.x   += e.vx
-        e.y   += e.vy
-        e.life -= e.decay
-
-        if (e.life <= 0) { embers.splice(i, 1); continue }
-
-        // Quadratic fade: fades slowly at first then quickly near end
+      for (let i = embersRef.current.length - 1; i >= 0; i--) {
+        const e = embersRef.current[i]
+        e.vy += GRAVITY; e.vx *= AIR_RESIST; e.x += e.vx; e.y += e.vy; e.life -= e.decay
+        if (e.life <= 0) { embersRef.current.splice(i, 1); continue }
         const alpha  = e.life * e.life
-        const radius = e.size * e.life   // shrinks as it dies
-
-        // ── Draw ─────────────────────────────────────────
+        const radius = e.size * e.life
         ctx.shadowColor = `rgba(${e.r},${e.g},${e.b},${(alpha * 0.7).toFixed(2)})`
         ctx.fillStyle   = `rgba(${e.r},${e.g},${e.b},${alpha.toFixed(2)})`
-
         ctx.beginPath()
         ctx.arc(e.x, e.y, Math.max(0.1, radius), 0, Math.PI * 2)
         ctx.fill()
       }
 
-      // Reset shadow so it doesn't bleed into other canvas operations
       ctx.shadowBlur = 0
-
       rafRef.current = requestAnimationFrame(draw)
     }
     rafRef.current = requestAnimationFrame(draw)
 
     function onVisibilityChange() {
-      if (document.hidden) {
-        cancelAnimationFrame(rafRef.current)
-      } else {
-        rafRef.current = requestAnimationFrame(draw)
-      }
+      if (document.hidden) cancelAnimationFrame(rafRef.current)
+      else rafRef.current = requestAnimationFrame(draw)
     }
     document.addEventListener('visibilitychange', onVisibilityChange)
 
@@ -192,30 +144,94 @@ export default function CustomCursor() {
     }
   }, [isHoverDevice]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Cursor state detection ────────────────────────────────
+  useEffect(() => {
+    if (!isHoverDevice) return
+
+    function onPointerOver(e: PointerEvent) {
+      setCursorState(detectState(e.target as Element))
+    }
+    function onMouseDown() { setPressing(true)  }
+    function onMouseUp()   { setPressing(false) }
+
+    window.addEventListener('pointerover', onPointerOver)
+    window.addEventListener('mousedown',   onMouseDown)
+    window.addEventListener('mouseup',     onMouseUp)
+    return () => {
+      window.removeEventListener('pointerover', onPointerOver)
+      window.removeEventListener('mousedown',   onMouseDown)
+      window.removeEventListener('mouseup',     onMouseUp)
+    }
+  }, [isHoverDevice])
+
   if (!isHoverDevice) return null
+
+  const isPointer = cursorState === 'pointer'
+  const isText    = cursorState === 'text'
 
   return (
     <>
-      {/* Ember trail canvas — full-screen, sits below the cursor ring */}
-      <canvas
-        ref={canvasRef}
-        className="pointer-events-none fixed inset-0 z-[9990]"
-      />
+      <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-[9990]" />
 
-      {/* Cursor — glowing ember point, spring-smoothed */}
+      {/* Cursor — centered exactly on mouse position */}
       <motion.div
-        className="pointer-events-none fixed z-[9999] top-0 left-0 h-6 w-6"
+        className="pointer-events-none fixed z-[9999] top-0 left-0"
         style={{ x: springX, y: springY }}
+        animate={{ scale: pressing ? 0.7 : 1 }}
+        transition={{ duration: 0.12, ease: 'easeOut' }}
       >
-        {/* Outer soft glow */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(220,120,20,0.35) 0%, transparent 70%)' }}
+        {/* Outer ring — pointer state only */}
+        <AnimatePresence>
+          {isPointer && (
+            <motion.div
+              className="absolute rounded-full border"
+              style={{
+                width: 32, height: 32,
+                top: -16, left: -16,
+                borderColor: 'rgba(232,201,122,0.5)',
+                boxShadow: '0 0 8px rgba(220,140,20,0.25)',
+              }}
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1,   opacity: 1 }}
+              exit={{    scale: 0.4, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* I-beam — text state */}
+        <AnimatePresence>
+          {isText && (
+            <motion.div
+              className="absolute"
+              style={{ width: 2, height: 18, top: -9, left: -1, background: 'rgba(201,169,110,0.8)', borderRadius: 1 }}
+              initial={{ scaleY: 0, opacity: 0 }}
+              animate={{ scaleY: 1, opacity: 1 }}
+              exit={{    scaleY: 0, opacity: 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Soft outer glow — centered on cursor point */}
+        <motion.div
+          className="absolute rounded-full"
+          style={{
+            width: 16, height: 16, top: -8, left: -8,
+            background: 'radial-gradient(circle, rgba(220,120,20,0.35) 0%, transparent 70%)',
+          }}
+          animate={{ opacity: isText ? 0 : 1, scale: isPointer ? 1.4 : 1 }}
+          transition={{ duration: 0.15 }}
         />
-        {/* Inner bright core */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[6px] w-[6px] rounded-full bg-amber"
-          style={{ boxShadow: '0 0 6px 2px rgba(232,180,50,0.9), 0 0 14px 4px rgba(200,80,10,0.5)' }}
+        {/* Bright core — centered on cursor point */}
+        <motion.div
+          className="absolute rounded-full bg-amber"
+          style={{
+            width: 6, height: 6, top: -3, left: -3,
+            boxShadow: '0 0 6px 2px rgba(232,180,50,0.9), 0 0 14px 4px rgba(200,80,10,0.5)',
+          }}
+          animate={{ opacity: isText ? 0 : 1, scale: isPointer ? 1.4 : 1 }}
+          transition={{ duration: 0.15 }}
         />
       </motion.div>
     </>

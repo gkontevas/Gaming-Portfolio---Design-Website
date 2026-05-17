@@ -199,14 +199,22 @@ export default function SoundManager() {
   // Temporarily fade ambient out/in without changing persisted mute state
   useEffect(() => {
     window.__pauseAmbient = () => {
-      if (gainRef.current && ctxRef.current && !mutedRef.current) {
-        gainRef.current.gain.linearRampToValueAtTime(0, ctxRef.current.currentTime + 0.6)
-      }
+      const gain = gainRef.current
+      const ctx  = ctxRef.current
+      if (!gain || !ctx || mutedRef.current) return
+      const now = ctx.currentTime
+      gain.gain.cancelScheduledValues(now)
+      gain.gain.setValueAtTime(gain.gain.value, now)
+      gain.gain.linearRampToValueAtTime(0, now + 1.8)
     }
     window.__resumeAmbient = () => {
-      if (gainRef.current && ctxRef.current && !mutedRef.current) {
-        gainRef.current.gain.linearRampToValueAtTime(1, ctxRef.current.currentTime + 1.0)
-      }
+      const gain = gainRef.current
+      const ctx  = ctxRef.current
+      if (!gain || !ctx || mutedRef.current) return
+      const now = ctx.currentTime
+      gain.gain.cancelScheduledValues(now)
+      gain.gain.setValueAtTime(gain.gain.value, now)
+      gain.gain.linearRampToValueAtTime(1, now + 2.5)
     }
   }, [])
 

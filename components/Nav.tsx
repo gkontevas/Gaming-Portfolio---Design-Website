@@ -2,7 +2,6 @@
 
 import { useRef, useState, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
-import type { Transition, TargetAndTransition, VariantLabels } from 'framer-motion'
 
 const ease     = [0.16, 1, 0.3, 1] as [number, number, number, number]
 const sections = ['origins', 'remembrances', 'arsenal', 'worthy', 'scholars']
@@ -14,29 +13,25 @@ const links    = [
   { label: 'Scholars',     href: '#scholars',     key: '5' },
 ]
 
-// ── MagneticLink — desktop only ──────────────────────────
-interface MagneticLinkProps {
+function MagneticLink({
+  href, onClick, active, children,
+}: {
   href: string
   onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void
-  color: string
-  initial: boolean | TargetAndTransition | VariantLabels
-  animate: boolean | TargetAndTransition | VariantLabels
-  transition: Transition
+  active: boolean
   children: React.ReactNode
-}
-
-function MagneticLink({ href, onClick, color, initial, animate, transition, children }: MagneticLinkProps) {
-  const ref    = useRef<HTMLAnchorElement>(null)
-  const x      = useMotionValue(0)
-  const y      = useMotionValue(0)
+}) {
+  const ref     = useRef<HTMLAnchorElement>(null)
+  const x       = useMotionValue(0)
+  const y       = useMotionValue(0)
   const springX = useSpring(x, { stiffness: 150, damping: 12 })
   const springY = useSpring(y, { stiffness: 150, damping: 12 })
 
   function onMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
     if (!ref.current) return
-    const rect    = ref.current.getBoundingClientRect()
-    x.set((e.clientX - (rect.left + rect.width  / 2)) * 0.35)
-    y.set((e.clientY - (rect.top  + rect.height / 2)) * 0.35)
+    const rect = ref.current.getBoundingClientRect()
+    x.set((e.clientX - (rect.left + rect.width  / 2)) * 0.3)
+    y.set((e.clientY - (rect.top  + rect.height / 2)) * 0.3)
   }
 
   return (
@@ -44,31 +39,34 @@ function MagneticLink({ href, onClick, color, initial, animate, transition, chil
       ref={ref}
       href={href}
       onClick={onClick}
-      style={{ x: springX, y: springY, color }}
+      style={{ x: springX, y: springY }}
       onMouseMove={onMouseMove}
       onMouseLeave={() => { x.set(0); y.set(0) }}
-      className="font-display text-xs tracking-[0.2em] uppercase transition-colors duration-300"
-      initial={initial}
-      animate={animate}
-      transition={transition}
+      className="group relative font-display text-xs tracking-[0.35em] uppercase transition-colors duration-300"
+      animate={{ color: active ? '#E8C97A' : '#C9A96E' }}
+      whileHover={{ color: '#E8C97A' }}
     >
       {children}
+      {/* Active underline */}
+      {active && (
+        <motion.span
+          layoutId="nav-underline"
+          className="absolute -bottom-1 left-0 right-0 h-px bg-amber/50"
+          transition={{ duration: 0.3, ease }}
+        />
+      )}
     </motion.a>
   )
 }
 
-// ── Nav ───────────────────────────────────────────────────
 export default function Nav() {
   const [active, setActive]     = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [muted, setMuted]       = useState(false)
 
-  // Sync initial mute state from localStorage + listen for changes from SoundManager
   useEffect(() => {
     setMuted(localStorage.getItem('muted') === 'true')
-    function onMuteChange(e: Event) {
-      setMuted((e as CustomEvent<boolean>).detail)
-    }
+    function onMuteChange(e: Event) { setMuted((e as CustomEvent<boolean>).detail) }
     window.addEventListener('mutechange', onMuteChange)
     return () => window.removeEventListener('mutechange', onMuteChange)
   }, [])
@@ -87,7 +85,6 @@ export default function Nav() {
     return () => observers.forEach((o) => o?.disconnect())
   }, [])
 
-  // Close mobile menu on resize to desktop
   useEffect(() => {
     function onResize() { if (window.innerWidth >= 768) setMenuOpen(false) }
     window.addEventListener('resize', onResize)
@@ -103,111 +100,66 @@ export default function Nav() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center items-start pt-5 px-4 sm:px-6">
-        <div className="flex items-center gap-2 w-full md:w-auto">
-        <motion.nav
-          className="flex w-full items-center justify-between rounded-full border border-gold/25 bg-cinder/90 px-5 py-3 sm:px-8 md:w-auto md:justify-start backdrop-blur-md"
-          style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(201,169,110,0.06)' }}
-          initial={{ opacity: 0, y: -32 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease, delay: 0.1 }}
+
+      <motion.header
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 pt-5 pb-5 backdrop-blur-md"
+        style={{ background: 'linear-gradient(to bottom, rgba(13,10,7,0.55) 0%, rgba(13,10,7,0.15) 100%)' }}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease, delay: 0.2 }}
+      >
+        {/* Logo */}
+        <button
+          onClick={() => window.__lenis?.scrollTo(0)}
+          className="flex flex-col gap-0.5 text-left"
         >
-          {/* Logo */}
-          <motion.button
-            onClick={() => window.__lenis?.scrollTo(0)}
-            className="flex flex-col items-center gap-1"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease, delay: 0.5 }}
-          >
-            <span className="font-display text-xs tracking-[0.4em] text-gold uppercase leading-none sm:text-sm">
-              Vestiges
-            </span>
-            <span className="font-display text-[7px] tracking-[0.5em] text-gold/70 uppercase leading-none sm:text-[8px] sm:tracking-[0.6em]">
-              of the Unlit
-            </span>
-          </motion.button>
+          <span className="font-display text-sm tracking-[0.45em] text-gold uppercase leading-none">
+            Vestiges
+          </span>
+          <span className="font-display text-[9px] tracking-[0.4em] text-gold/60 uppercase leading-none">
+            of the Unlit
+          </span>
+        </button>
 
-          {/* Desktop spacer + links */}
-          <div className="mx-12 hidden md:block lg:mx-20" />
-          <div className="hidden md:flex items-center gap-6 lg:gap-8">
-            {links.map((link, i) => (
-              <MagneticLink
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNav(e, link.href)}
-                color={active === link.href.slice(1) ? '#E8C97A' : '#C9A96E'}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, ease, delay: 0.6 + i * 0.08 }}
-              >
-                {link.label}
-                <sup className="ml-0.5 text-[7px] opacity-30">{link.key}</sup>
-              </MagneticLink>
-            ))}
-
-            {/* Divider */}
-            <motion.div
-              className="h-3 w-px bg-gold/20"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, ease, delay: 1.1 }}
-            />
-
-            {/* Dev portfolio link */}
-            <motion.a
-              href="https://dimosgkontevas.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-display text-xs tracking-[0.2em] uppercase transition-colors duration-300"
-              style={{ color: '#7A6545' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#C9A96E')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#7A6545')}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, ease, delay: 1.15 }}
+        {/* Desktop links — centered */}
+        <nav className="hidden md:flex items-center gap-8">
+          {links.map((link) => (
+            <MagneticLink
+              key={link.href}
+              href={link.href}
+              onClick={(e) => handleNav(e, link.href)}
+              active={active === link.href.slice(1)}
             >
-              Dev Portfolio
-            </motion.a>
+              {link.label}
+            </MagneticLink>
+          ))}
+        </nav>
 
-          </div>
+        {/* Right — dev link + hamburger */}
+        <div className="flex items-center gap-5">
+          <a
+            href="https://dimosgkontevas.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:block font-display text-xs tracking-[0.35em] uppercase text-bronze/60 transition-colors duration-300 hover:text-gold"
+          >
+            Dev Portfolio
+          </a>
 
           {/* Hamburger — mobile only */}
-          <motion.button
-            className="ml-5 flex md:hidden flex-col items-center justify-center gap-[5px] w-6"
+          <button
+            className="flex md:hidden flex-col items-center justify-center gap-[5px] w-6"
             onClick={() => setMenuOpen(o => !o)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease, delay: 0.5 }}
             aria-label="Toggle menu"
           >
-            {/*
-              Three lines that animate into an X when open.
-              Each line is a motion.div that rotates/translates on state change.
-            */}
-            <motion.span
-              className="block h-px w-full bg-gold/70"
-              animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.3 }}
-            />
-            <motion.span
-              className="block h-px w-full bg-gold/70"
-              animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-              transition={{ duration: 0.2 }}
-            />
-            <motion.span
-              className="block h-px w-full bg-gold/70"
-              animate={menuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.3 }}
-            />
-          </motion.button>
-        </motion.nav>
-
-
+            <motion.span className="block h-px w-full bg-gold/60" animate={menuOpen ? { rotate: 45, y: 6 }  : { rotate: 0, y: 0 }}  transition={{ duration: 0.3 }} />
+            <motion.span className="block h-px w-full bg-gold/60" animate={menuOpen ? { opacity: 0 }        : { opacity: 1 }}         transition={{ duration: 0.2 }} />
+            <motion.span className="block h-px w-full bg-gold/60" animate={menuOpen ? { rotate: -45, y: -6 }: { rotate: 0, y: 0 }}  transition={{ duration: 0.3 }} />
+          </button>
         </div>
-      </header>
+      </motion.header>
 
-      {/* Mute button — fixed bottom-left */}
+      {/* Mute button — bottom left, always visible */}
       <motion.button
         onClick={() => window.__toggleMute?.()}
         title={muted ? 'Unmute' : 'Mute'}
@@ -221,11 +173,7 @@ export default function Nav() {
         </span>
       </motion.button>
 
-      {/* ── MOBILE MENU OVERLAY ───────────────────────────────
-          Full-screen dark overlay with large centered nav links.
-          AnimatePresence handles the mount/unmount fade.
-          z-[49] so it sits below the nav bar (z-50) but above everything else.
-      */}
+      {/* Mobile menu overlay */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -235,7 +183,6 @@ export default function Nav() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {/* Decorative divider at top */}
             <div className="absolute top-28 flex items-center gap-4 w-48">
               <div className="flex-1 h-px bg-gold/20" />
               <span className="text-gold/30 text-xs">✦</span>
@@ -259,14 +206,12 @@ export default function Nav() {
               ))}
             </nav>
 
-            {/* Decorative divider at bottom */}
             <div className="absolute bottom-28 flex flex-col items-center gap-5">
               <div className="flex items-center gap-4 w-48">
                 <div className="flex-1 h-px bg-gold/20" />
                 <span className="text-gold/30 text-xs">✦</span>
                 <div className="flex-1 h-px bg-gold/20" />
               </div>
-
               <a
                 href="https://dimosgkontevas.dev"
                 target="_blank"

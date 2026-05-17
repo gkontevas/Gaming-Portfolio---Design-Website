@@ -4,7 +4,8 @@ import { useRef, useState, useCallback } from 'react'
 import Image from "next/image";
 import { AnimatePresence, motion, useInView } from 'framer-motion'
 import { Game } from "@/types/game";
-import GameModal from './GameModal';
+import dynamic from 'next/dynamic'
+const GameModal = dynamic(() => import('./GameModal'))
 
 type Props = {
   game: Game;

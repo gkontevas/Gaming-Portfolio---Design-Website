@@ -30,7 +30,7 @@ function BossPanel({ boss, index }: { boss: Boss; index: number }) {
 
       {/* ── BACKGROUND IMAGE ── */}
       {boss.image ? (
-        <motion.div className="absolute inset-0 scale-125" style={{ y: imageY }}>
+        <motion.div className="absolute inset-0 scale-125" style={{ y: imageY, willChange: 'transform' }}>
           <Image
             src={boss.image}
             alt={boss.name}

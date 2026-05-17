@@ -14,6 +14,7 @@ type Props = {
 export default function RevealText({ children, delay = 0, className }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const [ready, setReady] = useState(false)
+  const [done, setDone] = useState(false)
   const isInView = useInView(ref, { once: true, margin: '-40px' })
 
   useEffect(() => {
@@ -26,12 +27,13 @@ export default function RevealText({ children, delay = 0, className }: Props) {
   const shouldAnimate = ready && isInView
 
   return (
-    <div ref={ref} style={{ overflow: 'hidden', display: 'inline-block' }}>
+    <div ref={ref} style={{ overflow: done ? 'visible' : 'hidden', display: 'inline-block' }}>
       <motion.div
         className={className}
         initial={{ y: '105%' }}
         animate={shouldAnimate ? { y: '0%' } : undefined}
         transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1], delay }}
+        onAnimationComplete={() => setDone(true)}
       >
         {children}
       </motion.div>

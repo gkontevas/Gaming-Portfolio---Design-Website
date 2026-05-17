@@ -11,8 +11,9 @@ import HollowedOrigins from "@/components/HollowedOrigins";
 import HollowTrigger from "@/components/HollowTrigger";
 import HeroTitle from "@/components/HeroTitle";
 import LoreWord from "@/components/LoreWord";
-import SacredRelics from "@/components/SacredRelics";
 const EldenRingCinematic = dynamic(() => import("@/components/EldenRingCinematic"))
+const SacredRelics        = dynamic(() => import("@/components/SacredRelics"))
+const EmberTrail          = dynamic(() => import("@/components/EmberTrail"))
 
 // Loaded only when near the viewport — reduces initial JS bundle
 const BossShowcase   = dynamic(() => import("@/components/BossShowcase"))
@@ -126,6 +127,8 @@ export default function Home() {
         </section>
 
         <EldenRingCinematic />
+
+        <EmberTrail />
 
         <SacredRelics />
 
