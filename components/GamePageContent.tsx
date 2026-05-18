@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
@@ -66,6 +66,7 @@ function Divider() {
 
 export default function GamePageContent({ game }: { game: Game }) {
   const heroRef = useRef<HTMLElement>(null)
+  const [imgLoaded, setImgLoaded] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -98,17 +99,25 @@ export default function GamePageContent({ game }: { game: Game }) {
 
         {/* Background */}
         {game.image ? (
-          <motion.div className="absolute inset-0 scale-[1.15]" style={{ y: imageY, willChange: 'transform' }}>
-            <Image
-              src={game.image}
-              alt={game.title}
-              fill
-              priority
-              quality={85}
-              sizes="100vw"
-              className="object-cover object-center"
-            />
-          </motion.div>
+          <>
+            {/* Shimmer shown until image loads */}
+            {!imgLoaded && (
+              <div className="absolute inset-0 animate-pulse"
+                style={{ background: 'linear-gradient(135deg, #1C1409 0%, #0D0A07 50%, #1C1409 100%)' }} />
+            )}
+            <motion.div className="absolute inset-0 scale-[1.15]" style={{ y: imageY, willChange: 'transform' }}>
+              <Image
+                src={game.image}
+                alt={game.title}
+                fill
+                priority
+                quality={85}
+                sizes="100vw"
+                className="object-cover object-center"
+                onLoad={() => setImgLoaded(true)}
+              />
+            </motion.div>
+          </>
         ) : (
           <div className="absolute inset-0"
             style={{ background: 'radial-gradient(ellipse at 30% 50%, #1C1409 0%, #0D0A07 80%)' }} />
@@ -122,7 +131,7 @@ export default function GamePageContent({ game }: { game: Game }) {
 
         {/* Back */}
         <Link href="/"
-          className="absolute top-7 left-7 z-10 flex items-center gap-3 font-display text-xs tracking-[0.4em] text-bronze/75 uppercase hover:text-gold transition-colors duration-300 group border border-gold/20 hover:border-gold/45 bg-ash/60 backdrop-blur-sm px-4 py-2.5">
+          className="absolute top-5 left-5 sm:top-7 sm:left-7 z-10 flex items-center gap-3 font-display text-xs tracking-[0.4em] text-bronze/75 uppercase hover:text-gold transition-colors duration-300 group border border-gold/20 hover:border-gold/45 bg-ash/60 backdrop-blur-sm px-4 py-3 min-h-[44px]">
           <span className="group-hover:-translate-x-1 transition-transform duration-300 text-sm">←</span>
           <span>Archive</span>
         </Link>
@@ -134,7 +143,7 @@ export default function GamePageContent({ game }: { game: Game }) {
         </span>
 
         {/* Hero text */}
-        <motion.div className="absolute bottom-0 left-0 p-8 md:p-16 max-w-4xl"
+        <motion.div className="absolute bottom-0 left-0 p-5 sm:p-8 md:p-16 max-w-4xl"
           style={{ y: contentY, opacity: heroOpacity }}>
 
           <motion.p
@@ -163,7 +172,7 @@ export default function GamePageContent({ game }: { game: Game }) {
           </motion.p>
 
           <motion.div
-            className="flex flex-wrap gap-8 border-t border-gold/20 pt-5"
+            className="flex flex-wrap gap-5 sm:gap-8 border-t border-gold/20 pt-5"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.45 }}>
             {game.hours      !== undefined && <HeroStat label="Hours Bound">{game.hours}+</HeroStat>}
@@ -183,7 +192,7 @@ export default function GamePageContent({ game }: { game: Game }) {
           CONTENT
       ═══════════════════════════════════════════════════ */}
       <div className="bg-ash">
-        <div className="mx-auto max-w-3xl px-8 py-24">
+        <div className="mx-auto max-w-3xl px-5 sm:px-8 py-16 sm:py-24">
 
           {/* Lore */}
           <FadeUp>
@@ -289,19 +298,19 @@ export default function GamePageContent({ game }: { game: Game }) {
                 <p className="mb-7 font-display text-[9px] tracking-[0.55em] text-bronze/45 uppercase">
                   Time Investment
                 </p>
-                <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+                <div className={`grid gap-5 sm:gap-8 ${game.hours !== undefined ? 'grid-cols-3' : 'grid-cols-2'}`}>
                   <div className="flex flex-col gap-1.5">
-                    <span className="font-display text-[9px] tracking-[0.45em] text-bronze/40 uppercase">Main Story</span>
-                    <span className="font-display text-4xl text-gold leading-none">~{game.playtime.main}h</span>
+                    <span className="font-display text-[9px] tracking-[0.3em] sm:tracking-[0.45em] text-bronze/40 uppercase">Main Story</span>
+                    <span className="font-display text-2xl sm:text-4xl text-gold leading-none">~{game.playtime.main}h</span>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <span className="font-display text-[9px] tracking-[0.45em] text-bronze/40 uppercase">Completionist</span>
-                    <span className="font-display text-4xl text-gold leading-none">~{game.playtime.complete}h</span>
+                    <span className="font-display text-[9px] tracking-[0.3em] sm:tracking-[0.45em] text-bronze/40 uppercase">Completionist</span>
+                    <span className="font-display text-2xl sm:text-4xl text-gold leading-none">~{game.playtime.complete}h</span>
                   </div>
                   {game.hours !== undefined && (
                     <div className="flex flex-col gap-1.5">
-                      <span className="font-display text-[9px] tracking-[0.45em] text-amber/60 uppercase">My Playtime</span>
-                      <span className="font-display text-4xl text-amber leading-none">{game.hours}h+</span>
+                      <span className="font-display text-[9px] tracking-[0.3em] sm:tracking-[0.45em] text-amber/60 uppercase">My Playtime</span>
+                      <span className="font-display text-2xl sm:text-4xl text-amber leading-none">{game.hours}h+</span>
                     </div>
                   )}
                 </div>
@@ -364,7 +373,7 @@ export default function GamePageContent({ game }: { game: Game }) {
             <div className="flex items-center justify-between gap-4">
               {prev ? (
                 <Link href={`/games/${prev.id}`}
-                  className="group flex flex-col gap-1.5 max-w-[45%]">
+                  className="group flex flex-col gap-1.5 max-w-[45%] py-2">
                   <span className="font-display text-[9px] tracking-[0.45em] text-bronze/35 uppercase">← Previous</span>
                   <span className="font-display text-sm tracking-wide text-gold/70 group-hover:text-gold transition-colors duration-300 leading-snug">
                     {prev.title}
@@ -374,7 +383,7 @@ export default function GamePageContent({ game }: { game: Game }) {
 
               {next ? (
                 <Link href={`/games/${next.id}`}
-                  className="group flex flex-col items-end gap-1.5 max-w-[45%] text-right">
+                  className="group flex flex-col items-end gap-1.5 max-w-[45%] text-right py-2">
                   <span className="font-display text-[9px] tracking-[0.45em] text-bronze/35 uppercase">Next →</span>
                   <span className="font-display text-sm tracking-wide text-gold/70 group-hover:text-gold transition-colors duration-300 leading-snug">
                     {next.title}
