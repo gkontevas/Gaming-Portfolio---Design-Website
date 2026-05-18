@@ -104,6 +104,10 @@ export default function IntroScreen() {
 
   // ── INIT ────────────────────────────────────────────────────────────────────
   useLayoutEffect(() => {
+    // Prevent the browser from ever restoring a cached scroll position
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
+    window.scrollTo(0, 0)
+
     const onGamePage = window.location.pathname.startsWith('/games/')
     if (sessionStorage.getItem('intro-seen') || onGamePage) {
       skippedRef.current = true
@@ -166,20 +170,26 @@ export default function IntroScreen() {
   useEffect(() => {
     if (step !== 1) return
     function dismiss() {
+      // Lock Lenis before removing overflow so it can't drift to a
+      // restored native scroll position during the transition.
+      window.__lenisLocked = true
       document.body.style.overflow = ''
       sessionStorage.setItem('intro-seen', '1')
       window.dispatchEvent(new Event('intro-dismissed'))
-      // Reset immediately (sync restoration).
+      // Hard-reset every scroll surface immediately
       window.scrollTo(0, 0)
-      window.__lenis?.scrollTo(0, { immediate: true })
-      // Browser may restore scroll async after overflow is lifted.
-      // Reset again in double-rAF, then remove the overlay — so the page
-      // is never revealed at the wrong position.
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
       requestAnimationFrame(() => {
+        window.scrollTo(0, 0)
         requestAnimationFrame(() => {
           window.scrollTo(0, 0)
           window.__lenis?.scrollTo(0, { immediate: true })
           setStep(2)
+          // Unlock Lenis one frame after the overlay is removed
+          requestAnimationFrame(() => {
+            window.__lenisLocked = false
+          })
         })
       })
     }
