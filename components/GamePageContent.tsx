@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { games } from '@/data/games'
 import type { Game } from '@/types/game'
 
@@ -62,8 +62,11 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 // ── MAIN ───────────────────────────────────────────────────────────────────────
 
-export default function GamePageContent({ game }: { game: Game }) {
-  const heroRef = useRef<HTMLElement>(null)
+export default function GamePageContent({ game, screenshots = [] }: { game: Game; screenshots?: string[] }) {
+  const heroRef       = useRef<HTMLElement>(null)
+  const imgWrapRef    = useRef<HTMLDivElement>(null)
+  const contentRef    = useRef<HTMLDivElement>(null)
+  const scrollIndRef  = useRef<HTMLDivElement>(null)
   const [imgLoaded, setImgLoaded] = useState(false)
 
   useEffect(() => {
@@ -71,14 +74,31 @@ export default function GamePageContent({ game }: { game: Game }) {
     window.__lenis?.scrollTo(0, { immediate: true })
   }, [])
 
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start start', 'end start'],
-  })
-
-  const imageY      = useTransform(scrollYProgress, [0, 1], ['0%', '22%'])
-  const contentY    = useTransform(scrollYProgress, [0, 1], ['0%', '-12%'])
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0])
+  // Direct DOM mutation in the same RAF tick as Lenis — no MotionValue
+  // subscriber overhead, no Framer Motion diffing, pure GPU transform.
+  useEffect(() => {
+    const lenis = window.__lenis
+    if (!lenis) return
+    function onScroll(l: { scroll: number }) {
+      const heroH = heroRef.current?.offsetHeight ?? window.innerHeight
+      const p     = Math.min(Math.max(l.scroll / heroH, 0), 1)
+      const fade  = Math.max(0, 1 - p / 0.75)
+      // Image: tiny fixed shift (30px max). No scaling — serves image at full
+      // native quality. Gap at top is invisible because hero fades out first.
+      if (imgWrapRef.current) {
+        imgWrapRef.current.style.transform = `translateY(${p * 30}px)`
+      }
+      if (contentRef.current) {
+        contentRef.current.style.transform = `translateY(${p * -60}px)`
+        contentRef.current.style.opacity   = `${fade}`
+      }
+      if (scrollIndRef.current) {
+        scrollIndRef.current.style.opacity = `${fade}`
+      }
+    }
+    lenis.on('scroll', onScroll)
+    return () => lenis.off('scroll', onScroll)
+  }, [])
 
   const idx  = games.findIndex(g => g.id === game.id)
   const prev = games[idx - 1] ?? null
@@ -102,7 +122,7 @@ export default function GamePageContent({ game }: { game: Game }) {
               <div className="absolute inset-0 animate-pulse"
                 style={{ background: 'linear-gradient(135deg, #1C1409 0%, #0D0A07 50%, #1C1409 100%)' }} />
             )}
-            <motion.div className="absolute inset-0 scale-[1.15]" style={{ y: imageY, willChange: 'transform' }}>
+            <div ref={imgWrapRef} className="absolute inset-0" style={{ willChange: 'transform' }}>
               <Image
                 src={game.image}
                 alt={game.title}
@@ -113,7 +133,7 @@ export default function GamePageContent({ game }: { game: Game }) {
                 className="object-cover object-center"
                 onLoad={() => setImgLoaded(true)}
               />
-            </motion.div>
+            </div>
           </>
         ) : (
           <div className="absolute inset-0"
@@ -145,9 +165,10 @@ export default function GamePageContent({ game }: { game: Game }) {
         </span>
 
         {/* Scroll indicator */}
-        <motion.div
+        <div
+          ref={scrollIndRef}
           className="absolute bottom-10 right-7 sm:right-12 z-10 hidden sm:flex flex-col items-center gap-3"
-          style={{ opacity: heroOpacity }}
+          style={{ willChange: 'opacity' }}
         >
           <motion.div
             className="flex flex-col items-center gap-3"
@@ -163,11 +184,10 @@ export default function GamePageContent({ game }: { game: Game }) {
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             />
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Hero text */}
-        <motion.div className="absolute bottom-0 left-0 p-5 sm:p-8 md:p-16 max-w-4xl"
-          style={{ y: contentY, opacity: heroOpacity }}>
+        <div ref={contentRef} className="absolute bottom-0 left-0 p-5 sm:p-8 md:p-16 max-w-4xl" style={{ willChange: 'transform' }}>
 
           <motion.p
             className="mb-3 font-display text-[10px] tracking-[0.55em] text-bronze/60 uppercase"
@@ -208,7 +228,7 @@ export default function GamePageContent({ game }: { game: Game }) {
             )}
           </motion.div>
 
-        </motion.div>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════
@@ -366,6 +386,34 @@ export default function GamePageContent({ game }: { game: Game }) {
                   </div>
                 )}
 
+              </div>
+            </FadeUp>
+          )}
+
+          {/* Screenshots */}
+          {screenshots.length > 0 && (
+            <FadeUp className="mt-20">
+              <SectionLabel>Gallery</SectionLabel>
+              <div
+                className="flex gap-3 overflow-x-auto pb-4 -mx-5 sm:-mx-8 px-5 sm:px-8"
+                style={{ scrollbarWidth: 'none' }}
+              >
+                {screenshots.map((src, i) => (
+                  <div
+                    key={i}
+                    className="relative shrink-0 overflow-hidden"
+                    style={{ width: 'clamp(260px, 55vw, 420px)', aspectRatio: '16/9' }}
+                  >
+                    <Image
+                      src={src}
+                      alt={`${game.title} screenshot ${i + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 55vw, 420px"
+                      className="object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                    <div className="absolute inset-0 border border-gold/10 pointer-events-none" />
+                  </div>
+                ))}
               </div>
             </FadeUp>
           )}

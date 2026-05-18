@@ -169,14 +169,17 @@ export default function IntroScreen() {
       document.body.style.overflow = ''
       sessionStorage.setItem('intro-seen', '1')
       window.dispatchEvent(new Event('intro-dismissed'))
-      setStep(2)
-      // Browser restores its scroll position after overflow:hidden is lifted,
-      // which happens asynchronously after paint. Double-rAF ensures we reset
-      // AFTER that restoration, not before it.
+      // Reset immediately (sync restoration).
+      window.scrollTo(0, 0)
+      window.__lenis?.scrollTo(0, { immediate: true })
+      // Browser may restore scroll async after overflow is lifted.
+      // Reset again in double-rAF, then remove the overlay — so the page
+      // is never revealed at the wrong position.
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           window.scrollTo(0, 0)
           window.__lenis?.scrollTo(0, { immediate: true })
+          setStep(2)
         })
       })
     }

@@ -1,6 +1,7 @@
 import { games } from '@/data/games'
 import { notFound } from 'next/navigation'
 import GamePageContent from '@/components/GamePageContent'
+import { getGameScreenshots } from '@/lib/rawg'
 import type { Metadata } from 'next'
 
 export function generateStaticParams() {
@@ -29,5 +30,6 @@ export default async function GamePage({
   const { id } = await params
   const game = games.find(g => g.id === id)
   if (!game) notFound()
-  return <GamePageContent game={game} />
+  const screenshots = await getGameScreenshots(game.title)
+  return <GamePageContent game={game} screenshots={screenshots} />
 }

@@ -23,18 +23,18 @@ const PATH: Entry[] = [
     inscription: 'The first hunt. Nothing before prepared me for Yharnam. Nothing after was ever quite the same.',
   },
   {
-    title: 'Sekiro',
-    note: 'Shadows Die Twice',
-    perfect: true,
-    image: '/sekiro.jpg',
-    inscription: 'Death was not failure — death was the lesson. Every hour spent dying was an hour spent learning.',
-  },
-  {
     title: 'Elden Ring',
     note: '+ Shadow of the Erdtree',
     perfect: true,
     image: '/elden ring.jpg',
     inscription: 'Three hundred hours. Every grace lit, every secret unearthed. The world that defined everything after it.',
+  },
+  {
+    title: 'Sekiro',
+    note: 'Shadows Die Twice',
+    perfect: true,
+    image: '/sekiro.jpg',
+    inscription: 'Death was not failure — death was the lesson. Every hour spent dying was an hour spent learning.',
   },
   {
     title: 'Dark Souls: Remastered',
