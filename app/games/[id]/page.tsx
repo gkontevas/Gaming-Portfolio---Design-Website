@@ -1,11 +1,11 @@
-import { games } from '@/data/games'
+import { perfectGames } from '@/data/games'
 import { notFound } from 'next/navigation'
 import GamePageContent from '@/components/GamePageContent'
 import { getGameScreenshots } from '@/lib/rawg'
 import type { Metadata } from 'next'
 
 export function generateStaticParams() {
-  return games.map(g => ({ id: g.id }))
+  return perfectGames.map(g => ({ id: g.id }))
 }
 
 export async function generateMetadata({
@@ -28,7 +28,7 @@ export default async function GamePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const game = games.find(g => g.id === id)
+  const game = perfectGames.find(g => g.id === id)
   if (!game) notFound()
   const screenshots = await getGameScreenshots(game.title)
   return <GamePageContent game={game} screenshots={screenshots} />

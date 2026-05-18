@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
-import { games } from '@/data/games'
+import { perfectGames } from '@/data/games'
 import type { Game } from '@/types/game'
 
 const GENRE_LABELS: Record<Game['genre'], string> = {
@@ -100,9 +100,9 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
     return () => lenis.off('scroll', onScroll)
   }, [])
 
-  const idx  = games.findIndex(g => g.id === game.id)
-  const prev = games[idx - 1] ?? null
-  const next = games[idx + 1] ?? null
+  const idx  = perfectGames.findIndex(g => g.id === game.id)
+  const prev = perfectGames[idx - 1] ?? null
+  const next = perfectGames[idx + 1] ?? null
 
   const achievementPct = game.achievements
     ? Math.round((game.achievements.earned / game.achievements.total) * 100)
@@ -393,7 +393,10 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
           {/* Screenshots */}
           {screenshots.length > 0 && (
             <FadeUp className="mt-20">
-              <SectionLabel>Gallery</SectionLabel>
+              <div className="flex items-baseline justify-between mb-6">
+                <p className="font-display text-[10px] tracking-[0.55em] text-bronze/45 uppercase">Gallery</p>
+                <p className="font-display text-[9px] tracking-[0.4em] text-bronze/35 uppercase">Swipe to explore</p>
+              </div>
               <div
                 className="flex gap-3 overflow-x-auto pb-4 -mx-5 sm:-mx-8 px-5 sm:px-8"
                 style={{ scrollbarWidth: 'none' }}
