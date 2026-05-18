@@ -19,6 +19,7 @@ const EmberTrail          = dynamic(() => import("@/components/EmberTrail"))
 const BossShowcase      = dynamic(() => import("@/components/BossShowcase"))
 const QuoteCarousel     = dynamic(() => import("@/components/QuoteCarousel"))
 const BonfireMessages   = dynamic(() => import("@/components/BonfireMessages"))
+const LedgerSection     = dynamic(() => import("@/components/LedgerSection"))
 import { games, perfectGames, currentlyPlaying } from "@/data/games";
 
 const totalHours = Math.floor(games.reduce((sum, g) => sum + (g.hours ?? 0), 0));
@@ -137,6 +138,11 @@ export default function Home() {
             THE WORTHY — boss showcase
         ═══════════════════════════════════════════════════ */}
         <BossShowcase />
+
+        {/* ═══════════════════════════════════════════════════
+            LEDGER OF THE UNLIT — stats
+        ═══════════════════════════════════════════════════ */}
+        <LedgerSection />
 
         {/* ═══════════════════════════════════════════════════
             WORDS OF SCHOLARS

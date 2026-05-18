@@ -18,7 +18,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       // Lower = slower/heavier, higher = snappier. 0.08–0.12 is the sweet spot.
       lerp: 0.08,
       smoothWheel: true,
-      smoothTouch: false,  // native touch scroll feels better on mobile
+      syncTouch: false,
       overscroll: false,
     })
 

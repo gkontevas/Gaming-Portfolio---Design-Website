@@ -77,7 +77,7 @@ export default function EldenRingCinematic() {
       {/* ── VIDEO ── */}
       <video
         src="/elden-ring.mp4"
-        autoPlay muted loop playsInline preload="none"
+        autoPlay muted loop playsInline preload="metadata"
         className="absolute inset-0 h-full w-full object-cover"
         style={{ filter: 'brightness(0.72) contrast(1.12) saturate(1.15)' }}
       />

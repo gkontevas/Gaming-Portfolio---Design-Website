@@ -84,10 +84,12 @@ export default function GameModal({ game, onClose }: Props) {
     window.__lenisLocked = true
     document.body.style.overflow = 'hidden'
     window.dispatchEvent(new CustomEvent('scrolllock', { detail: true }))
+    window.__pauseAmbient?.()
     return () => {
       window.__lenisLocked = false
       document.body.style.overflow = ''
       window.dispatchEvent(new CustomEvent('scrolllock', { detail: false }))
+      window.__resumeAmbient?.()
       // Snap Lenis's internal target to actual position — prevents post-close scroll jump
       window.__lenis?.scrollTo(window.scrollY, { immediate: true })
     }

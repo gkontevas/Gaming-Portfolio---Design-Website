@@ -272,7 +272,7 @@ export default function IntroScreen() {
                 className="absolute inset-0"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
 
-                <video src="/fire-bg.mp4" autoPlay muted loop playsInline preload="none"
+                <video src="/fire-bg.mp4" autoPlay muted loop playsInline preload="metadata"
                   className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute inset-0" style={{
                   background: 'linear-gradient(to bottom, #0D0A07 0%, rgba(13,10,7,0.70) 22%, rgba(13,10,7,0.70) 78%, #0D0A07 100%)'
