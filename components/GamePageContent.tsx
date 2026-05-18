@@ -54,25 +54,9 @@ function FadeUp({ children, delay = 0, className = '' }: {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 mb-7">
-      <span className="shrink-0 text-gold/35 text-[9px]">◈</span>
-      <span className="font-display text-[10px] tracking-[0.5em] text-bronze/60 uppercase">{children}</span>
-      <div className="flex-1 h-px bg-gold/10" />
-    </div>
-  )
-}
-
-function Divider() {
-  return (
-    <div className="my-14 flex items-center gap-4">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gold/15" />
-      <div className="flex items-center gap-1.5">
-        <span className="text-gold/15 text-[6px]">◆</span>
-        <span className="text-gold/30 text-xs">✦</span>
-        <span className="text-gold/15 text-[6px]">◆</span>
-      </div>
-      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gold/15" />
-    </div>
+    <p className="mb-6 font-display text-[10px] tracking-[0.55em] text-bronze/45 uppercase">
+      {children}
+    </p>
   )
 }
 
@@ -231,56 +215,36 @@ export default function GamePageContent({ game }: { game: Game }) {
           CONTENT
       ═══════════════════════════════════════════════════ */}
       <div className="bg-ash">
-        <div className="mx-auto max-w-3xl px-5 sm:px-8 py-16 sm:py-24">
+        <div className="mx-auto max-w-3xl px-5 sm:px-8 py-20 sm:py-28">
 
-          {/* Ornamental content header */}
-          <FadeUp className="mb-14">
-            <div className="flex flex-col items-center gap-3">
-              <div className="flex items-center gap-4 w-full">
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gold/20" />
-                <div className="flex items-center gap-2.5">
-                  <span className="text-gold/20 text-[8px]">◆</span>
-                  <span className="font-display text-[9px] tracking-[0.9em] text-gold/40 uppercase">
-                    {String(idx + 1).padStart(2, '0')}
-                  </span>
-                  <span className="text-gold/20 text-[8px]">◆</span>
-                </div>
-                <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gold/20" />
-              </div>
-              <span className="font-display text-[9px] tracking-[0.6em] text-bronze/35 uppercase">
-                {GENRE_LABELS[game.genre]} · {game.year}
-              </span>
-            </div>
-          </FadeUp>
-
-          {/* Lore */}
+          {/* Lore — centered scripture */}
           <FadeUp>
-            <div className="relative">
+            <div className="relative text-center px-4 sm:px-10 py-8">
               <span
-                className="absolute -top-5 -left-2 font-body text-[5.5rem] sm:text-[7rem] leading-none text-gold/[0.07] select-none pointer-events-none"
-                aria-hidden
-              >❝</span>
-              <blockquote className="border-l-2 border-gold/35 pl-6 sm:pl-8">
-                <p className="font-body text-2xl sm:text-3xl leading-relaxed italic text-bronze/95">
-                  {game.lore}
-                </p>
-              </blockquote>
+                className="absolute top-0 left-2 sm:left-4 font-body text-[6rem] sm:text-[8rem] leading-none text-gold/[0.07] select-none pointer-events-none"
+                aria-hidden>❝</span>
+              <p className="font-body text-2xl sm:text-3xl leading-relaxed italic text-bronze/95 relative z-10">
+                {game.lore}
+              </p>
+              <span
+                className="absolute bottom-0 right-2 sm:right-4 font-body text-[6rem] sm:text-[8rem] leading-none text-gold/[0.07] select-none pointer-events-none"
+                aria-hidden>❞</span>
             </div>
           </FadeUp>
 
           {/* Credits — director + composer */}
           {(game.director || game.composer) && (
             <FadeUp delay={0.08} className="mt-12">
-              <div className="flex flex-wrap gap-10 border-t border-b border-gold/12 py-6">
+              <div className="flex flex-wrap gap-10 border-t border-b border-gold/10 py-6">
                 {game.director && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="font-display text-[10px] tracking-[0.5em] text-bronze/50 uppercase">Directed by</span>
+                    <span className="font-display text-[10px] tracking-[0.5em] text-bronze/45 uppercase">Directed by</span>
                     <span className="font-display text-base tracking-wide text-bronze/90">{game.director}</span>
                   </div>
                 )}
                 {game.composer && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="font-display text-[10px] tracking-[0.5em] text-bronze/50 uppercase">Music by</span>
+                    <span className="font-display text-[10px] tracking-[0.5em] text-bronze/45 uppercase">Music by</span>
                     <span className="font-display text-base tracking-wide text-bronze/90">{game.composer}</span>
                   </div>
                 )}
@@ -290,169 +254,148 @@ export default function GamePageContent({ game }: { game: Game }) {
 
           {/* Description */}
           {game.description && (
-            <>
-              <Divider />
-              <FadeUp delay={0.05}>
-                <p className="font-body text-lg sm:text-xl leading-loose text-bronze/85">
-                  {game.description}
-                </p>
-              </FadeUp>
-            </>
+            <FadeUp delay={0.05} className="mt-20">
+              <p className="font-body text-lg sm:text-xl leading-loose text-bronze/85">
+                {game.description}
+              </p>
+            </FadeUp>
           )}
 
           {/* Legacy */}
           {game.legacy && (
-            <>
-              <Divider />
-              <FadeUp>
-                <SectionLabel>Legacy</SectionLabel>
-                <p className="font-body text-lg sm:text-xl leading-loose text-bronze/88">
-                  {game.legacy}
-                </p>
-              </FadeUp>
-            </>
+            <FadeUp className="mt-20">
+              <SectionLabel>Legacy</SectionLabel>
+              <p className="font-body text-lg sm:text-xl leading-loose text-bronze/88">
+                {game.legacy}
+              </p>
+            </FadeUp>
           )}
 
           {/* Awards */}
           {game.awards && game.awards.length > 0 && (
-            <>
-              <Divider />
-              <FadeUp>
-                <SectionLabel>Accolades</SectionLabel>
-                <div className="flex flex-col gap-3.5">
-                  {game.awards.map((award, i) => (
-                    <FadeUp key={i} delay={i * 0.06}>
-                      <div className="flex items-center gap-4">
-                        <span className="shrink-0 text-amber/65 text-xs">◈</span>
-                        <span className="font-display text-sm sm:text-base tracking-wide text-bronze/85">{award}</span>
-                      </div>
-                    </FadeUp>
-                  ))}
-                </div>
-              </FadeUp>
-            </>
+            <FadeUp className="mt-20">
+              <SectionLabel>Accolades</SectionLabel>
+              <div className="flex flex-col gap-3">
+                {game.awards.map((award, i) => (
+                  <FadeUp key={i} delay={i * 0.05}>
+                    <div className="flex items-center gap-4 pl-4 border-l border-amber/20">
+                      <span className="font-display text-sm sm:text-base tracking-wide text-bronze/85">{award}</span>
+                    </div>
+                  </FadeUp>
+                ))}
+              </div>
+            </FadeUp>
           )}
 
           {/* Features */}
           {game.features && game.features.length > 0 && (
-            <>
-              <Divider />
-              <FadeUp>
-                <SectionLabel>Inscriptions</SectionLabel>
-                <div className="flex flex-col gap-5">
-                  {game.features.map((f, i) => (
-                    <FadeUp key={i} delay={i * 0.07}>
-                      <div className="flex items-start gap-4">
-                        <span className="mt-1.5 shrink-0 text-gold/50 text-xs">✦</span>
-                        <p className="font-body text-base sm:text-lg leading-relaxed text-bronze/85">{f}</p>
-                      </div>
-                    </FadeUp>
-                  ))}
-                </div>
-              </FadeUp>
-            </>
+            <FadeUp className="mt-20">
+              <SectionLabel>Inscriptions</SectionLabel>
+              <div className="flex flex-col gap-5">
+                {game.features.map((f, i) => (
+                  <FadeUp key={i} delay={i * 0.07}>
+                    <div className="flex items-start gap-4">
+                      <span className="mt-1.5 shrink-0 text-gold/50 text-xs">✦</span>
+                      <p className="font-body text-base sm:text-lg leading-relaxed text-bronze/85">{f}</p>
+                    </div>
+                  </FadeUp>
+                ))}
+              </div>
+            </FadeUp>
           )}
 
-          {/* Playtime */}
-          {game.playtime && (
-            <>
-              <Divider />
-              <FadeUp>
-                <SectionLabel>Time Investment</SectionLabel>
-                <div className={`grid gap-5 sm:gap-8 ${game.hours !== undefined ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                  <div className="flex flex-col gap-1.5">
-                    <span className="font-display text-[9px] tracking-[0.3em] sm:tracking-[0.45em] text-bronze/50 uppercase">Main Story</span>
-                    <span className="font-display text-2xl sm:text-4xl text-gold leading-none">~{game.playtime.main}h</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <span className="font-display text-[9px] tracking-[0.3em] sm:tracking-[0.45em] text-bronze/50 uppercase">Completionist</span>
-                    <span className="font-display text-2xl sm:text-4xl text-gold leading-none">~{game.playtime.complete}h</span>
-                  </div>
-                  {game.hours !== undefined && (
-                    <div className="flex flex-col gap-1.5">
-                      <span className="font-display text-[9px] tracking-[0.3em] sm:tracking-[0.45em] text-amber/70 uppercase">My Playtime</span>
-                      <span className="font-display text-2xl sm:text-4xl text-amber leading-none">{game.hours}h+</span>
-                    </div>
-                  )}
-                </div>
-              </FadeUp>
-            </>
-          )}
+          {/* Stats panel — Playtime + Achievements + Platforms */}
+          {(game.playtime || game.achievements || game.platforms) && (
+            <FadeUp className="mt-20">
+              <div className="border border-gold/10 bg-gold/[0.025] p-6 sm:p-10 flex flex-col gap-10">
 
-          {/* Achievements + Platforms */}
-          {(game.achievements || game.platforms) && (
-            <>
-              <Divider />
-              <FadeUp>
-                <div className="flex flex-col gap-10">
-
-                  {game.achievements && (
-                    <div>
-                      <div className="mb-4 flex justify-between font-display text-xs sm:text-sm tracking-widest">
-                        <span className="text-bronze/65 uppercase">Achievements</span>
-                        <span className={game.perfect ? 'text-amber' : 'text-gold'}>
-                          {game.achievements.earned} / {game.achievements.total} · {achievementPct}%
-                        </span>
+                {game.playtime && (
+                  <div>
+                    <SectionLabel>Time Investment</SectionLabel>
+                    <div className={`grid gap-5 sm:gap-8 ${game.hours !== undefined ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="font-display text-[9px] tracking-[0.3em] sm:tracking-[0.45em] text-bronze/50 uppercase">Main Story</span>
+                        <span className="font-display text-2xl sm:text-4xl text-gold leading-none">~{game.playtime.main}h</span>
                       </div>
-                      <div className="relative h-[3px] w-full overflow-hidden"
-                        style={{ background: 'rgba(201,169,110,0.09)' }}>
-                        <motion.div
-                          className={`absolute inset-y-0 left-0 h-full ${game.perfect ? 'bg-amber' : 'bg-gold'}`}
-                          initial={{ width: '0%' }}
-                          whileInView={{ width: `${achievementPct}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 2.0, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-                        />
+                      <div className="flex flex-col gap-1.5">
+                        <span className="font-display text-[9px] tracking-[0.3em] sm:tracking-[0.45em] text-bronze/50 uppercase">Completionist</span>
+                        <span className="font-display text-2xl sm:text-4xl text-gold leading-none">~{game.playtime.complete}h</span>
                       </div>
+                      {game.hours !== undefined && (
+                        <div className="flex flex-col gap-1.5">
+                          <span className="font-display text-[9px] tracking-[0.3em] sm:tracking-[0.45em] text-amber/70 uppercase">My Playtime</span>
+                          <span className="font-display text-2xl sm:text-4xl text-amber leading-none">{game.hours}h+</span>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {game.platforms && (
-                    <div className="flex flex-col gap-3">
-                      <span className="font-display text-[10px] tracking-[0.5em] text-bronze/55 uppercase">
-                        Available On
+                {game.achievements && (
+                  <div>
+                    <div className="mb-4 flex justify-between font-display text-xs sm:text-sm tracking-widest">
+                      <span className="text-bronze/60 uppercase">Achievements</span>
+                      <span className={game.perfect ? 'text-amber' : 'text-gold'}>
+                        {game.achievements.earned} / {game.achievements.total} · {achievementPct}%
                       </span>
-                      <div className="flex flex-wrap gap-2">
-                        {game.platforms.map(p => (
-                          <span key={p}
-                            className="font-display text-xs sm:text-sm tracking-widest text-bronze/88 border border-gold/20 px-3 py-1.5 uppercase">
-                            {p}
-                          </span>
-                        ))}
-                      </div>
                     </div>
-                  )}
+                    <div className="relative h-[3px] w-full overflow-hidden"
+                      style={{ background: 'rgba(201,169,110,0.09)' }}>
+                      <motion.div
+                        className={`absolute inset-y-0 left-0 h-full ${game.perfect ? 'bg-amber' : 'bg-gold'}`}
+                        initial={{ width: '0%' }}
+                        whileInView={{ width: `${achievementPct}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 2.0, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                      />
+                    </div>
+                  </div>
+                )}
 
-                </div>
-              </FadeUp>
-            </>
+                {game.platforms && (
+                  <div className="flex flex-col gap-3">
+                    <span className="font-display text-[10px] tracking-[0.5em] text-bronze/45 uppercase">Available On</span>
+                    <div className="flex flex-wrap gap-2">
+                      {game.platforms.map(p => (
+                        <span key={p}
+                          className="font-display text-xs sm:text-sm tracking-widest text-bronze/85 border border-gold/20 px-3 py-1.5 uppercase">
+                          {p}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            </FadeUp>
           )}
 
           {/* Prev / Next */}
-          <Divider />
-          <FadeUp>
-            <div className="flex items-center justify-between gap-4">
-              {prev ? (
-                <Link href={`/games/${prev.id}`}
-                  className="group flex flex-col gap-2 max-w-[45%] py-2">
-                  <span className="font-display text-[10px] tracking-[0.45em] text-bronze/45 uppercase">← Previous</span>
-                  <span className="font-display text-sm sm:text-base tracking-wide text-gold/75 group-hover:text-gold transition-colors duration-300 leading-snug">
-                    {prev.title}
-                  </span>
-                </Link>
-              ) : <div />}
+          <div className="mt-20 pt-8 border-t border-gold/10">
+            <FadeUp>
+              <div className="flex items-center justify-between gap-4">
+                {prev ? (
+                  <Link href={`/games/${prev.id}`}
+                    className="group flex flex-col gap-2 max-w-[45%] py-2">
+                    <span className="font-display text-[10px] tracking-[0.45em] text-bronze/40 uppercase">← Previous</span>
+                    <span className="font-display text-sm sm:text-base tracking-wide text-gold/75 group-hover:text-gold transition-colors duration-300 leading-snug">
+                      {prev.title}
+                    </span>
+                  </Link>
+                ) : <div />}
 
-              {next ? (
-                <Link href={`/games/${next.id}`}
-                  className="group flex flex-col items-end gap-2 max-w-[45%] text-right py-2">
-                  <span className="font-display text-[10px] tracking-[0.45em] text-bronze/45 uppercase">Next →</span>
-                  <span className="font-display text-sm sm:text-base tracking-wide text-gold/75 group-hover:text-gold transition-colors duration-300 leading-snug">
-                    {next.title}
-                  </span>
-                </Link>
-              ) : <div />}
-            </div>
-          </FadeUp>
+                {next ? (
+                  <Link href={`/games/${next.id}`}
+                    className="group flex flex-col items-end gap-2 max-w-[45%] text-right py-2">
+                    <span className="font-display text-[10px] tracking-[0.45em] text-bronze/40 uppercase">Next →</span>
+                    <span className="font-display text-sm sm:text-base tracking-wide text-gold/75 group-hover:text-gold transition-colors duration-300 leading-snug">
+                      {next.title}
+                    </span>
+                  </Link>
+                ) : <div />}
+              </div>
+            </FadeUp>
+          </div>
 
         </div>
       </div>
