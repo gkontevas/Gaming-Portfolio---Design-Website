@@ -21,10 +21,15 @@ const QuoteCarousel     = dynamic(() => import("@/components/QuoteCarousel"))
 const BonfireMessages   = dynamic(() => import("@/components/BonfireMessages"))
 const LedgerSection     = dynamic(() => import("@/components/LedgerSection"))
 import { games, perfectGames, currentlyPlaying } from "@/data/games";
+import { getMessages, getMessageCount } from "@/app/actions/messages";
 
 const totalHours = Math.floor(games.reduce((sum, g) => sum + (g.hours ?? 0), 0));
 
-export default function Home() {
+export default async function Home() {
+  const [initialMessages, initialCount] = await Promise.all([
+    getMessages('recent', 0).catch(() => []),
+    getMessageCount().catch(() => 0),
+  ]);
   return (
     <>
       <Nav />
@@ -174,7 +179,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════
             BONFIRE MESSAGES
         ═══════════════════════════════════════════════════ */}
-        <BonfireMessages />
+        <BonfireMessages initialMessages={initialMessages} initialCount={initialCount} />
 
         {/* ═══════════════════════════════════════════════════
             FOOTER

@@ -89,6 +89,13 @@ export default function IntroScreen() {
   // Single ref tracks the active timer so cleanup always cancels the right one.
   const timerRef    = useRef<ReturnType<typeof setTimeout> | null>(null)
   const slideRef    = useRef(0)
+  const lastTapRef  = useRef(0)
+
+  function handleDoubleTap() {
+    const now = Date.now()
+    if (now - lastTapRef.current < 400) skipCinematic()
+    lastTapRef.current = now
+  }
 
   // ── INIT ────────────────────────────────────────────────────────────────────
   useLayoutEffect(() => {
@@ -138,6 +145,16 @@ export default function IntroScreen() {
     return () => { if (timerRef.current) clearTimeout(timerRef.current) }
   }, [step])  // intentionally excludes slideIndex / exiting
 
+  // ── SPACE to skip cinematic ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (step !== 0) return
+    function onKey(e: KeyboardEvent) {
+      if (e.code === 'Space') { e.preventDefault(); skipCinematic() }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [step])
+
   // ── VESTIGES: click / key to dismiss ────────────────────────────────────────
   useEffect(() => {
     if (step !== 1) return
@@ -178,6 +195,8 @@ export default function IntroScreen() {
             {step === 0 && (
               <motion.div key="cinematic"
                 className="absolute inset-0 flex flex-col items-center justify-center px-8"
+                style={{ touchAction: 'manipulation' }}
+                onClick={handleDoubleTap}
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}>
 
@@ -253,13 +272,12 @@ export default function IntroScreen() {
                 </div>
 
                 {/* Skip hint — bottom right corner */}
-                <motion.button
-                  onClick={skipCinematic}
-                  className="absolute bottom-8 right-8 font-display text-[9px] tracking-[0.4em] text-bronze/65 uppercase hover:text-gold transition-colors duration-300"
+                <motion.p
+                  className="absolute bottom-8 right-8 font-display text-[9px] tracking-[0.4em] text-bronze/65 uppercase pointer-events-none"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }}>
                   <span className="sm:hidden">Double tap to skip</span>
-                  <span className="hidden sm:inline">Click to skip</span>
-                </motion.button>
+                  <span className="hidden sm:inline">Double click · Space to skip</span>
+                </motion.p>
 
               </motion.div>
             )}

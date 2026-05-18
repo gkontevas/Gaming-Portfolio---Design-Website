@@ -43,11 +43,16 @@ function timeAgo(iso: string) {
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
-export default function BonfireMessages() {
-  const [messages,    setMessages]    = useState<BonfireMessage[]>([])
+type Props = {
+  initialMessages?: BonfireMessage[]
+  initialCount?: number
+}
+
+export default function BonfireMessages({ initialMessages = [], initialCount }: Props) {
+  const [messages,    setMessages]    = useState<BonfireMessage[]>(initialMessages)
   const [sort,        setSort]        = useState<'recent' | 'top'>('recent')
-  const [count,       setCount]       = useState<number | null>(null)
-  const [hasMore,     setHasMore]     = useState(false)
+  const [count,       setCount]       = useState<number | null>(initialCount ?? null)
+  const [hasMore,     setHasMore]     = useState(initialMessages.length === PAGE_SIZE)
   const [loadingMore, setLoadingMore] = useState(false)
   const [prefix,      setPrefix]      = useState(PREFIXES[0])
   const [suffix,      setSuffix]      = useState(SUFFIXES[0])
@@ -56,7 +61,8 @@ export default function BonfireMessages() {
   const [submitting,  setSubmitting]  = useState(false)
   const [newId,       setNewId]       = useState<string | null>(null)
   const [cooldown,    setCooldown]    = useState(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const intervalRef  = useRef<ReturnType<typeof setInterval> | null>(null)
+  const isFirstMount = useRef(true)
 
   const loadFirst = useCallback(async (currentSort: 'recent' | 'top') => {
     const data = await getMessages(currentSort, 0)
@@ -65,14 +71,21 @@ export default function BonfireMessages() {
   }, [])
 
   useEffect(() => {
-    loadFirst(sort)
+    // Skip the immediate fetch on first mount if we have server-pre-fetched data.
+    // Sort change (non-initial) always re-fetches immediately.
+    if (isFirstMount.current && initialMessages.length > 0) {
+      isFirstMount.current = false
+    } else {
+      isFirstMount.current = false
+      loadFirst(sort)
+    }
     intervalRef.current = setInterval(() => loadFirst(sort), 8000)
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [sort, loadFirst])
+  }, [sort, loadFirst]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    getMessageCount().then(setCount)
-  }, [])
+    if (initialCount == null) getMessageCount().then(setCount)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const last = localStorage.getItem(RATE_LIMIT_KEY)
