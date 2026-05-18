@@ -61,10 +61,10 @@ export default function Parallax({ children, depth = 0.2, className }: ParallaxP
   // At progress=0 (entering viewport): element is nudged down by depth*60px
   // At progress=1 (leaving viewport):  element is nudged up by depth*60px
   // The motion is continuous and smooth throughout the scroll.
-  const y = useTransform(scrollYProgress, [0, 1], [depth * 60, depth * -60])
+  const y = useTransform(scrollYProgress, [0, 1], [depth * 80, depth * -80])
 
   return (
-    <motion.div ref={ref} style={{ y }} className={`relative ${className ?? ''}`}>
+    <motion.div ref={ref} style={{ y, willChange: 'transform' }} className={`relative ${className ?? ''}`}>
       {children}
     </motion.div>
   )
