@@ -34,6 +34,16 @@ export const games: Game[] = [
       'Over 100 unique bosses ranging from optional to mandatory',
       'Hundreds of weapons, spells, and ashes of war for infinite build variety',
     ],
+    director: 'Hidetaka Miyazaki',
+    composer: 'Yuka Kitamura',
+    awards: [
+      'Game of the Year 2022 — The Game Awards',
+      'Best Art Direction 2022 — The Game Awards',
+      'Best RPG 2022 — The Game Awards',
+      'Best Direction 2022 — The Game Awards',
+      '80+ Game of the Year awards across all outlets',
+    ],
+    legacy: `No open world before it invited the player to be confused, lost, and still want to stay. Miyazaki's collaboration with George R.R. Martin produced a mythology so deliberately opaque that entire communities formed solely around parsing it. It swept The Game Awards 2022 — Game of the Year, Best Art Direction, Best RPG, Best Direction. Miyazaki was named one of TIME's 100 Most Influential People of 2023, only the second game developer after Shigeru Miyamoto. The Lands Between is not a setting. It is a place.`,
   },
   {
     id: "black-myth-wukong",
@@ -58,6 +68,15 @@ export const games: Game[] = [
       'One of the fastest-selling games in history, selling 10M copies in three days',
       'Deeply layered boss encounters inspired by Buddhist and Taoist theology',
     ],
+    director: 'Feng Ji',
+    composer: 'Wang Xinghe, Li Jiaqi & Zhai Jinyan',
+    awards: [
+      'Best Action Game 2024 — The Game Awards',
+      "Player's Voice Award 2024 — The Game Awards",
+      'Ultimate Game of the Year 2024 — Golden Joystick Awards',
+      'Best Visual Design 2024 — Golden Joystick Awards',
+    ],
+    legacy: `The first AAA game built entirely by the Chinese games industry. Twenty million copies sold in its first month. It arrived carrying the weight of an entire culture's mythological heritage — temples reconstructed with documentary precision, combat woven from the philosophy of the source text — and delivered without flinching. It proved that the storytelling tradition behind Journey to the West was always capable of producing world-class games. Sun Wukong was never just a character. He was the evidence.`,
   },
   {
     id: "clair-obscur",
@@ -82,6 +101,18 @@ export const games: Game[] = [
       'Emotionally devastating narrative about grief, memory, and defiance',
       'Critically acclaimed original soundtrack by Lorien Testard',
     ],
+    director: 'Guillaume Broche',
+    composer: 'Lorien Testard',
+    awards: [
+      'Game of the Year 2025 — The Game Awards',
+      'Best Game Direction 2025 — The Game Awards',
+      'Best Narrative 2025 — The Game Awards',
+      'Best Score & Music 2025 — The Game Awards',
+      'Best Art Direction 2025 — The Game Awards',
+      'Ultimate Game of the Year 2025 — Golden Joystick Awards',
+      'Game of the Year 2025 — D.I.C.E. Awards',
+    ],
+    legacy: `A French studio of thirty developers — mostly ex-Ubisoft — made a JRPG about grief and erasure, with a score written by a guitar teacher discovered on SoundCloud. It won nine awards at The Game Awards 2025 including Game of the Year. Its developers were knighted by the French Ministry of Culture in February 2026, under the Ordre des Arts et des Lettres. Lorien Testard's score was nominated for a Grammy. It proved that the most emotionally devastating games come from people with everything to lose and nothing to prove.`,
   },
   {
     id: "elden-ring-nightreign",
@@ -106,6 +137,12 @@ export const games: Game[] = [
       'Designed for 1–3 player co-op with a session length of ~40 minutes',
       'Each of the 8 Nightlords demands a completely different strategy to defeat',
     ],
+    director: 'Junya Ishizaki',
+    composer: 'Yuka Kitamura',
+    awards: [
+      'Best Multiplayer Game 2025 — The Game Awards',
+    ],
+    legacy: `Junya Ishizaki's directorial debut — after years as lead designer on Dark Souls and battle director on Elden Ring. Miyazaki gave him one instruction: "do it as you please." The result is FromSoftware's first co-op roguelite spinoff: the same combat philosophy, the same environmental density, compressed into 40-minute sessions that demand everything. It didn't dilute Elden Ring. It distilled it.`,
   },
   {
     id: "sekiro",
@@ -130,6 +167,16 @@ export const games: Game[] = [
       'Vertical exploration via grappling hook redefines FromSoftware level design',
       'Winner of Game of the Year 2019 at The Game Awards',
     ],
+    director: 'Hidetaka Miyazaki & Kazuhiro Hamatani',
+    composer: 'Yuka Kitamura & Noriyuki Asakura',
+    awards: [
+      'Game of the Year 2019 — The Game Awards',
+      'Best Action/Adventure 2019 — The Game Awards',
+      'Game of the Year 2019 — GameSpot Editors',
+      'Best Game You Suck At — Steam Awards 2019',
+      '10 million copies sold as of 2023',
+    ],
+    legacy: `The purest distillation of FromSoftware's philosophy: no stat to hide behind, no summon to carry you, no build to optimize. Just you and the rhythm. It won Game of the Year 2019 despite being — by design — the game most people couldn't finish. The posture system didn't just reinvent combat. It reframed what a game was allowed to ask of its player. Mastery isn't a reward. It is the point.`,
   },
   {
     id: "god-of-war-ragnarok",
@@ -154,6 +201,15 @@ export const games: Game[] = [
       'Expanded weapon variety, skill trees, and armor customization',
       'Received 288 Game of the Year nominations — more than any game in history',
     ],
+    director: 'Eric Williams',
+    composer: 'Bear McCreary',
+    awards: [
+      '288 Game of the Year nominations — most in history',
+      'EE Game of the Year — BAFTA Games Awards 2023',
+      '6 wins from 15 nominations — BAFTA Games Awards 2023',
+      '14 wins from 14 nominations — Game Audio Network Guild Awards',
+    ],
+    legacy: `The Norse saga ends not with apocalypse but with choice. Ragnarök received more GOTY nominations than any game in history — 288 — and won the BAFTA Game of the Year. Bear McCreary returned to close the loop on a score that began with footsteps in the snow and ends with the weight of every world. The father and son arc is one of the most complete character studies in gaming. It earned its ending.`,
   },
   {
     id: "dark-souls-2",
@@ -178,6 +234,9 @@ export const games: Game[] = [
       'Most bosses of any entry in the Dark Souls trilogy',
       'Scholar edition redesigns enemy placements and adds a new NPC questline',
     ],
+    director: 'Tomohiro Shibuya & Yui Tanimura',
+    composer: 'Motoi Sakuraba & Nobuyoshi Suzuki',
+    legacy: `The most divisive entry in the trilogy — and quietly, for many, the most rewarding. Without Miyazaki at the helm, it chose a different kind of darkness: slower, more labyrinthine, philosophically heavier. The Scholar of the First Sin edition corrected its roughest edges and elevated it into something essential. The Crown DLC trilogy is, taken together, one of the finest pieces of soulslike content ever made.`,
   },
   {
     id: "dark-souls-remastered",
@@ -202,6 +261,13 @@ export const games: Game[] = [
       'Every area, enemy, and item placement is deliberate and hand-crafted',
       'The game that defined the soulslike genre and inspired a decade of imitators',
     ],
+    director: 'Hidetaka Miyazaki',
+    composer: 'Motoi Sakuraba',
+    awards: [
+      'Ultimate Game of All Time 2021 — Golden Joystick Awards',
+      '40 million franchise copies sold by 2025',
+    ],
+    legacy: `In 2021, Dark Souls was voted Ultimate Game of All Time at the Golden Joystick Awards — beating Doom and Tetris. Not the flashiest, not the biggest, not the most technically impressive. Just the most complete. Every room a puzzle, every enemy a lesson, death a form of information. Lordran's interconnected geography remains one of the most studied and admired environments in the medium. It didn't invent difficulty. It gave difficulty meaning.`,
   },
   {
     id: "dark-souls-3",
@@ -226,6 +292,13 @@ export const games: Game[] = [
       'Dense, layered world design with callbacks to every previous FromSoftware title',
       'Soul of Cinder — a final boss that embodies the entire history of the franchise',
     ],
+    director: 'Hidetaka Miyazaki & Yui Tanimura',
+    composer: 'Yuka Kitamura & Motoi Sakuraba',
+    awards: [
+      'Game of the Year 2016 — Golden Joystick Awards',
+      'Fastest-selling FromSoftware release at launch',
+    ],
+    legacy: `The final chapter hits hardest, fastest, and most cinematically. Yuka Kitamura's score for The Ringed City DLC is some of the most devastating music in FromSoftware's catalogue — a funeral for an entire franchise delivered in orchestral fire. Soul of Cinder doesn't just close a chapter. It closes a decade. Every ember you ever linked, every bonfire you ever found, compresses into that final fight.`,
   },
   {
     id: "nioh",
@@ -258,6 +331,14 @@ export const games: Game[] = [
       'Over 150 hours of content across the base game and three DLC expansions',
       'One of the deepest loot and build systems in the action RPG genre',
     ],
+    director: 'Fumihiko Yasuda',
+    composer: 'Kenji Ito & Ryosuke Nakatake',
+    awards: [
+      'Award for Excellence — Japan Game Awards 2021',
+      'Best Game You Suck At — Steam Awards 2021',
+      'Nominated: Best Action Game 2020 — The Game Awards',
+    ],
+    legacy: `Team Ninja achieved something rare: a sequel that surpasses its predecessor in every dimension. Fumihiko Yasuda's half-demon protagonist brought a more personal story into a war between history and mythology — and wrapped it in a combat system so deep it remains arguably unmatched in the action RPG genre. The Yokai Shift alone is worth the price of admission. Nioh 2 is the game that proved Team Ninja could compete with anyone.`,
   },
   {
     id: "ghost-of-tsushima",
@@ -281,6 +362,14 @@ export const games: Game[] = [
       'Samurai and Ghost skill trees with contrasting combat philosophies',
       'One of the most visually stunning open worlds ever committed to a game',
     ],
+    director: 'Nate Fox & Jason Connell',
+    composer: 'Ilan Eshkeri & Shigeru Umebayashi',
+    awards: [
+      "Player's Voice Award 2020 — The Game Awards",
+      '14 awards — NAVGTR 2021 (more than any other game that year)',
+      'Most downloaded PS4 game of 2020 in many regions',
+    ],
+    legacy: `Sucker Punch built a love letter to samurai cinema in a genre dominated by Western templates. Kurosawa Mode isn't a filter — it's a transformation. Ilan Eshkeri and Shigeru Umebayashi's score was performed live at Kyoto's Tenryu-ji temple. The wind mechanic replaced the minimap with something the industry had never tried before: trust. Ghost of Tsushima proved open worlds could be felt as much as navigated.`,
   },
   {
     id: "lies-of-p",
@@ -314,6 +403,8 @@ export const games: Game[] = [
       'Deeply interconnected world design reminiscent of classic Soulsborne level architecture',
       'Extensive weapon variety across traditional Chinese martial arts weapon classes',
     ],
+    director: 'Xia Siyuan',
+    legacy: `A soulslike that dared to centre a culture rarely seen in the genre, rendered with atmosphere and care. The fog-wrapped shores of Ming-dynasty China are among the most distinctive environments in recent action RPGs. Behind the scenes, a more turbulent story unfolded: the director was dismissed mid-development, the core team dissolved. That the game shipped at all — and shipped well — is its own kind of testament.`,
   },
   {
     id: "first-berserker-khazan",
@@ -338,6 +429,7 @@ export const games: Game[] = [
       'Striking cel-shaded art style that brings the DNF universe into 3D',
       'New Game+ with enhanced enemy AI, new items, and amplified challenge',
     ],
+    legacy: `A soulslike built around one singular design conviction: the boss is the game. Neople stripped away the filler and left only the confrontation — 57 achievements, all earned through the same discipline. The cel-shaded aesthetic is one of the genre's most visually distinctive choices, proof that challenging design doesn't require visual austerity.`,
   },
 
   {
@@ -363,6 +455,7 @@ export const games: Game[] = [
       'Memory-reading narrative told through fragmented recollections',
       'Short but dense — a complete soulslike experience in under 20 hours',
     ],
+    legacy: `Thymesia proves the soulslike formula doesn't require a massive budget or a long runtime. OverBorder Studio built a complete, considered experience in under 20 hours — and made every one of them count. The plague weapon system is one of the genre's most inventive mechanics: you don't collect weapons, you steal them. It's the difference between looting a corpse and learning from one.`,
   },
 
   // ── BLOODBORNE ──────────────────────────────────────────
@@ -389,6 +482,15 @@ export const games: Game[] = [
       'The Old Hunters DLC is widely considered the finest piece of FromSoftware DLC ever made',
       'No shields, no builds — pure aggression is the only viable strategy',
     ],
+    director: 'Hidetaka Miyazaki',
+    composer: 'Ryan Amon, Yuka Kitamura, Tsukasa Saitoh, Cris Velasco & Michael Wandmacher',
+    awards: [
+      'Best Game Design — BAFTA Games Awards 2016',
+      'Best Original Game — Golden Joystick Awards 2015',
+      'Award for Excellence — Japan Game Awards 2015',
+      '7.46 million copies sold by February 2022 (PS4 exclusive)',
+    ],
+    legacy: `Yharnam remains one of the most fully realised game worlds ever constructed — a city of secrets that rewards obsession and punishes hesitation in equal measure. Miyazaki himself calls it a "special game." Its collaborative soundtrack — six composers across a single game — somehow coheres into the most atmospheric score in the Soulsborne catalogue. A decade later, the demand for a PC port or remaster remains one of gaming's loudest ongoing conversations. Bloodborne doesn't get outdated. It gets deeper.`,
   },
 
   // ── GOD OF WAR FRANCHISE ────────────────────────────────
@@ -414,6 +516,15 @@ export const games: Game[] = [
       'Atreus as an active combat partner who grows meaningfully across the story',
       'Won Game of the Year 2018 and is considered one of the greatest games ever made',
     ],
+    director: 'Cory Barlog',
+    composer: 'Bear McCreary',
+    awards: [
+      'Game of the Year 2018 — The Game Awards',
+      'Best Game — BAFTA Games Awards 2019',
+      'Game of the Year — D.I.C.E. Awards 2019',
+      'Outstanding Achievement in Game Direction — D.I.C.E. Awards 2019',
+    ],
+    legacy: `A creative reinvention so total it shouldn't have worked. Same franchise, same character, same brutality — but filmed in a single unbroken camera shot and reframed around a father learning not to be a weapon. Bear McCreary's leitmotif became one of PlayStation's most recognisable musical signatures. Cory Barlog wept on stage at the Game Awards. The Leviathan Axe throw-and-recall is still, years later, one of the most satisfying interactions in modern gaming.`,
   },
   {
     id: "god-of-war-3",
@@ -437,6 +548,9 @@ export const games: Game[] = [
       'Remastered in 1080p with enhanced textures and 60fps performance on PS4',
       'A finale that closes Kratos\'s Greek arc with total and devastating finality',
     ],
+    director: 'Stig Asmussen',
+    composer: 'Gerard Marino, Ron Fish & Cris Velasco',
+    legacy: `The Greek saga's violent finale. Kratos rides the Titan Gaia up the slopes of Olympus and tears through the pantheon god by god — spectacle operating at a scale the medium rarely reached before or since. Stig Asmussen delivered a conclusion that earned its excess. The opening sequence, with Poseidon as a world-scale boss, remains one of gaming's most cinematic opening statements.`,
   },
 
   // ── DEVIL MAY CRY FRANCHISE ─────────────────────────────

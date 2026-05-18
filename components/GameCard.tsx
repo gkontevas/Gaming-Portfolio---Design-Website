@@ -1,11 +1,10 @@
 'use client'
 
 import { useRef, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from "next/image";
-import { AnimatePresence, motion, useInView } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { Game } from "@/types/game";
-import dynamic from 'next/dynamic'
-const GameModal = dynamic(() => import('./GameModal'))
 
 type Props = {
   game: Game;
@@ -18,9 +17,9 @@ export default function GameCard({ game }: Props) {
 
   // useInView fires once when the card scrolls into the viewport (15% threshold).
   // We pass this boolean to the motion.div below so the bar animates on entry.
+  const router = useRouter()
   const ref = useRef<HTMLElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-15% 0px' })
-  const [modalOpen, setModalOpen] = useState(false)
 
   // 3D tilt state — updated on every mousemove, reset on leave
   const [tilt,      setTilt]      = useState({ x: 0, y: 0 })
@@ -44,10 +43,9 @@ export default function GameCard({ game }: Props) {
   }, [])
 
   return (
-    <>
     <article
       ref={ref}
-      onClick={() => setModalOpen(true)}
+      onClick={() => router.push(`/games/${game.id}`)}
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -169,12 +167,5 @@ export default function GameCard({ game }: Props) {
 
       </div>
     </article>
-
-    <AnimatePresence>
-      {modalOpen && (
-        <GameModal game={game} onClose={() => setModalOpen(false)} />
-      )}
-    </AnimatePresence>
-    </>
   );
 }

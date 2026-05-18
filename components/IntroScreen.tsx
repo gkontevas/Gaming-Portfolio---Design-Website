@@ -93,19 +93,26 @@ export default function IntroScreen() {
 
   function handleDoubleTap() {
     const now = Date.now()
-    if (now - lastTapRef.current < 400) skipCinematic()
-    lastTapRef.current = now
+    // Mobile: double tap (two taps within 400ms). Desktop: single click suffices.
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      if (now - lastTapRef.current < 400) skipCinematic()
+      lastTapRef.current = now
+    } else {
+      skipCinematic()
+    }
   }
 
   // ── INIT ────────────────────────────────────────────────────────────────────
   useLayoutEffect(() => {
-    if (sessionStorage.getItem('intro-seen')) {
+    const onGamePage = window.location.pathname.startsWith('/games/')
+    if (sessionStorage.getItem('intro-seen') || onGamePage) {
       skippedRef.current = true
       setStep(2)
     } else {
       document.body.style.overflow = 'hidden'
     }
-    document.getElementById('intro-cover')?.remove()
+    const cover = document.getElementById('intro-cover')
+    if (cover) cover.style.display = 'none'
     setMounted(true)
     return () => { document.body.style.overflow = '' }
   }, [])
@@ -162,6 +169,10 @@ export default function IntroScreen() {
       document.body.style.overflow = ''
       sessionStorage.setItem('intro-seen', '1')
       window.dispatchEvent(new Event('intro-dismissed'))
+      // Reset scroll — browser restores previous session position when
+      // overflow:hidden is lifted, which causes the page to jump mid-way down.
+      window.scrollTo(0, 0)
+      window.__lenis?.scrollTo(0, { immediate: true })
       setStep(2)
     }
     document.addEventListener('keydown', dismiss)
@@ -273,10 +284,10 @@ export default function IntroScreen() {
 
                 {/* Skip hint — bottom right corner */}
                 <motion.p
-                  className="absolute bottom-8 right-8 font-display text-[9px] tracking-[0.4em] text-bronze/65 uppercase pointer-events-none"
+                  className="absolute bottom-8 right-8 font-display text-xs tracking-[0.35em] text-bronze/70 uppercase pointer-events-none"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }}>
-                  <span className="sm:hidden">Double tap to skip</span>
-                  <span className="hidden sm:inline">Double click · Space to skip</span>
+                  <span className="sm:hidden">Double tap to continue</span>
+                  <span className="hidden sm:inline">Click · Space to continue</span>
                 </motion.p>
 
               </motion.div>

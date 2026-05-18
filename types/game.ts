@@ -31,4 +31,8 @@ export type Game = {
   series?: string;          // e.g. 'Dark Souls Trilogy · Part 1'
   playtime?: { main: number; complete: number }; // hours
   features?: string[];      // 3–4 standout features, bullet-point style
+  director?: string;        // e.g. "Hidetaka Miyazaki"
+  composer?: string;        // e.g. "Yuka Kitamura"
+  awards?: string[];        // major awards won
+  legacy?: string;          // why this game matters — written in portfolio voice
 };
