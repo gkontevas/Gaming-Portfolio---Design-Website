@@ -16,8 +16,9 @@ const SacredRelics        = dynamic(() => import("@/components/SacredRelics"))
 const EmberTrail          = dynamic(() => import("@/components/EmberTrail"))
 
 // Loaded only when near the viewport — reduces initial JS bundle
-const BossShowcase   = dynamic(() => import("@/components/BossShowcase"))
-const QuoteCarousel  = dynamic(() => import("@/components/QuoteCarousel"))
+const BossShowcase      = dynamic(() => import("@/components/BossShowcase"))
+const QuoteCarousel     = dynamic(() => import("@/components/QuoteCarousel"))
+const BonfireMessages   = dynamic(() => import("@/components/BonfireMessages"))
 import { games, perfectGames, currentlyPlaying } from "@/data/games";
 
 const totalHours = Math.floor(games.reduce((sum, g) => sum + (g.hours ?? 0), 0));
@@ -166,6 +167,11 @@ export default function Home() {
 
           </div>
         </section>
+
+        {/* ═══════════════════════════════════════════════════
+            BONFIRE MESSAGES
+        ═══════════════════════════════════════════════════ */}
+        <BonfireMessages />
 
         {/* ═══════════════════════════════════════════════════
             FOOTER

@@ -8,7 +8,7 @@ const keyMap: Record<string, string> = {
   '2': '#remembrances',
   '3': '#arsenal',
   '4': '#worthy',
-  '5': '#scholars',
+  '5': '#bonfire',
 }
 
 export default function KeyboardNav() {

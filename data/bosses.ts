@@ -83,14 +83,15 @@ weight.`,
 even as darkness moved his limbs. That dignity in defeat — it never fully leaves you.`,
   },
   {
-    id: 'erlang',
-    name: 'Erlang Shen',
-    title: 'The Illustrious Sage · God of War and Virtue',
-    game: 'Black Myth: Wukong',
-    image: '/erlang.webp',
+    id: 'malenia',
+    name: 'Malenia',
+    title: 'Blade of Miquella · Goddess of Rot',
+    game: 'Elden Ring',
+    image: '/malenia.jpg',
     objectPosition: 'top',
-    quote: `A god who was never truly trying until he was. He gave you room to grow before taking it
-all back. The restraint was the lesson. Humility, administered with a staff and a smirk.`,
+    quote: `She heals on every hit, punishes every mistake, and does it all with the grace of someone
+who has never lost. She has never known defeat. For a while, neither statement felt true about
+me.`,
   },
   {
     id: 'lady-maria',

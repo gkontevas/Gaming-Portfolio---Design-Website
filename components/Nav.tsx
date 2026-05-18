@@ -4,13 +4,13 @@ import { useRef, useState, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
 
 const ease     = [0.16, 1, 0.3, 1] as [number, number, number, number]
-const sections = ['origins', 'remembrances', 'arsenal', 'worthy', 'scholars']
+const sections = ['origins', 'remembrances', 'arsenal', 'worthy', 'bonfire']
 const links    = [
   { label: 'Origins',      href: '#origins',      key: '1' },
   { label: 'Remembrances', href: '#remembrances', key: '2' },
   { label: 'Relics',       href: '#arsenal',      key: '3' },
   { label: 'The Worthy',   href: '#worthy',       key: '4' },
-  { label: 'Scholars',     href: '#scholars',     key: '5' },
+  { label: 'Bonfire',      href: '#bonfire',      key: '5' },
 ]
 
 function MagneticLink({
