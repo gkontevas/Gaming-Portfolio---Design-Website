@@ -14,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const game = games.find(g => g.id === id)
+  const game = perfectGames.find(g => g.id === id)
   if (!game) return {}
   return {
     title: `${game.title} — Vestiges of the Unlit`,
