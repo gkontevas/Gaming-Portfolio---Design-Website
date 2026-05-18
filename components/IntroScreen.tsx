@@ -169,11 +169,16 @@ export default function IntroScreen() {
       document.body.style.overflow = ''
       sessionStorage.setItem('intro-seen', '1')
       window.dispatchEvent(new Event('intro-dismissed'))
-      // Reset scroll — browser restores previous session position when
-      // overflow:hidden is lifted, which causes the page to jump mid-way down.
-      window.scrollTo(0, 0)
-      window.__lenis?.scrollTo(0, { immediate: true })
       setStep(2)
+      // Browser restores its scroll position after overflow:hidden is lifted,
+      // which happens asynchronously after paint. Double-rAF ensures we reset
+      // AFTER that restoration, not before it.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0)
+          window.__lenis?.scrollTo(0, { immediate: true })
+        })
+      })
     }
     document.addEventListener('keydown', dismiss)
     document.addEventListener('click',   dismiss)
