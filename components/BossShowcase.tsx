@@ -36,13 +36,13 @@ function BossPanel({ boss, index }: { boss: Boss; index: number }) {
             alt={boss.name}
             fill
             loading={index === 0 ? 'eager' : 'lazy'}
-            quality={90}
+            quality={80}
             className="object-cover"
             style={{
               objectPosition: boss.objectPosition ?? 'center',
               filter: 'contrast(1.12) brightness(0.9) saturate(1.1)',
             }}
-            sizes="130vw"
+            sizes="100vw"
           />
         </motion.div>
       ) : (

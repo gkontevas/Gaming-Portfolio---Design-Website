@@ -40,7 +40,6 @@ export default function Embers() {
             height: e.size,
             animation: `ember-rise ${e.duration}s ${e.delay}s infinite ease-out`,
             '--drift': `${e.drift}px`,
-            willChange: 'transform, opacity',
           } as React.CSSProperties}
         />
       ))}
