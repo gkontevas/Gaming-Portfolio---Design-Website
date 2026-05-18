@@ -122,8 +122,8 @@ export default function GamePageContent({ game }: { game: Game }) {
 
         {/* Back */}
         <Link href="/"
-          className="absolute top-8 left-8 z-10 flex items-center gap-2 font-display text-[10px] tracking-[0.45em] text-bronze/55 uppercase hover:text-gold transition-colors duration-300 group">
-          <span className="group-hover:-translate-x-0.5 transition-transform duration-300">←</span>
+          className="absolute top-7 left-7 z-10 flex items-center gap-3 font-display text-xs tracking-[0.4em] text-bronze/75 uppercase hover:text-gold transition-colors duration-300 group border border-gold/20 hover:border-gold/45 bg-ash/60 backdrop-blur-sm px-4 py-2.5">
+          <span className="group-hover:-translate-x-1 transition-transform duration-300 text-sm">←</span>
           <span>Archive</span>
         </Link>
 
