@@ -1,10 +1,8 @@
 import FadeIn from "@/components/FadeIn"
 import RevealText from "@/components/RevealText"
 import AnimatedStatBars from "@/components/AnimatedStatBars"
-import AnimatedCounter from "@/components/AnimatedCounter"
 import SteamReveal from "@/components/SteamReveal"
 import HollowedIdentity from "@/components/HollowedIdentity"
-import { perfectGames } from "@/data/games"
 
 export default function HollowedOrigins() {
   return (
@@ -76,24 +74,6 @@ export default function HollowedOrigins() {
           </FadeIn>
 
         </div>
-
-        {/* ── STEAM STATS STRIP ─────────────────────────────────── */}
-        <FadeIn delay={0.2} className="mt-14 grid grid-cols-2 gap-6 border-t border-gold/15 pt-10 sm:grid-cols-4">
-          {[
-            { label: "Achievements", value: 1073, suffix: ''  },
-            { label: "Perfect Games", value: perfectGames.length, suffix: ''  },
-            { label: "Completion",    value: 44,  suffix: '%' },
-            { label: "Library",       value: 46,  suffix: ''  },
-          ].map((stat) => (
-            <div key={stat.label} className="flex flex-col items-center gap-2 text-center">
-              <span className="font-display text-3xl sm:text-4xl tracking-wide text-gold leading-none">
-                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-              </span>
-              <div className="h-px w-8 bg-gold/20" />
-              <span className="font-display text-[10px] tracking-[0.4em] text-bronze/60 uppercase">{stat.label}</span>
-            </div>
-          ))}
-        </FadeIn>
 
       </div>
     </section>

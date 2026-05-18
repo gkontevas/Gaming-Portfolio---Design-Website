@@ -100,6 +100,8 @@ export default function Home() {
 
         <HollowedOrigins />
 
+        <LedgerSection />
+
         {/* ═══════════════════════════════════════════════════
             REMEMBRANCES
         ═══════════════════════════════════════════════════ */}
@@ -138,11 +140,6 @@ export default function Home() {
             THE WORTHY — boss showcase
         ═══════════════════════════════════════════════════ */}
         <BossShowcase />
-
-        {/* ═══════════════════════════════════════════════════
-            LEDGER OF THE UNLIT — stats
-        ═══════════════════════════════════════════════════ */}
-        <LedgerSection />
 
         {/* ═══════════════════════════════════════════════════
             WORDS OF SCHOLARS
