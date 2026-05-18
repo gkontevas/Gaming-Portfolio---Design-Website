@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
@@ -66,6 +66,11 @@ function Divider() {
 
 export default function GamePageContent({ game }: { game: Game }) {
   const heroRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+    window.__lenis?.scrollTo(0, { immediate: true })
+  }, [])
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
