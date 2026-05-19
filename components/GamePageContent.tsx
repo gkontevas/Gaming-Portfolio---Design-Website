@@ -16,6 +16,72 @@ const GENRE_LABELS: Record<Game['genre'], string> = {
   'other':      'Other',
 }
 
+function HeroSigil() {
+  const rings = [
+    { r: 110, duration: 50, dir:  1, ticks: 12, tickLen: [10, 5], opacity: 0.10 },
+    { r:  76, duration: 33, dir: -1, ticks:  0, tickLen: [0,  0], opacity: 0.07, dashed: true },
+    { r:  44, duration: 20, dir:  1, ticks:  4, tickLen: [8,  0], opacity: 0.14 },
+  ]
+
+  return (
+    <motion.div
+      className="absolute pointer-events-none hidden md:block"
+      style={{ right: 'clamp(5rem, 11vw, 13rem)', top: '42%', transform: 'translateY(-50%)' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 2.5, delay: 0.7 }}
+      aria-hidden
+    >
+      {rings.map(({ r, duration, dir, ticks, tickLen, opacity, dashed }, ri) => (
+        <motion.div key={ri}
+          className="absolute rounded-full"
+          style={{
+            width: r * 2, height: r * 2, top: -r, left: -r,
+            border: `1px ${dashed ? 'dashed' : 'solid'} rgba(201,169,110,${opacity})`,
+          }}
+          animate={{ rotate: dir * 360 }}
+          transition={{ duration, ease: 'linear', repeat: Infinity }}
+        >
+          {Array.from({ length: ticks }, (_, i) => (
+            <div key={i} style={{
+              position: 'absolute',
+              width: i % 3 === 0 ? tickLen[0] : tickLen[1],
+              height: 1,
+              background: `rgba(201,169,110,${i % 3 === 0 ? 0.35 : 0.18})`,
+              top: '50%', left: '50%',
+              transformOrigin: '0 50%',
+              transform: `rotate(${(i / ticks) * 360}deg) translateX(${r - 4}px) translateY(-50%)`,
+            }} />
+          ))}
+        </motion.div>
+      ))}
+
+      {/* Core pulse */}
+      <motion.div className="absolute rounded-full"
+        style={{ width: 32, height: 32, top: -16, left: -16,
+          background: 'radial-gradient(circle, rgba(232,180,50,0.18) 0%, transparent 70%)' }}
+        animate={{ opacity: [0.4, 1, 0.4], scale: [0.7, 1.3, 0.7] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      {/* Centre ✦ */}
+      <motion.span className="absolute font-display text-gold/25 select-none"
+        style={{ top: -9, left: -7, fontSize: 15 }}
+        animate={{ opacity: [0.2, 0.6, 0.2] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+      >✦</motion.span>
+
+      {/* Outer ambient glow */}
+      <motion.div className="absolute rounded-full"
+        style={{ width: 340, height: 340, top: -170, left: -170,
+          background: 'radial-gradient(circle, rgba(160,50,8,0.07) 0%, transparent 62%)' }}
+        animate={{ opacity: [0.4, 1, 0.4], scale: [0.88, 1.12, 0.88] }}
+        transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
+      />
+    </motion.div>
+  )
+}
+
 // ── SUB-COMPONENTS ─────────────────────────────────────────────────────────────
 
 function DifficultyPips({ value }: { value: number }) {
@@ -63,19 +129,15 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 // ── MAIN ───────────────────────────────────────────────────────────────────────
 
 export default function GamePageContent({ game, screenshots = [] }: { game: Game; screenshots?: string[] }) {
-  const heroRef       = useRef<HTMLElement>(null)
-  const imgWrapRef    = useRef<HTMLDivElement>(null)
-  const contentRef    = useRef<HTMLDivElement>(null)
-  const scrollIndRef  = useRef<HTMLDivElement>(null)
-  const [imgLoaded, setImgLoaded] = useState(false)
+  const heroRef      = useRef<HTMLElement>(null)
+  const contentRef   = useRef<HTMLDivElement>(null)
+  const scrollIndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     window.scrollTo(0, 0)
     window.__lenis?.scrollTo(0, { immediate: true })
   }, [])
 
-  // Direct DOM mutation in the same RAF tick as Lenis — no MotionValue
-  // subscriber overhead, no Framer Motion diffing, pure GPU transform.
   useEffect(() => {
     const lenis = window.__lenis
     if (!lenis) return
@@ -83,11 +145,6 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
       const heroH = heroRef.current?.offsetHeight ?? window.innerHeight
       const p     = Math.min(Math.max(l.scroll / heroH, 0), 1)
       const fade  = Math.max(0, 1 - p / 0.75)
-      // Image: tiny fixed shift (30px max). No scaling — serves image at full
-      // native quality. Gap at top is invisible because hero fades out first.
-      if (imgWrapRef.current) {
-        imgWrapRef.current.style.transform = `translateY(${p * 30}px)`
-      }
       if (contentRef.current) {
         contentRef.current.style.transform = `translateY(${p * -60}px)`
         contentRef.current.style.opacity   = `${fade}`
@@ -115,36 +172,12 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
       ═══════════════════════════════════════════════════ */}
       <section ref={heroRef} className="relative h-screen overflow-hidden">
 
-        {/* Background */}
-        {game.image ? (
-          <>
-            {!imgLoaded && (
-              <div className="absolute inset-0 animate-pulse"
-                style={{ background: 'linear-gradient(135deg, #1C1409 0%, #0D0A07 50%, #1C1409 100%)' }} />
-            )}
-            <div ref={imgWrapRef} className="absolute inset-0" style={{ willChange: 'transform' }}>
-              <Image
-                src={game.image}
-                alt={game.title}
-                fill
-                priority
-                quality={85}
-                sizes="100vw"
-                className="object-cover object-center"
-                onLoad={() => setImgLoaded(true)}
-              />
-            </div>
-          </>
-        ) : (
-          <div className="absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse at 30% 50%, #1C1409 0%, #0D0A07 80%)' }} />
-        )}
+        {/* Dark atmospheric background */}
+        <div className="absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse at 22% 55%, #1E1208 0%, #0D0A07 62%)' }} />
 
-        {/* Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ash via-ash/55 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ash/85 via-ash/25 to-transparent" />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(13,10,7,0.6) 100%)' }} />
+        {/* Right-side sigil — multi-ring astronomical instrument */}
+        <HeroSigil />
 
         {/* Back */}
         <Link href="/"
@@ -159,7 +192,7 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
         </div>
 
         {/* Ghost index */}
-        <span className="pointer-events-none select-none absolute right-6 top-1/2 -translate-y-1/2 font-display leading-none text-gold/[0.04]"
+        <span className="pointer-events-none select-none absolute left-[4%] top-1/2 -translate-y-1/2 font-display leading-none text-gold/[0.035]"
           style={{ fontSize: 'clamp(5rem, 18vw, 16rem)' }}>
           {String(idx + 1).padStart(2, '0')}
         </span>
@@ -188,7 +221,6 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
 
         {/* Hero text */}
         <div ref={contentRef} className="absolute bottom-0 left-0 p-5 sm:p-8 md:p-16 max-w-4xl" style={{ willChange: 'transform' }}>
-
           <motion.p
             className="mb-3 font-display text-[10px] tracking-[0.55em] text-bronze/60 uppercase"
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
@@ -209,9 +241,7 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}>
             {game.developer}
-            {game.series && (
-              <span className="ml-4 text-bronze/50">· {game.series}</span>
-            )}
+            {game.series && <span className="ml-4 text-bronze/50">· {game.series}</span>}
           </motion.p>
 
           <motion.div
@@ -227,9 +257,31 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
               <HeroStat label="Status"><span className="text-amber">Perfected ✦</span></HeroStat>
             )}
           </motion.div>
-
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════
+          SCREENSHOTS — full-width horizontal scroll
+      ═══════════════════════════════════════════════════ */}
+      {screenshots.length > 0 && (
+        <div className="bg-ash pt-10 pb-2">
+          <div className="flex items-baseline justify-between mb-5 px-5 sm:px-8 md:px-16">
+            <p className="font-display text-[10px] tracking-[0.55em] text-bronze/45 uppercase">Screenshots</p>
+            <p className="font-display text-[9px] tracking-[0.4em] text-bronze/30 uppercase">Swipe to explore</p>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-6 px-5 sm:px-8 md:px-16" style={{ scrollbarWidth: 'none' }}>
+            {screenshots.map((src, i) => (
+              <div key={i} className="relative shrink-0 overflow-hidden"
+                style={{ width: 'clamp(280px, 60vw, 480px)', aspectRatio: '16/9' }}>
+                <Image src={src} alt={`${game.title} screenshot ${i + 1}`} fill
+                  sizes="(max-width: 640px) 60vw, (max-width: 1024px) 50vw, 480px"
+                  className="object-cover transition-transform duration-500 hover:scale-105" />
+                <div className="absolute inset-0 border border-gold/10 pointer-events-none" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ═══════════════════════════════════════════════════
           CONTENT
@@ -386,37 +438,6 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
                   </div>
                 )}
 
-              </div>
-            </FadeUp>
-          )}
-
-          {/* Screenshots */}
-          {screenshots.length > 0 && (
-            <FadeUp className="mt-20">
-              <div className="flex items-baseline justify-between mb-6">
-                <p className="font-display text-[10px] tracking-[0.55em] text-bronze/45 uppercase">Gallery</p>
-                <p className="font-display text-[9px] tracking-[0.4em] text-bronze/35 uppercase">Swipe to explore</p>
-              </div>
-              <div
-                className="flex gap-3 overflow-x-auto pb-4 -mx-5 sm:-mx-8 px-5 sm:px-8"
-                style={{ scrollbarWidth: 'none' }}
-              >
-                {screenshots.map((src, i) => (
-                  <div
-                    key={i}
-                    className="relative shrink-0 overflow-hidden"
-                    style={{ width: 'clamp(260px, 55vw, 420px)', aspectRatio: '16/9' }}
-                  >
-                    <Image
-                      src={src}
-                      alt={`${game.title} screenshot ${i + 1}`}
-                      fill
-                      sizes="(max-width: 768px) 55vw, 420px"
-                      className="object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                    <div className="absolute inset-0 border border-gold/10 pointer-events-none" />
-                  </div>
-                ))}
               </div>
             </FadeUp>
           )}

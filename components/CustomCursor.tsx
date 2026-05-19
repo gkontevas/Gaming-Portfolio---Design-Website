@@ -179,11 +179,7 @@ export default function CustomCursor() {
         className="pointer-events-none fixed z-[9999] top-0 left-0"
         style={{ transform: 'translate(-999px,-999px)' }}
       >
-      <motion.div
-        animate={{ scale: pressing ? 0.7 : 1 }}
-        transition={{ duration: 0.15, ease: 'easeInOut' }}
-      >
-        {/* Outer ring — pointer state only */}
+        {/* Outer ring — outside press-scale so it never shifts toward text on release */}
         <AnimatePresence>
           {isPointer && (
             <motion.div
@@ -202,41 +198,46 @@ export default function CustomCursor() {
           )}
         </AnimatePresence>
 
-        {/* I-beam — text state */}
-        <AnimatePresence>
-          {isText && (
-            <motion.div
-              className="absolute pointer-events-none"
-              style={{ width: 2, height: 18, top: -9, left: -1, background: 'rgba(201,169,110,0.8)', borderRadius: 1 }}
-              initial={{ scaleY: 0, opacity: 0 }}
-              animate={{ scaleY: 1, opacity: 1 }}
-              exit={{    scaleY: 0, opacity: 0 }}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
-            />
-          )}
-        </AnimatePresence>
+        {/* Dot + glow + i-beam scale on press */}
+        <motion.div
+          animate={{ scale: pressing ? 0.7 : 1 }}
+          transition={{ duration: 0.15, ease: 'easeInOut' }}
+        >
+          {/* I-beam — text state */}
+          <AnimatePresence>
+            {isText && (
+              <motion.div
+                className="absolute pointer-events-none"
+                style={{ width: 2, height: 18, top: -9, left: -1, background: 'rgba(201,169,110,0.8)', borderRadius: 1 }}
+                initial={{ scaleY: 0, opacity: 0 }}
+                animate={{ scaleY: 1, opacity: 1 }}
+                exit={{    scaleY: 0, opacity: 0 }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+              />
+            )}
+          </AnimatePresence>
 
-        {/* Soft outer glow */}
-        <motion.div
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            width: 16, height: 16, top: -8, left: -8,
-            background: 'radial-gradient(circle, rgba(220,120,20,0.35) 0%, transparent 70%)',
-          }}
-          animate={{ opacity: isText ? 0 : 1, scale: isPointer ? 1.4 : 1 }}
-          transition={{ duration: 0.15 }}
-        />
-        {/* Bright core */}
-        <motion.div
-          className="absolute rounded-full bg-amber pointer-events-none"
-          style={{
-            width: 6, height: 6, top: -3, left: -3,
-            boxShadow: '0 0 6px 2px rgba(232,180,50,0.9), 0 0 14px 4px rgba(200,80,10,0.5)',
-          }}
-          animate={{ opacity: isText ? 0 : 1, scale: isPointer ? 1.4 : 1 }}
-          transition={{ duration: 0.15 }}
-        />
-      </motion.div>
+          {/* Soft outer glow */}
+          <motion.div
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              width: 16, height: 16, top: -8, left: -8,
+              background: 'radial-gradient(circle, rgba(220,120,20,0.35) 0%, transparent 70%)',
+            }}
+            animate={{ opacity: isText ? 0 : 1, scale: isPointer ? 1.4 : 1 }}
+            transition={{ duration: 0.15 }}
+          />
+          {/* Bright core */}
+          <motion.div
+            className="absolute rounded-full bg-amber pointer-events-none"
+            style={{
+              width: 6, height: 6, top: -3, left: -3,
+              boxShadow: '0 0 6px 2px rgba(232,180,50,0.9), 0 0 14px 4px rgba(200,80,10,0.5)',
+            }}
+            animate={{ opacity: isText ? 0 : 1, scale: isPointer ? 1.4 : 1 }}
+            transition={{ duration: 0.15 }}
+          />
+        </motion.div>
       </div>
     </>
   )
