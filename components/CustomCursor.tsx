@@ -50,8 +50,8 @@ export default function CustomCursor() {
   // cursor position — set to exact mouse coords (no offset)
   const cursorX = useMotionValue(-999)
   const cursorY = useMotionValue(-999)
-  const springX = useSpring(cursorX, { stiffness: 600, damping: 35 })
-  const springY = useSpring(cursorY, { stiffness: 600, damping: 35 })
+  const springX = useSpring(cursorX, { stiffness: 600, damping: 48 })
+  const springY = useSpring(cursorY, { stiffness: 600, damping: 48 })
 
   useEffect(() => {
     if (!window.matchMedia('(hover: none)').matches) setIsHoverDevice(true)
@@ -184,7 +184,7 @@ export default function CustomCursor() {
         <AnimatePresence>
           {isPointer && (
             <motion.div
-              className="absolute rounded-full border"
+              className="absolute rounded-full border pointer-events-none"
               style={{
                 width: 32, height: 32,
                 top: -16, left: -16,
@@ -203,7 +203,7 @@ export default function CustomCursor() {
         <AnimatePresence>
           {isText && (
             <motion.div
-              className="absolute"
+              className="absolute pointer-events-none"
               style={{ width: 2, height: 18, top: -9, left: -1, background: 'rgba(201,169,110,0.8)', borderRadius: 1 }}
               initial={{ scaleY: 0, opacity: 0 }}
               animate={{ scaleY: 1, opacity: 1 }}
@@ -213,9 +213,9 @@ export default function CustomCursor() {
           )}
         </AnimatePresence>
 
-        {/* Soft outer glow — centered on cursor point */}
+        {/* Soft outer glow */}
         <motion.div
-          className="absolute rounded-full"
+          className="absolute rounded-full pointer-events-none"
           style={{
             width: 16, height: 16, top: -8, left: -8,
             background: 'radial-gradient(circle, rgba(220,120,20,0.35) 0%, transparent 70%)',
@@ -223,9 +223,9 @@ export default function CustomCursor() {
           animate={{ opacity: isText ? 0 : 1, scale: isPointer ? 1.4 : 1 }}
           transition={{ duration: 0.15 }}
         />
-        {/* Bright core — centered on cursor point */}
+        {/* Bright core */}
         <motion.div
-          className="absolute rounded-full bg-amber"
+          className="absolute rounded-full bg-amber pointer-events-none"
           style={{
             width: 6, height: 6, top: -3, left: -3,
             boxShadow: '0 0 6px 2px rgba(232,180,50,0.9), 0 0 14px 4px rgba(200,80,10,0.5)',
