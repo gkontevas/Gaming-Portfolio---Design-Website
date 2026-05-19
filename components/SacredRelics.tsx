@@ -69,7 +69,7 @@ export default function SacredRelics() {
     const isSnapping = { current: false }
 
     function snap() {
-      if (!outerRef.current || isSnapping.current) return
+      if (!outerRef.current || isSnapping.current || window.__navScrolling) return
       const sectionTop  = outerRef.current.getBoundingClientRect().top + window.scrollY
       const scrollTravel = outerRef.current.offsetHeight - window.innerHeight
       const relative     = window.scrollY - sectionTop
@@ -93,7 +93,7 @@ export default function SacredRelics() {
     }
 
     function onScroll() {
-      if (isSnapping.current) return
+      if (isSnapping.current || window.__navScrolling) return
       clearTimeout(snapTimeout.current)
       snapTimeout.current = window.setTimeout(snap, 80)
     }

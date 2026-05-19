@@ -7,6 +7,7 @@ declare global {
   interface Window {
     __lenis?: Lenis
     __lenisLocked?: boolean
+    __navScrolling?: boolean
   }
 }
 

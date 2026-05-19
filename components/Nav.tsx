@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
-import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const ease     = [0.16, 1, 0.3, 1] as [number, number, number, number]
 const sections = ['origins', 'remembrances', 'arsenal', 'worthy', 'bonfire']
@@ -13,7 +13,7 @@ const links    = [
   { label: 'Bonfire',      href: '#bonfire',      key: '5' },
 ]
 
-function MagneticLink({
+function NavLink({
   href, onClick, active, children,
 }: {
   href: string
@@ -21,48 +21,32 @@ function MagneticLink({
   active: boolean
   children: React.ReactNode
 }) {
-  const ref     = useRef<HTMLAnchorElement>(null)
-  const x       = useMotionValue(0)
-  const y       = useMotionValue(0)
-  const springX = useSpring(x, { stiffness: 150, damping: 22 })
-  const springY = useSpring(y, { stiffness: 150, damping: 22 })
-
-  function onMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    x.set((e.clientX - (rect.left + rect.width  / 2)) * 0.3)
-    y.set((e.clientY - (rect.top  + rect.height / 2)) * 0.3)
-  }
-
   return (
-    <motion.a
-      ref={ref}
+    <a
       href={href}
       onClick={onClick}
-      style={{ x: springX, y: springY }}
-      onMouseMove={onMouseMove}
-      onMouseLeave={() => { x.set(0); y.set(0) }}
-      className="group relative font-display text-xs tracking-[0.35em] uppercase transition-colors duration-300"
-      animate={{ color: active ? '#E8C97A' : '#C9A96E' }}
-      whileHover={{ color: '#E8C97A' }}
+      className={`relative py-2 font-display text-xs tracking-[0.35em] uppercase transition-colors duration-300 hover:text-amber ${
+        active ? 'text-amber' : 'text-gold'
+      }`}
     >
       {children}
-      {/* Active underline */}
       {active && (
         <motion.span
           layoutId="nav-underline"
-          className="absolute -bottom-1 left-0 right-0 h-px bg-amber/50"
+          className="pointer-events-none absolute -bottom-1 left-0 right-0 h-px bg-amber/50"
           transition={{ duration: 0.3, ease }}
         />
       )}
-    </motion.a>
+    </a>
   )
 }
 
 export default function Nav() {
-  const [active, setActive]     = useState('')
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [muted, setMuted]       = useState(false)
+  const [active,      setActive]      = useState('')
+  const [menuOpen,    setMenuOpen]    = useState(false)
+  const [muted,       setMuted]       = useState(false)
+  const [scrolling,   setScrolling]   = useState(false)
+  const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setMuted(localStorage.getItem('muted') === 'true')
@@ -94,7 +78,20 @@ export default function Nav() {
   function handleNav(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
     e.preventDefault()
     window.__playChime?.()
-    window.__lenis?.scrollTo(href, { duration: 2.2, easing: (t: number) => 1 - Math.pow(1 - t, 4) })
+    const target = document.querySelector(href)
+    const dist   = target ? Math.abs(target.getBoundingClientRect().top) : 1200
+    const dur    = Math.min(Math.max(dist / 1200, 0.8), 2.0)
+    window.__lenis?.scrollTo(href, {
+      duration: dur,
+      easing: (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+    })
+    setScrolling(true)
+    window.__navScrolling = true
+    if (scrollTimer.current) clearTimeout(scrollTimer.current)
+    scrollTimer.current = setTimeout(() => {
+      setScrolling(false)
+      window.__navScrolling = false
+    }, dur * 1000 + 600)
     setMenuOpen(false)
   }
 
@@ -124,14 +121,14 @@ export default function Nav() {
         {/* Desktop links — centered */}
         <nav className="hidden md:flex items-center gap-8">
           {links.map((link) => (
-            <MagneticLink
+            <NavLink
               key={link.href}
               href={link.href}
               onClick={(e) => handleNav(e, link.href)}
               active={active === link.href.slice(1)}
             >
               {link.label}
-            </MagneticLink>
+            </NavLink>
           ))}
         </nav>
 
@@ -172,6 +169,17 @@ export default function Nav() {
           {muted ? '✕' : '♪'}
         </span>
       </motion.button>
+
+      {/* Scroll motion blur — vignette + blur that pulses during nav scrolls */}
+      <motion.div
+        className="fixed inset-0 pointer-events-none z-[44]"
+        animate={{ opacity: scrolling ? 1 : 0 }}
+        transition={{ duration: scrolling ? 0.12 : 0.25, ease: 'easeOut' }}
+        style={{
+          background: 'radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(13,10,7,0.45) 100%)',
+          backdropFilter: 'blur(1.5px)',
+        }}
+      />
 
       {/* Mobile menu overlay */}
       <AnimatePresence>
