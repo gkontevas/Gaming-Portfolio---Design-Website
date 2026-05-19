@@ -42,12 +42,14 @@ export default function CustomCursor() {
   const embersRef    = useRef<Ember[]>([])
   const rafRef       = useRef<number>(0)
   const lastSpawnRef = useRef({ x: -999, y: -999 })
+  // Plain ref for canvas draw loop — always in sync with mousemove, no FM batching concerns
+  const mousePos     = useRef({ x: -999, y: -999 })
 
   const [isHoverDevice, setIsHoverDevice] = useState(false)
   const [cursorState, setCursorState]     = useState<CursorState>('default')
   const [pressing, setPressing]           = useState(false)
 
-  // cursor position — direct tracking, no spring (spring velocity causes visible overshoot fling)
+  // Motion values for DOM transform only — no spring (spring velocity caused visible overshoot fling)
   const cursorX = useMotionValue(-999)
   const cursorY = useMotionValue(-999)
 
@@ -94,12 +96,14 @@ export default function CustomCursor() {
     function onMouseMove(e: MouseEvent) {
       cursorX.set(e.clientX)
       cursorY.set(e.clientY)
+      mousePos.current.x = e.clientX
+      mousePos.current.y = e.clientY
     }
     window.addEventListener('mousemove', onMouseMove)
 
     function draw() {
-      const sx   = cursorX.get()
-      const sy   = cursorY.get()
+      const sx   = mousePos.current.x
+      const sy   = mousePos.current.y
       const last = lastSpawnRef.current
       if (sx > -100) {
         const moved = last.x === -999 ? 0 : Math.hypot(sx - last.x, sy - last.y)
