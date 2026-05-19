@@ -94,7 +94,7 @@ export default function Nav() {
   function handleNav(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
     e.preventDefault()
     window.__playChime?.()
-    window.__lenis?.scrollTo(href)
+    window.__lenis?.scrollTo(href, { duration: 2.2, easing: (t: number) => 1 - Math.pow(1 - t, 4) })
     setMenuOpen(false)
   }
 

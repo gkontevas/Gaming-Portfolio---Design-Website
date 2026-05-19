@@ -65,11 +65,14 @@ export default function CustomScrollbar() {
     function onMouseMove(e: MouseEvent) {
       if (!isDragging.current || window.__lenisLocked) return
       const { maxScroll, maxThumbTop } = getMetrics()
-      // How far did the mouse move? Convert that to a scroll distance.
-      // The ratio is: (mouse delta / available track space) = (scroll delta / max scroll)
       const deltaY      = e.clientY - dragStartY.current
       const scrollDelta = (deltaY / maxThumbTop) * maxScroll
-      window.scrollTo({ top: dragStartScroll.current + scrollDelta })
+      const target      = Math.max(0, Math.min(dragStartScroll.current + scrollDelta, maxScroll))
+      if (window.__lenis) {
+        window.__lenis.scrollTo(target, { immediate: true })
+      } else {
+        window.scrollTo({ top: target })
+      }
     }
 
     function onMouseUp() {
@@ -85,33 +88,17 @@ export default function CustomScrollbar() {
     }
   }, [])
 
-  // Clicking the track (not the thumb) jumps to that position
-  function onTrackClick(e: React.MouseEvent) {
-    if (window.__lenisLocked || e.target === thumbRef.current) return
-    const track = trackRef.current
-    if (!track) return
-    const { maxScroll, maxThumbTop, thumbHeight } = getMetrics()
-    const clickY   = e.clientY - track.getBoundingClientRect().top - thumbHeight / 2
-    const scrollTo = Math.max(0, Math.min((clickY / maxThumbTop) * maxScroll, maxScroll))
-    if (window.__lenis) {
-      window.__lenis.scrollTo(scrollTo, { duration: 0.8 })
-    } else {
-      window.scrollTo({ top: scrollTo, behavior: 'smooth' })
-    }
-  }
-
   if (locked) return null
 
   return (
-    // Track — now pointer-events auto so it receives clicks
+    // Track is pointer-events-none — visual only, never intercepts clicks
     <div
       ref={trackRef}
-      className="fixed right-0 top-0 h-full w-[6px] z-[40]"
-      onClick={onTrackClick}
+      className="fixed right-0 top-0 h-full w-[6px] z-[40] pointer-events-none"
     >
       <div
         ref={thumbRef}
-        className="absolute w-full rounded-full bg-bronze/60 hover:bg-gold/70 transition-colors duration-150"
+        className="absolute w-full rounded-full bg-bronze/60 hover:bg-gold/70 transition-colors duration-150 pointer-events-auto cursor-grab active:cursor-grabbing"
         style={{ top: 0 }}
         onMouseDown={onThumbMouseDown}
       />
