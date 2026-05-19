@@ -181,7 +181,7 @@ export default function CustomCursor() {
       >
       <motion.div
         animate={{ scale: pressing ? 0.7 : 1 }}
-        transition={{ duration: 0.12, ease: 'easeOut' }}
+        transition={{ duration: 0.15, ease: 'easeInOut' }}
       >
         {/* Outer ring — pointer state only */}
         <AnimatePresence>
