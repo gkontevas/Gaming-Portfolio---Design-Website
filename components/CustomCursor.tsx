@@ -15,7 +15,7 @@
 */
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useMotionValue, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Ember {
   x: number; y: number
@@ -39,19 +39,16 @@ function detectState(el: Element): CursorState {
 
 export default function CustomCursor() {
   const canvasRef    = useRef<HTMLCanvasElement>(null)
+  // Plain div ref — direct style mutation bypasses Framer Motion layout system entirely
+  const cursorDivRef = useRef<HTMLDivElement>(null)
   const embersRef    = useRef<Ember[]>([])
   const rafRef       = useRef<number>(0)
   const lastSpawnRef = useRef({ x: -999, y: -999 })
-  // Plain ref for canvas draw loop — always in sync with mousemove, no FM batching concerns
   const mousePos     = useRef({ x: -999, y: -999 })
 
   const [isHoverDevice, setIsHoverDevice] = useState(false)
   const [cursorState, setCursorState]     = useState<CursorState>('default')
   const [pressing, setPressing]           = useState(false)
-
-  // Motion values for DOM transform only — no spring (spring velocity caused visible overshoot fling)
-  const cursorX = useMotionValue(-999)
-  const cursorY = useMotionValue(-999)
 
   useEffect(() => {
     if (!window.matchMedia('(hover: none)').matches) setIsHoverDevice(true)
@@ -94,10 +91,11 @@ export default function CustomCursor() {
     }
 
     function onMouseMove(e: MouseEvent) {
-      cursorX.set(e.clientX)
-      cursorY.set(e.clientY)
       mousePos.current.x = e.clientX
       mousePos.current.y = e.clientY
+      if (cursorDivRef.current) {
+        cursorDivRef.current.style.transform = `translate(${e.clientX}px,${e.clientY}px)`
+      }
     }
     window.addEventListener('mousemove', onMouseMove)
 
@@ -175,10 +173,11 @@ export default function CustomCursor() {
     <>
       <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-[9990]" />
 
-      {/* Cursor — outer motion.div tracks mouse directly, inner handles press scale */}
-      <motion.div
+      {/* Cursor — plain div for position (bypasses FM layout system), motion.div for press scale */}
+      <div
+        ref={cursorDivRef}
         className="pointer-events-none fixed z-[9999] top-0 left-0"
-        style={{ x: cursorX, y: cursorY }}
+        style={{ transform: 'translate(-999px,-999px)' }}
       >
       <motion.div
         animate={{ scale: pressing ? 0.7 : 1 }}
@@ -238,7 +237,7 @@ export default function CustomCursor() {
           transition={{ duration: 0.15 }}
         />
       </motion.div>
-      </motion.div>
+      </div>
     </>
   )
 }

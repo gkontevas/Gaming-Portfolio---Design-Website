@@ -28,11 +28,16 @@ export default function Embers() {
           key={e.id}
           className="absolute bottom-0 rounded-full bg-amber"
           style={{
-            left:      `${e.left}%`,
-            width:     e.size,
-            height:    e.size,
-            animation: `ember-rise ${e.duration}s ease-out ${e.delay}s infinite backwards`,
-            '--drift': `${e.drift}px`,
+            left:                   `${e.left}%`,
+            width:                  e.size,
+            height:                 e.size,
+            animationName:          'ember-rise',
+            animationDuration:      `${e.duration}s`,
+            animationTimingFunction:'ease-out',
+            animationDelay:         `${e.delay}s`,
+            animationIterationCount:'infinite',
+            animationFillMode:      'backwards',
+            '--drift':              `${e.drift}px`,
           } as React.CSSProperties}
         />
       ))}
