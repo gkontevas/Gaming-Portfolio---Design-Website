@@ -31,8 +31,7 @@ export default function Embers() {
             left:      `${e.left}%`,
             width:     e.size,
             height:    e.size,
-            animation: `ember-rise ${e.duration}s ${e.delay}s infinite ease-out`,
-            animationFillMode: 'backwards',
+            animation: `ember-rise ${e.duration}s ease-out ${e.delay}s infinite backwards`,
             '--drift': `${e.drift}px`,
           } as React.CSSProperties}
         />
