@@ -174,7 +174,7 @@ export default function BonfireMessages({ initialMessages = [], initialCount }: 
 
       {/* Floating embers — CSS only, zero JS */}
       <style>{`
-        @keyframes ember-rise {
+        @keyframes bonfire-ember-rise {
           0%   { transform: translateY(0) translateX(0);   opacity: 0; }
           12%  { opacity: 0.9; }
           80%  { opacity: 0.25; }
@@ -184,7 +184,7 @@ export default function BonfireMessages({ initialMessages = [], initialCount }: 
           position: absolute; bottom: 8%; pointer-events: none;
           width: 2px; height: 2px; border-radius: 50%;
           background: rgb(220,110,30);
-          animation: ember-rise var(--dur) var(--delay) ease-in infinite;
+          animation: bonfire-ember-rise var(--dur) var(--delay) ease-in infinite;
         }
       `}</style>
       {[
