@@ -422,7 +422,7 @@ export default function BonfireMessages({ initialMessages = [], initialCount }: 
                       <div className="flex-1 min-w-0">
                         {/* Message text */}
                         <p className={`font-body italic leading-relaxed mb-3 transition-colors duration-300 ${
-                          isNew ? 'text-bronze/95 text-base' : 'text-bronze/75 text-sm sm:text-base group-hover:text-bronze/90'
+                          isNew ? 'text-gold/95 text-base' : 'text-bronze/90 text-sm sm:text-base group-hover:text-bronze/100'
                         }`}>
                           &ldquo;{msg.text}&rdquo;
                         </p>
@@ -430,11 +430,11 @@ export default function BonfireMessages({ initialMessages = [], initialCount }: 
                         {/* Footer */}
                         <div className="flex items-center justify-between gap-4 flex-wrap">
                           <div className="flex items-center gap-2">
-                            <span className="font-display text-[9px] tracking-[0.35em] text-gold/55 uppercase">
+                            <span className="font-display text-[9px] tracking-[0.35em] text-gold/70 uppercase">
                               {msg.username}
                             </span>
-                            <span className="text-bronze/30 text-[9px]">·</span>
-                            <span className="font-display text-[9px] tracking-[0.3em] text-bronze/40 uppercase">
+                            <span className="text-bronze/40 text-[9px]">·</span>
+                            <span className="font-display text-[9px] tracking-[0.3em] text-bronze/55 uppercase">
                               {timeAgo(msg.created_at)}
                             </span>
                           </div>

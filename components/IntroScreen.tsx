@@ -170,23 +170,26 @@ export default function IntroScreen() {
   useEffect(() => {
     if (step !== 1) return
     function dismiss() {
-      // Lock Lenis before removing overflow so it can't drift to a
-      // restored native scroll position during the transition.
+      // Hold overflow:hidden while resetting — browser can't restore a
+      // cached position while the body is locked.
       window.__lenisLocked = true
-      document.body.style.overflow = ''
       sessionStorage.setItem('intro-seen', '1')
-      window.dispatchEvent(new Event('intro-dismissed'))
-      // Hard-reset every scroll surface immediately
+      // Reset scroll before anything is visible
       window.scrollTo(0, 0)
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
+      window.__lenis?.scrollTo(0, { immediate: true })
       requestAnimationFrame(() => {
         window.scrollTo(0, 0)
         requestAnimationFrame(() => {
           window.scrollTo(0, 0)
           window.__lenis?.scrollTo(0, { immediate: true })
+          // Unlock body — scroll is guaranteed at 0
+          document.body.style.overflow = ''
           setStep(2)
-          // Unlock Lenis one frame after the overlay is removed
+          // Dispatch AFTER scroll is set so IntersectionObservers
+          // (nav active state, FadeIn) fire at position 0, not origins
+          window.dispatchEvent(new Event('intro-dismissed'))
           requestAnimationFrame(() => {
             window.__lenisLocked = false
           })

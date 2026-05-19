@@ -91,10 +91,13 @@ export default function CustomScrollbar() {
     const track = trackRef.current
     if (!track) return
     const { maxScroll, maxThumbTop, thumbHeight } = getMetrics()
-    // Center the thumb on the click point
-    const clickY    = e.clientY - track.getBoundingClientRect().top - thumbHeight / 2
-    const scrollTo  = (clickY / maxThumbTop) * maxScroll
-    window.scrollTo({ top: scrollTo, behavior: 'smooth' })
+    const clickY   = e.clientY - track.getBoundingClientRect().top - thumbHeight / 2
+    const scrollTo = Math.max(0, Math.min((clickY / maxThumbTop) * maxScroll, maxScroll))
+    if (window.__lenis) {
+      window.__lenis.scrollTo(scrollTo, { duration: 0.8 })
+    } else {
+      window.scrollTo({ top: scrollTo, behavior: 'smooth' })
+    }
   }
 
   if (locked) return null
@@ -103,7 +106,7 @@ export default function CustomScrollbar() {
     // Track — now pointer-events auto so it receives clicks
     <div
       ref={trackRef}
-      className="fixed right-0 top-0 h-full w-[6px] z-[9997]"
+      className="fixed right-0 top-0 h-full w-[6px] z-[40]"
       onClick={onTrackClick}
     >
       <div
