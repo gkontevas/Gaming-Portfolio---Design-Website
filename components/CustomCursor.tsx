@@ -15,7 +15,7 @@
 */
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
+import { motion, useMotionValue, AnimatePresence } from 'framer-motion'
 
 interface Ember {
   x: number; y: number
@@ -47,11 +47,9 @@ export default function CustomCursor() {
   const [cursorState, setCursorState]     = useState<CursorState>('default')
   const [pressing, setPressing]           = useState(false)
 
-  // cursor position — set to exact mouse coords (no offset)
+  // cursor position — direct tracking, no spring (spring velocity causes visible overshoot fling)
   const cursorX = useMotionValue(-999)
   const cursorY = useMotionValue(-999)
-  const springX = useSpring(cursorX, { stiffness: 600, damping: 48 })
-  const springY = useSpring(cursorY, { stiffness: 600, damping: 48 })
 
   useEffect(() => {
     if (!window.matchMedia('(hover: none)').matches) setIsHoverDevice(true)
@@ -100,8 +98,8 @@ export default function CustomCursor() {
     window.addEventListener('mousemove', onMouseMove)
 
     function draw() {
-      const sx   = springX.get()
-      const sy   = springY.get()
+      const sx   = cursorX.get()
+      const sy   = cursorY.get()
       const last = lastSpawnRef.current
       if (sx > -100) {
         const moved = last.x === -999 ? 0 : Math.hypot(sx - last.x, sy - last.y)
@@ -173,10 +171,12 @@ export default function CustomCursor() {
     <>
       <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-[9990]" />
 
-      {/* Cursor — centered exactly on mouse position */}
+      {/* Cursor — outer motion.div tracks mouse directly, inner handles press scale */}
       <motion.div
         className="pointer-events-none fixed z-[9999] top-0 left-0"
-        style={{ x: springX, y: springY }}
+        style={{ x: cursorX, y: cursorY }}
+      >
+      <motion.div
         animate={{ scale: pressing ? 0.7 : 1 }}
         transition={{ duration: 0.12, ease: 'easeOut' }}
       >
@@ -233,6 +233,7 @@ export default function CustomCursor() {
           animate={{ opacity: isText ? 0 : 1, scale: isPointer ? 1.4 : 1 }}
           transition={{ duration: 0.15 }}
         />
+      </motion.div>
       </motion.div>
     </>
   )
