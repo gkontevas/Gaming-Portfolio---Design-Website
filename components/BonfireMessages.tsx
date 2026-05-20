@@ -288,7 +288,7 @@ export default function BonfireMessages({ initialMessages = [], initialCount }: 
                     value={username}
                     onChange={e => setUsername(e.target.value.slice(0, 24))}
                     placeholder="Your name (optional)"
-                    className="w-60 bg-transparent border-b border-gold/25 px-2 py-2 font-display text-xs tracking-widest text-gold placeholder:text-bronze/35 focus:outline-none focus:border-amber/50 transition-colors duration-300 text-center"
+                    className="w-60 bg-transparent border-b border-gold/40 px-2 py-2 font-display text-xs tracking-widest text-gold placeholder:text-bronze/55 focus:outline-none focus:border-amber/60 transition-colors duration-300 text-center"
                   />
                   {username && (
                     <span className="absolute -top-2 left-1/2 -translate-x-1/2 font-display text-[8px] tracking-[0.4em] text-amber/60 uppercase bg-[#130D04] px-2">
