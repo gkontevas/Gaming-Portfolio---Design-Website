@@ -25,17 +25,19 @@ function NavLink({
     <a
       href={href}
       onClick={onClick}
-      className={`relative py-2 font-display text-xs tracking-[0.35em] uppercase transition-colors duration-300 hover:text-amber ${
+      className={`group relative py-2 font-display text-xs tracking-[0.35em] uppercase transition-colors duration-300 hover:text-amber ${
         active ? 'text-amber' : 'text-gold'
       }`}
     >
       {children}
-      {active && (
+      {active ? (
         <motion.span
           layoutId="nav-underline"
           className="pointer-events-none absolute -bottom-1 left-0 right-0 h-px bg-amber/50"
           transition={{ duration: 0.3, ease }}
         />
+      ) : (
+        <span className="pointer-events-none absolute -bottom-1 left-0 right-0 h-px bg-gold/40 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
       )}
     </a>
   )
@@ -91,7 +93,7 @@ export default function Nav() {
     scrollTimer.current = setTimeout(() => {
       setScrolling(false)
       window.__navScrolling = false
-    }, dur * 1000 + 600)
+    }, dur * 1000 + 150)
     setMenuOpen(false)
   }
 
@@ -174,7 +176,7 @@ export default function Nav() {
       <motion.div
         className="fixed inset-0 pointer-events-none z-[44]"
         animate={{ opacity: scrolling ? 1 : 0 }}
-        transition={{ duration: scrolling ? 0.12 : 0.25, ease: 'easeOut' }}
+        transition={{ duration: scrolling ? 0.12 : 0.15, ease: 'easeOut' }}
         style={{
           background: 'radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(13,10,7,0.45) 100%)',
           backdropFilter: 'blur(1.5px)',

@@ -66,6 +66,11 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
   const heroRef      = useRef<HTMLElement>(null)
   const contentRef   = useRef<HTMLDivElement>(null)
   const scrollIndRef = useRef<HTMLDivElement>(null)
+  const galleryRef   = useRef<HTMLDivElement>(null)
+
+  function scrollGallery(dir: 'left' | 'right') {
+    galleryRef.current?.scrollBy({ left: dir === 'right' ? 420 : -420, behavior: 'smooth' })
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -89,6 +94,16 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
     }
     lenis.on('scroll', onScroll)
     return () => lenis.off('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if (e.key === 'ArrowRight') scrollGallery('right')
+      if (e.key === 'ArrowLeft')  scrollGallery('left')
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [])
 
   const idx  = perfectGames.findIndex(g => g.id === game.id)
@@ -207,11 +222,24 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
       ═══════════════════════════════════════════════════ */}
       {screenshots.length > 0 && (
         <div className="bg-ash pt-0 pb-2">
-          <div className="flex items-baseline justify-between mb-3 px-5 sm:px-8 md:px-16 pt-4">
+          <div className="flex items-center justify-between mb-3 px-5 sm:px-8 md:px-16 pt-4">
             <p className="font-display text-[10px] tracking-[0.55em] text-bronze/45 uppercase">Screenshots</p>
-            <p className="font-display text-[9px] tracking-[0.4em] text-bronze/30 uppercase">Swipe to explore</p>
+            <div className="hidden sm:flex gap-2">
+              <button
+                onClick={() => scrollGallery('left')}
+                aria-label="Previous screenshot"
+                className="w-11 h-11 flex items-center justify-center border border-gold/40 hover:border-gold bg-gold/5 hover:bg-gold/10 text-gold/70 hover:text-gold transition-all duration-200 font-display text-base">
+                ←
+              </button>
+              <button
+                onClick={() => scrollGallery('right')}
+                aria-label="Next screenshot"
+                className="w-11 h-11 flex items-center justify-center border border-gold/40 hover:border-gold bg-gold/5 hover:bg-gold/10 text-gold/70 hover:text-gold transition-all duration-200 font-display text-base">
+                →
+              </button>
+            </div>
           </div>
-          <div className="flex gap-3 overflow-x-auto pb-6 px-5 sm:px-8 md:px-16" style={{ scrollbarWidth: 'none' }}>
+          <div ref={galleryRef} className="flex gap-3 overflow-x-auto pb-6 px-5 sm:px-8 md:px-16" style={{ scrollbarWidth: 'none' }}>
             {screenshots.map((src, i) => (
               <div key={i} className="relative shrink-0 overflow-hidden"
                 style={{ width: 'clamp(280px, 60vw, 480px)', aspectRatio: '16/9' }}>
