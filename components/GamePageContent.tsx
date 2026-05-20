@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
@@ -14,72 +14,6 @@ const GENRE_LABELS: Record<Game['genre'], string> = {
   'action':     'Action',
   'roguelike':  'Roguelike',
   'other':      'Other',
-}
-
-function HeroSigil() {
-  const rings = [
-    { r: 110, duration: 50, dir:  1, ticks: 12, tickLen: [10, 5], opacity: 0.10 },
-    { r:  76, duration: 33, dir: -1, ticks:  0, tickLen: [0,  0], opacity: 0.07, dashed: true },
-    { r:  44, duration: 20, dir:  1, ticks:  4, tickLen: [8,  0], opacity: 0.14 },
-  ]
-
-  return (
-    <motion.div
-      className="absolute pointer-events-none hidden md:block"
-      style={{ right: 'clamp(5rem, 11vw, 13rem)', top: '42%', transform: 'translateY(-50%)' }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 2.5, delay: 0.7 }}
-      aria-hidden
-    >
-      {rings.map(({ r, duration, dir, ticks, tickLen, opacity, dashed }, ri) => (
-        <motion.div key={ri}
-          className="absolute rounded-full"
-          style={{
-            width: r * 2, height: r * 2, top: -r, left: -r,
-            border: `1px ${dashed ? 'dashed' : 'solid'} rgba(201,169,110,${opacity})`,
-          }}
-          animate={{ rotate: dir * 360 }}
-          transition={{ duration, ease: 'linear', repeat: Infinity }}
-        >
-          {Array.from({ length: ticks }, (_, i) => (
-            <div key={i} style={{
-              position: 'absolute',
-              width: i % 3 === 0 ? tickLen[0] : tickLen[1],
-              height: 1,
-              background: `rgba(201,169,110,${i % 3 === 0 ? 0.35 : 0.18})`,
-              top: '50%', left: '50%',
-              transformOrigin: '0 50%',
-              transform: `rotate(${(i / ticks) * 360}deg) translateX(${r - 4}px) translateY(-50%)`,
-            }} />
-          ))}
-        </motion.div>
-      ))}
-
-      {/* Core pulse */}
-      <motion.div className="absolute rounded-full"
-        style={{ width: 32, height: 32, top: -16, left: -16,
-          background: 'radial-gradient(circle, rgba(232,180,50,0.18) 0%, transparent 70%)' }}
-        animate={{ opacity: [0.4, 1, 0.4], scale: [0.7, 1.3, 0.7] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-      />
-
-      {/* Centre ✦ */}
-      <motion.span className="absolute font-display text-gold/25 select-none"
-        style={{ top: -9, left: -7, fontSize: 15 }}
-        animate={{ opacity: [0.2, 0.6, 0.2] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-      >✦</motion.span>
-
-      {/* Outer ambient glow */}
-      <motion.div className="absolute rounded-full"
-        style={{ width: 340, height: 340, top: -170, left: -170,
-          background: 'radial-gradient(circle, rgba(160,50,8,0.07) 0%, transparent 62%)' }}
-        animate={{ opacity: [0.4, 1, 0.4], scale: [0.88, 1.12, 0.88] }}
-        transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
-      />
-    </motion.div>
-  )
 }
 
 // ── SUB-COMPONENTS ─────────────────────────────────────────────────────────────
@@ -174,10 +108,13 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
 
         {/* Dark atmospheric background */}
         <div className="absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse at 22% 55%, #1E1208 0%, #0D0A07 62%)' }} />
+          style={{ background: 'radial-gradient(ellipse at 50% 60%, #1A1007 0%, #0D0A07 65%)' }} />
 
-        {/* Right-side sigil — multi-ring astronomical instrument */}
-        <HeroSigil />
+        {/* Ghost index — huge centred watermark behind title */}
+        <span className="pointer-events-none select-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-display leading-none text-gold/[0.025]"
+          style={{ fontSize: 'clamp(10rem, 30vw, 26rem)', whiteSpace: 'nowrap' }}>
+          {String(idx + 1).padStart(2, '0')}
+        </span>
 
         {/* Back */}
         <Link href="/"
@@ -191,63 +128,68 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
           <div className="w-8 h-8 sm:w-10 sm:h-10 border-t border-r border-gold/20" />
         </div>
 
-        {/* Ghost index */}
-        <span className="pointer-events-none select-none absolute left-[4%] top-1/2 -translate-y-1/2 font-display leading-none text-gold/[0.035]"
-          style={{ fontSize: 'clamp(5rem, 18vw, 16rem)' }}>
-          {String(idx + 1).padStart(2, '0')}
-        </span>
-
         {/* Scroll indicator */}
-        <div
-          ref={scrollIndRef}
+        <div ref={scrollIndRef}
           className="absolute bottom-10 right-7 sm:right-12 z-10 hidden sm:flex flex-col items-center gap-3"
           style={{ willChange: 'opacity' }}
         >
-          <motion.div
-            className="flex flex-col items-center gap-3"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.1, duration: 0.9 }}
-          >
+          <motion.div className="flex flex-col items-center gap-3"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ delay: 1.1, duration: 0.9 }}>
             <span className="font-display text-[8px] tracking-[0.5em] text-bronze/35 uppercase">Scroll</span>
-            <motion.div
-              className="w-px h-9"
+            <motion.div className="w-px h-9"
               style={{ background: 'linear-gradient(to bottom, rgba(201,169,110,0.4), transparent)' }}
               animate={{ opacity: [0.4, 1, 0.4], y: [0, 5, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            />
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} />
           </motion.div>
         </div>
 
-        {/* Hero text */}
-        <div ref={contentRef} className="absolute bottom-0 left-0 p-5 sm:p-8 md:p-16 max-w-4xl" style={{ willChange: 'transform' }}>
+        {/* Cinematic centred hero */}
+        <div ref={contentRef}
+          className="absolute inset-0 flex flex-col items-center justify-center px-5 sm:px-12 text-center"
+          style={{ willChange: 'transform' }}>
+
+          {/* Genre · year */}
           <motion.p
-            className="mb-3 font-display text-[10px] tracking-[0.55em] text-bronze/60 uppercase"
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-5 font-display text-[10px] tracking-[0.65em] text-bronze/50 uppercase"
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}>
             {GENRE_LABELS[game.genre]} · {game.year}
           </motion.p>
 
+          {/* Title */}
           <motion.h1
-            className="font-display uppercase leading-[0.88] text-gold mb-4"
-            style={{ fontSize: 'clamp(2.8rem, 7vw, 7rem)', textShadow: '0 4px 60px rgba(0,0,0,0.85)' }}
-            initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}>
+            className="font-display uppercase text-gold"
+            style={{
+              fontSize: 'clamp(3.2rem, 9vw, 10rem)',
+              lineHeight: 0.88,
+              letterSpacing: '0.02em',
+              textShadow: '0 0 120px rgba(0,0,0,0.9), 0 4px 80px rgba(0,0,0,0.85)',
+            }}
+            initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}>
             {game.title}
           </motion.h1>
 
+          {/* Thin rule */}
+          <motion.div className="w-12 h-px bg-gold/25 my-6"
+            initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.45 }} />
+
+          {/* Developer · series */}
           <motion.p
-            className="font-display text-sm tracking-[0.3em] text-bronze/75 uppercase mb-6"
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}>
+            className="font-display text-xs sm:text-sm tracking-[0.4em] text-bronze/60 uppercase"
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}>
             {game.developer}
-            {game.series && <span className="ml-4 text-bronze/50">· {game.series}</span>}
+            {game.series && <span className="ml-4 text-bronze/35">· {game.series}</span>}
           </motion.p>
 
+          {/* Stats */}
           <motion.div
-            className="flex flex-wrap gap-5 sm:gap-8 border-t border-gold/20 pt-5"
+            className="flex flex-wrap justify-center gap-6 sm:gap-10 mt-8 pt-6 border-t border-gold/15"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.45 }}>
+            transition={{ duration: 0.7, delay: 0.6 }}>
             {game.hours      !== undefined && <HeroStat label="Hours Bound">{game.hours}+</HeroStat>}
             {game.metacritic !== undefined && <HeroStat label="Metacritic">{game.metacritic}</HeroStat>}
             {game.difficulty !== undefined && (
@@ -264,7 +206,7 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
           SCREENSHOTS — full-width horizontal scroll
       ═══════════════════════════════════════════════════ */}
       {screenshots.length > 0 && (
-        <div className="bg-ash pt-10 pb-2">
+        <div className="bg-ash pt-3 pb-2">
           <div className="flex items-baseline justify-between mb-5 px-5 sm:px-8 md:px-16">
             <p className="font-display text-[10px] tracking-[0.55em] text-bronze/45 uppercase">Screenshots</p>
             <p className="font-display text-[9px] tracking-[0.4em] text-bronze/30 uppercase">Swipe to explore</p>
