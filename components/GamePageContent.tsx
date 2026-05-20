@@ -206,8 +206,8 @@ export default function GamePageContent({ game, screenshots = [] }: { game: Game
           SCREENSHOTS — full-width horizontal scroll
       ═══════════════════════════════════════════════════ */}
       {screenshots.length > 0 && (
-        <div className="bg-ash pt-3 pb-2">
-          <div className="flex items-baseline justify-between mb-5 px-5 sm:px-8 md:px-16">
+        <div className="bg-ash pt-0 pb-2">
+          <div className="flex items-baseline justify-between mb-3 px-5 sm:px-8 md:px-16 pt-4">
             <p className="font-display text-[10px] tracking-[0.55em] text-bronze/45 uppercase">Screenshots</p>
             <p className="font-display text-[9px] tracking-[0.4em] text-bronze/30 uppercase">Swipe to explore</p>
           </div>
