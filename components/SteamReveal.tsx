@@ -37,7 +37,7 @@ export default function SteamReveal() {
         transition={{ duration: 1.6, ease: 'linear', delay: 0.45 }}
       >
         <Image
-          src="/steam.png"
+          src="/steam-2.png"
           alt="Steam profile"
           width={1540}
           height={784}
